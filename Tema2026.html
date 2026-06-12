@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>TEMAFINALE26</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px auto;
+            max-width: 900px;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: right;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2980b9;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+        ul {
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 300px;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #bdc3c7;
+            margin: 20px 0;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TEMAFINALE26</h1>
+
+    <p>A <em>Maritime Cargo shipping company</em> (from now on, simply <strong>company</strong>) intends to automate the operations of load of <strong>containers</strong> in the ship’s cargo hold (or simply <strong>hold</strong>). To this end, the company plans to employ a <em>Differential Drive Robot</em> (from now, called <strong>cargorobot</strong>).</p>
+
+    <p>The <em>hold</em> is a rectangular, flat area with an Input/Output port (<strong>IOPort</strong>). The area provides 4 <strong>slots</strong> to store the containers and a slot named <strong>slot5</strong>.</p>
+
+    <figure style="text-align: center; margin: 20px 0;">
+        <img src="docs/img/stiva.png" alt="Mappa della stiva con HOME, SONAR, SLOT1-5, IOPORT e SENSOR/DFREE" style="max-width: 100%; height: auto; border: 1px solid #bdc3c7; border-radius: 4px;">
+    </figure>
+
+    <p>In the picture above:</p>
+    <ul>
+        <li>The <strong>slots1-4</strong> depict the hold areas reserved to store one <em>container</em> each,</li>
+        <li>The <strong>slots5</strong> depicts an area, where the <em>cargorobot</em> must temporarily store a container, before to place it in one of the <em>slots1-4</em>. During temporary storage, a ‘marker’ device labels the container with an identification barcode and signals when this marking activity is completed.</li>
+        <li>The <strong>IOPort</strong> is a device with a <strong>pushbutton</strong> and a <strong>display</strong>. The <em>pushbutton</em> is pressed by the customer in order to to send a request to load a container on the cargo. The <em>display</em> is used to show the answer to the request and to show the current state of the <em>hold</em>.</li>
+        <li>The <strong>sensor</strong> associated to the <em>IOPort</em> is a device (a <em>sonar</em>) used to detect the presence of a container, when it measures a distance D, such that D < DFREE/2, during a reasonable time (e.g. 3 secs).</li>
+    </ul>
+
+    <h2>31.1 TF2026 Requirements</h2>
+
+    <p>The company asks us to build service named <strong>cargoservice</strong> that should work as follows.</p>
+
+    <p>The <em>cargoservice</em> is able to receive a <strong>request to load</strong> a container sent by some customer by using the <em>pushbutton</em> of the <em>IOPort</em>.</p>
+    <ul>
+        <li>It sends the answer <code>retrylater</code>, if the <strong>IOPort</strong> is currently occupied by a container or if the system is <em>Out of service</em></li>
+        <li>It rejects the request when the hold is already full, i.e. the <code>slots1-4</code> are already occupied.</li>
+        <li>Otherwise, it considers the system as <strong>engaged</strong>, detects a free slot and returns as answer the name of such a reserved slot. While engaged, the system must blink a Led.</li>
+    </ul>
+
+    <p>When the <em>request to load</em> is accepted, the customer must move the container in the <em>sensor</em> area within prefixed amount of time (e.g. 30 secs), otherwise the systems becomes <strong>disengaged</strong>. Then, the <em>cargoservice</em> uses the <em>cargorobot</em> to move the container from the <em>IOPort</em> to the <em>slot5</em> (for marking the container) and then to the reserved slot.</p>
+
+    <p>The service must also show on the <em>display</em> on the <em>IOPort</em>:</p>
+    <ul>
+        <li>the current state of the <em>hold</em></li>
+        <li>the message '<strong>Service working</strong>', when it is all is going well</li>
+        <li>the message '<strong>Out of service</strong>' if the <em>sonar sensor</em> measures a distance D > DFREE for at least 3 secs (perhaps a failure of the <em>sonar</em>).</li>
+    </ul>
+
+    <p>Lo scopo del tema finale è discutere un caso di studio in merito al processo di analisi, progettazione e costruzione di un <strong>sistema software distribuito</strong>, organizzato come un insieme di <em>micro-servizi</em>.</p>
+
+    <h2>32.1 Come produrre l'elaborato finale</h2>
+
+    <p>Come introdotto in <em>Processi di costruzione del software</em>, si parte sempre da un insieme di <strong>requisiti</strong> e dall'idea di pervenire al prodotto finale attraverso un processo <strong>evolutivo</strong> di costruzione <strong>incrementale</strong> di una sequenza di prototipi, ciascuno ottenuto come risultato di uno Sprint (terminologia Scrum).</p>
+
+    <h3>32.1.1 Lo Sprint0</h3>
+
+    <p>Nel <em>Il nostro metodo di lavoro</em>, lo SPRINT0 ha lo scopo di <strong>formalizzare</strong> quanto più possibile i singoli termini del testo dei requisiti, usando un qualche linguaggio di programmazione (e.g. Java) e/o di modellazione.</p>
+
+    <p>Lo SPRINT0 deve essere condotto in stretta cooperazione con il committente, per:</p>
+    <ul>
+        <li>fornire un modello delle macro-parti del sistema da realizzare, evidenziando quali componenti sono forniti/indicati dal committente e quelli che invece bisogna sviluppare, dando indicazioni sulla natura software dei componenti stessi.</li>
+        <li>evidenziare il <strong>core businness</strong> del sistema</li>
+        <li>definire un primo insieme di Piani di Test Funzionali</li>
+        <li>definire il sottoinsieme di requisiti (il goal) che si intende soddisfare con lo Sprint1</li>
+    </ul>
+
+    <p><em>Il linguaggio qak</em> introdotto nel corso non va preso come un vincolo a priori. Come per ogni altra tecnologia, ne va invece motivato l'uso, con particolare riferimento alla sua caratteristica di metamodello capace di superare l'idea tradizionale di componente software come oggetto.</p>
+
+    <h3>32.1.2 Come sviluppare gli Sprint successivi</h3>
+
+    <p>Ogni SPRINT dovrebbe:</p>
+    <ul>
+        <li>essere associato a un progetto autonomo, con un suo proprio <em>diario di bordo</em></li>
+        <li>definire un preciso obiettivo (<strong>goal</strong>, in terminologia Scrum)</li>
+        <li>approfondire (se si ritiene sia il caso) l'analisi dei requisiti relativa al sottoproblema dello SPRINT</li>
+        <li>realizzare l'<strong>analisi del problema</strong>, producendo come risultato:
+            <ul>
+                <li>una <strong>architettura logica</strong> del (sotto)sistema</li>
+                <li>definizione di un <strong>piano di lavoro</strong> come una previsione dei tempi di realizzazione (in <strong>ore/uomo</strong>),</li>
+                <li>la distribuzione dei compiti tra i membri del team</li>
+                <li>definizione di un insieme di TestPlan funzionali</li>
+            </ul>
+        </li>
+        <li>realizzare la <strong>progettazione</strong> del prototipo una <strong>architettura di progetto</strong></li>
+        <li>realizzare un prototipo eseguibile (da mostrare e discutere con il committente)</li>
+        <li>terminare con:
+            <ul>
+                <li>una <strong>pagina di sintesi</strong> che riporta l'architettura finale del prototipo (con i link al modello e ai Test). Un riferimento a questa pagina sarà l'inizio del documento relativo allo SPRINT successivo.</li>
+                <li>inserire istruzioni sul deployment del prodotto e su <strong>come eseguirlo</strong> , ad uso di un utente finale</li>
+                <li>una indicazione se i tempi di sviluppo previsti sono stati rispettati o meno, con una breve spiegazione in caso di scostamento significativo</li>
+                <li>definire il goal dello SPRINT successivo</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>32.2 Come presentare l'elaborato finale</h2>
+
+    <p>La costruzione di un prototipo di sistema software che soddisfa un insieme di requisiti (ad esempio TemaFinale25) mira a verificare il raggiungimento di adeguate abilità teorico/pratiche e può essere effettuata in modo individuale oppure in un gruppo di <strong>non più di tre studenti</strong>.</p>
+
+    <p>La discussione individuale orale che segue la demo del prototipo è volta a valutare il livello di <strong>conoscenza, consapevolezza e di autonomia</strong> analitico/progettuale del singolo studente.</p>
+
+    <p>48 h prima del colloquio, il codice del sistema finale deve essere stato pubblicato sul sito del prototipo (individuale o di gruppo), dandone relativa informazione via mail al docente.</p>
+
+    <p>Il giorno del colloquio, ogni gruppo deve avere effettuato gli opportuni preparativi per la/le demo, in modo da essere subito operativo</p>
+
+    <p>L'ordine di presentazione dei gruppi verrà opportunamente stabilito dal docente e si svolgerà come qui di seguito indicato.</p>
+
+    <ol>
+        <li>Presentazione (collettiva di gruppo) di una demo 'live' del sistema finale di durata 10-15(max) minuti. La demo deve mostrare la esecuzione di almeno un Test(Plan) automatizzato ritenuto significativo.</li>
+        <li>Presentazione (collettiva di gruppo) del progetto del sistema e della sua relazione con la fase di analisi. In questa fase è RICHIESTA la <strong>preparazione di N&lt;10 SLIDES</strong> di illustrazione del processo di sviluppo seguito e dell'architettura finale con figure e (se ritenuto utile) riferimenti al codice. Al termine di queste fasi il gruppo può raggiungere un
+            <ul>
+                <li><strong>punteggio massimo di 27/30</strong>.</li>
+            </ul>
+        </li>
+        <li>Domande rivolte dal docente a singole persone, riguardo al prodotto, al progetto e alla analisi del problema/requisiti. Al termine di questa fase, il singolo studente può raggiungere un
+            <ul>
+                <li><strong>punteggio massimo di 29/30</strong>.</li>
+            </ul>
+        </li>
+        <li>Altre domande rivolte dal docente a singole persone, più rivolte agli aspetti teorico/concettuali correlati al lavoro svolto . Al termine di questa fase, il singolo studente può raggiungere il
+            <ul>
+                <li><strong>punteggio massimo di 30 e lode</strong>.</li>
+            </ul>
+        </li>
+    </ol>
+
+</body>
+</html>
