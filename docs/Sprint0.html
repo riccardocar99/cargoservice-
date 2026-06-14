@@ -201,10 +201,23 @@ div.imagedesc{
 L'obiettivo principale &egrave; analizzare, formalizzare e delineare il modello concettuale del sistema software che automatizza le operazioni di carico dei container nella stiva di una nave utilizzando un robot a guida differenziale (<code>cargorobot</code>).</p>
  
 <h2>Requirements</h2>
-<div class="remark">
-Il documento dei requisiti fornito dal committente &egrave; disponibile in <a href="../Tema2026.html">Tema2026.html</a>.
-</div>
-<p>I requisiti principali (TF2026) includono la gestione di una stiva con 4 slot di memorizzazione pi&ugrave; uno slot temporaneo (slot5) usato per marcare i container. Le richieste di caricamento partono da una IOPort e sono accettate solo se ci sono slot liberi. Il sistema guida un cargorobot preesistente dalla IOPort allo slot5 e poi allo slot finale.</p>
+<p>The company asks us to build service named <strong>cargoservice</strong> that should work as follows.</p>
+
+<p>The <em>cargoservice</em> is able to receive a <strong>request to load</strong> a container sent by some customer by using the <em>pushbutton</em> of the <em>IOPort</em>.</p>
+<ul>
+    <li>It sends the answer <code>retrylater</code>, if the <strong>IOPort</strong> is currently occupied by a container or if the system is <em>Out of service</em></li>
+    <li>It rejects the request when the hold is already full, i.e. the <code>slots1-4</code> are already occupied.</li>
+    <li>Otherwise, it considers the system as <strong>engaged</strong>, detects a free slot and returns as answer the name of such a reserved slot. While engaged, the system must blink a Led.</li>
+</ul>
+
+<p>When the <em>request to load</em> is accepted, the customer must move the container in the <em>sensor</em> area within prefixed amount of time (e.g. 30 secs), otherwise the systems becomes <strong>disengaged</strong>. Then, the <em>cargoservice</em> uses the <em>cargorobot</em> to move the container from the <em>IOPort</em> to the <em>slot5</em> (for marking the container) and then to the reserved slot.</p>
+
+<p>The service must also show on the <em>display</em> on the <em>IOPort</em>:</p>
+<ul>
+    <li>the current state of the <em>hold</em></li>
+    <li>the message '<strong>Service working</strong>', when it is all is going well</li>
+    <li>the message '<strong>Out of service</strong>' if the <em>sonar sensor</em> measures a distance D &gt; DFREE for at least 3 secs (perhaps a failure of the <em>sonar</em>).</li>
+</ul>
 
 <h2>Requirement analysis</h2>
 <p>Seguendo i requisiti, identifichiamo e formalizziamo le principali entit&agrave; e interazioni del sistema.</p>
