@@ -1,0 +1,279 @@
+System cargoservice
+
+// Customer requests
+Request load : load(CLIENT_ID)
+Reply reserved : reserved(SLOT) for load
+Reply retrylater : retrylater(REASON) for load
+Reply reject : reject(REASON) for load
+
+// Sonar data
+Dispatch sonar_data : sonar_data(D)
+Dispatch sonar_ok : sonar_ok(D)
+Dispatch sonar_fail : sonar_fail(D)
+
+// Robot commands
+Request move_robot : move_robot(DEST)
+Reply move_done : move_done(RESULT) for move_robot
+
+// Marker commands
+Dispatch start_marking : start_marking(SLOT)
+Dispatch marking_done : marking_done(SLOT)
+
+// Led commands
+Dispatch led_cmd : led_cmd(CMD) // CMD is "blink" or "off"
+
+// Display updates
+Dispatch display_update : display_update(STATE)
+
+Context ctxcargoservice ip [ host="localhost" port=8082 ]
+
+/*
+ * cargoservice: the core manager actor
+ */
+QActor cargoservice context ctxcargoservice {
+    [#
+        var Slot1Occupied = false
+        var Slot2Occupied = false
+        var Slot3Occupied = false
+        var Slot4Occupied = false
+        var SystemOutOfService = false
+        var IOPortOccupied = false
+        var ReservedSlot = ""
+    #]
+
+    State s0 initial {
+        println("$name | starting...") color blue
+        [# SystemOutOfService = false #]
+        forward ioport -m display_update : display_update(working)
+    }
+    Goto working
+
+    State working {
+        println("$name | waiting for load requests...") color blue
+    }
+    Transition t0
+        whenRequest load -> handleLoadRequest
+        whenMsg sonar_fail -> handleSonarFail
+        whenMsg sonar_data -> handleSonarData
+
+    State handleLoadRequest {
+        printCurrentMessage color blue
+        onMsg(load : load(CLIENT_ID)) {
+            [#
+                // Check Out of Service or IOPort occupied
+                if (SystemOutOfService || IOPortOccupied) {
+            #]
+                    replyTo load with retrylater : retrylater(system_busy_or_out_of_service)
+            [#
+                } else if (Slot1Occupied && Slot2Occupied && Slot3Occupied && Slot4Occupied) {
+            #]
+                    replyTo load with reject : reject(hold_full)
+            [#
+                } else {
+                    // Find a free slot
+                    if (!Slot1Occupied) ReservedSlot = "slot1"
+                    else if (!Slot2Occupied) ReservedSlot = "slot2"
+                    else if (!Slot3Occupied) ReservedSlot = "slot3"
+                    else if (!Slot4Occupied) ReservedSlot = "slot4"
+            #]
+                    println("$name | accepted request, reserved $ReservedSlot") color blue
+                    replyTo load with reserved : reserved($ReservedSlot)
+                    forward led -m led_cmd : led_cmd(blink)
+            [#
+                }
+            #]
+        }
+    }
+    Goto waitingForContainer
+
+    State waitingForContainer {
+        println("$name | waiting for container at sensor area (30s timeout)...") color blue
+    }
+    // Timeout represents 30 seconds
+    Transition t0
+        whenTime 30000 -> handleTimeout
+        whenMsg sonar_data -> checkContainerArrival
+        whenMsg sonar_fail -> handleSonarFail
+
+    State checkContainerArrival {
+        onMsg(sonar_data : sonar_data(D)) {
+            [#
+                val DVal = payloadArg(0).toDouble()
+                // D < DFREE/2 simulates container presence
+                if (DVal < 10.0) { // e.g. DFREE is 20
+                    IOPortOccupied = true
+            #]
+                    println("$name | container detected at IOPort sensor area") color blue
+            [#
+                }
+            #]
+        }
+    }
+    // If container detected, start robot operation. If not, wait again or handle timeout
+    Goto robotExecution if [# IOPortOccupied #] else waitingForContainer
+
+    State robotExecution {
+        println("$name | starting robot execution to load container into $ReservedSlot") color blue
+        // 1. Move to IOPort to pick container
+        request cargorobot -m move_robot : move_robot(ioport)
+    }
+    Transition t0
+        whenReply move_done -> robotAtIOPort
+
+    State robotAtIOPort {
+        onMsg(move_done : move_done(success)) {
+            println("$name | robot picked container at IOPort, moving to slot5") color blue
+        }
+        request cargorobot -m move_robot : move_robot(slot5)
+    }
+    Transition t0
+        whenReply move_done -> robotAtSlot5
+
+    State robotAtSlot5 {
+        onMsg(move_done : move_done(success)) {
+            println("$name | robot placed container at slot5, starting marker") color blue
+            forward marker -m start_marking : start_marking($ReservedSlot)
+        }
+    }
+    Transition t0
+        whenMsg marking_done -> markingCompleted
+
+    State markingCompleted {
+        onMsg(marking_done : marking_done(SLOT)) {
+            println("$name | container marking completed, moving to $ReservedSlot") color blue
+        }
+        request cargorobot -m move_robot : move_robot($ReservedSlot)
+    }
+    Transition t0
+        whenReply move_done -> robotAtReservedSlot
+
+    State robotAtReservedSlot {
+        [#
+            if (ReservedSlot == "slot1") Slot1Occupied = true
+            else if (ReservedSlot == "slot2") Slot2Occupied = true
+            else if (ReservedSlot == "slot3") Slot3Occupied = true
+            else if (ReservedSlot == "slot4") Slot4Occupied = true
+            
+            IOPortOccupied = false
+            ReservedSlot = ""
+        #]
+        println("$name | robot placed container in reserved slot, returning HOME") color blue
+        forward led -m led_cmd : led_cmd(off)
+        request cargorobot -m move_robot : move_robot(home)
+    }
+    Transition t0
+        whenReply move_done -> robotExecutionCompleted
+
+    State robotExecutionCompleted {
+        println("$name | container loaded successfully") color blue
+        forward ioport -m display_update : display_update(working)
+    }
+    Goto working
+
+    State handleTimeout {
+        println("$name | client timeout: disengaging...") color blue
+        forward led -m led_cmd : led_cmd(off)
+        [# ReservedSlot = "" #]
+    }
+    Goto working
+
+    State handleSonarFail {
+        println("$name | sonar failure detected, system out of service!") color red
+        [# SystemOutOfService = true #]
+        forward led -m led_cmd : led_cmd(off)
+        forward ioport -m display_update : display_update(out_of_service)
+    }
+    Transition t0
+        whenMsg sonar_ok -> handleSonarRecovery
+        whenRequest load -> handleLoadRequest
+
+    State handleSonarRecovery {
+        println("$name | sonar recovered, back to normal service") color green
+        [# SystemOutOfService = false #]
+        forward ioport -m display_update : display_update(working)
+    }
+    Goto working
+}
+
+/*
+ * Mocks of external components/devices for Sprint 0 conceptual model
+ */
+
+QActor cargorobot context ctxcargoservice {
+    State s0 initial {
+        println("$name | ready") color green
+    }
+    Transition t0
+        whenRequest move_robot -> doMove
+
+    State doMove {
+        onMsg(move_robot : move_robot(DEST)) {
+            [# val Dest = payloadArg(0) #]
+            println("$name | moving to $Dest...") color green
+            // Simulate brief movement duration and reply success
+            replyTo move_robot with move_done : move_done(success)
+        }
+    }
+    Transition t0
+        whenRequest move_robot -> doMove
+}
+
+QActor sonar context ctxcargoservice {
+    State s0 initial {
+        println("$name | starting distance emissions") color yellow
+        // Emits normal distance initially
+        forward cargoservice -m sonar_data : sonar_data(20.0)
+    }
+}
+
+QActor led context ctxcargoservice {
+    State s0 initial {
+        println("$name | starting...") color magenta
+    }
+    Transition t0
+        whenMsg led_cmd -> handleCmd
+
+    State handleCmd {
+        onMsg(led_cmd : led_cmd(CMD)) {
+            [# val Cmd = payloadArg(0) #]
+            println("$name | led cmd received: $Cmd") color magenta
+        }
+    }
+    Transition t0
+        whenMsg led_cmd -> handleCmd
+}
+
+QActor marker context ctxcargoservice {
+    State s0 initial {
+        println("$name | ready") color cyan
+    }
+    Transition t0
+        whenMsg start_marking -> doMarking
+
+    State doMarking {
+        onMsg(start_marking : start_marking(SLOT)) {
+            [# val Slot = payloadArg(0) #]
+            println("$name | marking container for $Slot...") color cyan
+            forward cargoservice -m marking_done : marking_done($Slot)
+        }
+    }
+    Transition t0
+        whenMsg start_marking -> doMarking
+}
+
+QActor ioport context ctxcargoservice {
+    State s0 initial {
+        println("$name | display init: service working") color yellow
+    }
+    Transition t0
+        whenMsg display_update -> handleDisplayUpdate
+
+    State handleDisplayUpdate {
+        onMsg(display_update : display_update(STATE)) {
+            [# val StateVal = payloadArg(0) #]
+            println("$name | display updated state: $StateVal") color yellow
+        }
+    }
+    Transition t0
+        whenMsg display_update -> handleDisplayUpdate
+}
