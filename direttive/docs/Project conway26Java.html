@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Project conway26Java &#8212; iss26 1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=34905f61" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c3a2f58b" />
+    <script src="_static/documentation_options.js?v=29a6c3e3"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/custom.js?v=86b49eb6"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="TemaFinale25" href="TemaFinale25.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="TemaFinale25.html" title="TemaFinale25"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">iss26 1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Project conway26Java</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="project-conway26java">
+<h1>Project conway26Java<a class="headerlink" href="#project-conway26java" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="_static/docs/Protobook.pdf#section.5.8">Costruiamo?</a>. Si veda
+<a class="reference external" href="_static/docs/Protobook.pdf#section.5.9">Processi di costruzione del software</a> .</p>
+<p>Seguendo quanto detto in
+<a class="reference external" href="_static/docs/Protobook.pdf#subsection.5.10.1">Il nostro metodo di lavoro</a>,
+consideriamo questo progetto come lo <em>Sprint1</em>
+per la costruzione incrementale ed evolutiva di un prodotto software.</p>
+<p>Si veda <a class="reference external" href="_static/docs/Protobook.pdf#chapter.6">GAME OF LIFE DI CONWAY</a></p>
+<p><strong>Premessa</strong></p>
+<p>Si suppone di avere definito un sito GIT che contiene solo <a class="reference internal" href="#il-file-readme-md"><span class="std std-ref">Il file README.md</span></a>
+e di avere clonato questo sito entro una directory di lavoro (es. <strong>iss2026</strong>)
+sul nostro PC.</p>
+<section id="il-file-readme-md">
+<h2>Il file README.md<a class="headerlink" href="#il-file-readme-md" title="Link to this heading">¶</a></h2>
+<p>Il file <strong>README.md</strong> di un sito GIT è molto più di un semplice file di testo:
+è il biglietto da visita e lo strumento di marketing delle nostre attività.</p>
+<p>Inoltre potrebbe fornire indicazioni utili come manuale d’uso delle applicazioni.</p>
+<p>Il file deve essere scritto usando il <a class="reference external" href="https://it.wikipedia.org/wiki/Markdown">Linguaggio Markdown</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># issLab2026
+ Laboratorio di &lt;b&gt;Ingegneria dei Sistemi Software&lt;/b&gt; a.a. 2025/2026 di Cognome Nome Matricola
+
+ [Testo di riferimento:](https://anatali.github.io/issLab2026/_static/docs/Protobook.pdf)
+ &lt;!-- comment: [ancora personalizzata] --&gt;
+
+ &lt;h2 id=&quot;ParteA&quot;&gt;Parte A: Dai programmi ai Sistemi a Microservizi&lt;/h2&gt;
+
+ ### Sistema ConwayLife in locale
+ [Riferimento: conway26Java Dai requisiti al deployment](https://anatali.github.io/issLab2026/Project%20conway26Java.html#conway26java-dai-requisiti-al-deployment)
+ * [ConwayLife Sprint1](ConwayLife/Sprint1/conway26Java): impostazione di un primo prototipo
+   in Java con dispositivi Mock di I/O. &lt;i&gt;Distribuzione&lt;/i&gt;: file jar.
+ * [ConwayLife Sprint2](ConwayLife/Sprint2/conway26Java): &lt;b&gt;evoluzione&lt;/b&gt; del primo prototipo
+   con un dispositivo di output realizzato in Swing. &lt;i&gt;Distribuzione&lt;/i&gt;: file jar
+ ### Sistemi come servizi
+ * ...
+ ### Sistema ConwayLife con pagine HTML
+ * [ConwayLife Sprint3(ConwayLife/Sprint3/conway26Java): evoluzione del sistema in locale
+   usando una pagina HTML come dispositivo di I/O. &lt;i&gt;Distribuzione&lt;/i&gt;: Docker yaml.
+</pre></div>
+</div>
+<p><strong>Creiamo il progetto e impostiamo in Eclipse</strong></p>
+<table class="docutils align-default" style="width: 100%">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>.</p>
+<a class="reference internal image-reference" href="_images/conway25JavaProjectEclipse.PNG"><img alt="_images/conway25JavaProjectEclipse.PNG" class="align-center" src="_images/conway25JavaProjectEclipse.PNG" style="width: 100%;" />
+</a>
+</td>
+<td><p>Inizializzazione</p>
+<ul class="simple">
+<li><p>operiamo nella directory di lavoro <strong>iss2026</strong></p></li>
+<li><p>copiamo in questa la directory <strong>unibolibs</strong> (dal sito del corso)</p></li>
+<li><p>creiamo la subdirectory <strong>iss2026/conway26Java</strong></p></li>
+<li><p>nella directory <strong>iss2026/conway26Java</strong> eseguire: <code class="docutils literal notranslate"><span class="pre">gradle</span> <span class="pre">init</span> <span class="pre">1</span> <span class="pre">2</span> <span class="pre">-</span> <span class="pre">-</span></code></p></li>
+<li><p>importiamo il progetto in un workspace eclipse</p></li>
+<li><p>definiamo il <a class="reference internal" href="#conway26java-build-gradle"><span class="std std-ref">build.gradle</span></a></p></li>
+<li><p>aggiungiamo <em>Java nature</em></p></li>
+<li><p>creiamo il source folder <span class="slide3">src</span></p></li>
+<li><p>eseguiamo da un termimale <code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">eclipse</span></code> per generare i file per Eclipse</p></li>
+<li><p>scriviamo un file <strong>HelloWorld.java</strong> di prova</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Esecuzione del prodotto</p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">run</span></code>  o da Eclipse</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Settaggio filtri per redere visibili <strong>resources</strong> e <strong>Gradle build folder</strong></p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/eclipseProjectFilers.png"><img alt="_images/eclipseProjectFilers.png" class="align-center" src="_images/eclipseProjectFilers.png" style="width: 40%;" />
+</a>
+</div></blockquote>
+<p>Parte applicativa: <span class="slide3">la fase di analisi e progettazione</span></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>leggiamo <a class="reference external" href="_static/docs/Protobook.pdf#section.6.4">Il gioco come caso di studio</a></p></li>
+<li><p>aggiungiamo <span class="slide3">folder userDocs</span> e al suo interno:</p>
+<ul>
+<li><p>il file di nome <code class="docutils literal notranslate"><span class="pre">conway26Java_v0.html</span></code> ricavato da <a class="reference external" href="_static/templateToFill.html">template</a>
+che ha il ruolo di un <cite>diario di bordo</cite> (con varie versioni)</p></li>
+<li><p>la subdirectory <code class="docutils literal notranslate"><span class="pre">userDocs/css</span></code> per gli stili usati dal diario</p></li>
+<li><p>la subdirectory <code class="docutils literal notranslate"><span class="pre">userDocs/img</span></code> per le immagini usate dal diario</p></li>
+</ul>
+</li>
+<li><p>riportiamo nel file <code class="docutils literal notranslate"><span class="pre">conway26Java_v0.html</span></code> i dati del progettista e
+scriviamo le sezioni <strong>Requirement analysis e Problem analysis</strong>
+con le opportune motivazioni</p></li>
+<li><p>pensiamo alle procedure di testing funzionale
+(si veda <a class="reference external" href="_static/docs/Protobook.pdf#section.5.10">procedure di testing funzionale</a>)
+e scriviamo la sezione <strong>Test plans</strong></p></li>
+<li><p>impostiamo il progetto e scriviamo la sezione <strong>Project</strong> (prima di scrivere il codice)</p></li>
+</ul>
+</div></blockquote>
+<p>Parte applicativa: <span class="slide3">la fase di realizzazione</span></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>aggiungiamo (se non esiste) come <cite>sourcefolder</cite>: <strong>src/main/java</strong>  e le altre directory
+specificate in <a class="reference internal" href="#conway26java-build-gradle"><span class="std std-ref">build.gradle</span></a></p></li>
+<li><p>aggiungiamo il <code class="docutils literal notranslate"><span class="pre">package</span> <span class="pre">conway</span></code></p></li>
+<li><p>procediamo con la produzione del codice</p></li>
+<li><p>aggiungiamo procedure di testing</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="conway26java-build-gradle">
+<h2>conway26Java-build.gradle<a class="headerlink" href="#conway26java-build-gradle" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default" style="width: 100%">
+<colgroup>
+<col style="width: 70.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plugins</span> <span class="p">{</span>
+    <span class="nb">id</span> <span class="s1">&#39;application&#39;</span>
+    <span class="nb">id</span> <span class="s1">&#39;java&#39;</span>
+    <span class="nb">id</span> <span class="s1">&#39;eclipse&#39;</span>
+<span class="p">}</span>
+<span class="n">version</span> <span class="s1">&#39;1.0&#39;</span>
+<span class="n">java</span> <span class="p">{</span>
+    <span class="n">toolchain</span><span class="o">.</span><span class="n">languageVersion</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">JavaLanguageVersion</span><span class="o">.</span><span class="n">of</span><span class="p">(</span><span class="mi">17</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="n">repositories</span> <span class="p">{</span>
+    <span class="n">mavenCentral</span><span class="p">()</span>
+    <span class="n">flatDir</span> <span class="p">{</span>   <span class="n">dirs</span> <span class="s1">&#39;../unibolibs&#39;</span>    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">dependencies</span> <span class="p">{</span>
+    <span class="o">/*</span> <span class="n">UNIBO</span> <span class="o">*******************************</span> <span class="o">*/</span>
+    <span class="n">implementation</span> <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;uniboInterfaces&#39;</span>
+    <span class="n">implementation</span> <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;2p301&#39;</span>
+    <span class="n">implementation</span> <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;unibo.basicomm23-1.0&#39;</span>
+<span class="p">}</span>
+<span class="n">sourceSets</span> <span class="p">{</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src&#39;</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src/main/java&#39;</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src/main/kotlin&#39;</span>
+    <span class="n">main</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src/main/resources&#39;</span>
+    <span class="n">test</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src/main/java/test&#39;</span>         <span class="o">//</span><span class="n">test</span> <span class="ow">is</span> <span class="n">specific</span>
+    <span class="n">test</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src/main/kotlin/test&#39;</span>
+<span class="p">}</span>
+<span class="n">eclipse</span> <span class="p">{</span>
+    <span class="n">classpath</span> <span class="p">{</span>
+        <span class="n">sourceSets</span> <span class="o">-=</span> <span class="p">[</span><span class="n">sourceSets</span><span class="o">.</span><span class="n">main</span><span class="p">,</span> <span class="n">sourceSets</span><span class="o">.</span><span class="n">test</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">application</span> <span class="p">{</span>
+    <span class="o">//</span><span class="n">Define</span> <span class="n">the</span> <span class="n">main</span> <span class="k">class</span> <span class="nc">for</span> <span class="n">the</span> <span class="n">application</span><span class="o">.</span>
+    <span class="n">mainClassName</span>    <span class="o">=</span> <span class="s1">&#39;conway26Java.HelloWorld&#39;</span>
+<span class="p">}</span>
+<span class="n">jar</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s2">&quot;building jar&quot;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">sourceSets.main.allSource</span>
+    <span class="n">from</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">include</span> <span class="s1">&#39;*.pl&#39;</span>
+      <span class="n">include</span> <span class="s1">&#39;*.json&#39;</span>
+    <span class="p">}</span>
+    <span class="n">manifest</span> <span class="p">{</span>
+        <span class="n">attributes</span> <span class="s1">&#39;Main-Class&#39;</span><span class="p">:</span> <span class="s2">&quot;$mainClassName&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">task</span> <span class="n">dovesiamo</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s2">&quot;projectDir= $projectDir&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s2">&quot;buildDir  = $buildDir&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+<td><p>In questa versione <cite>vi sono dipendenze</cite> solo relative alla libreria JUnit per
+fare testing.</p>
+<p><strong>unibolibs</strong> contiene le librerie</p>
+<ul class="simple">
+<li><p>2p301.jar</p></li>
+<li><p>uniboInterfaces.jar</p></li>
+<li><p><a class="reference external" href="_static/docs/Protobook.pdf#unibo.basicomm23-1.0">unibo.basicomm23-1.0.jar</a>.</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="conway26java-dai-requisiti-al-deployment">
+<h1>conway26Java Dai requisiti al deployment<a class="headerlink" href="#conway26java-dai-requisiti-al-deployment" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="_static/docs/Protobook.pdf#subsection.5.10.1">Il nostro metodo di lavoro</a> impone che si debba partire dai requisiti,
+che il committente ha specificato come segue:</p>
+<section id="conway26java-requirements">
+<h2>conway26Java-Requirements<a class="headerlink" href="#conway26java-requirements" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Realizzare una versione in Java del gioco <strong>Life</strong> di Conway, come gioco zero-player.
+Il gioco consiste nell’introdurre una <strong>Griglia</strong> di <strong>Celle</strong>
+il cui stato (cella ‘viva’ o cella ‘morta’) evolve come stabilito dallle
+<a class="reference external" href="_static/docs/Protobook.pdf#chapter.6">regole di ConwayLife</a></p></li>
+<li><p>L’utente umano deve poter:</p>
+<ul class="simple">
+<li><p>specificare la configurazione iniziale della griglia del gioco</p></li>
+<li><p>vedere l’evoluzione del gioco in forma opportuna
+(si veda <a class="reference external" href="_static/docs/Protobook.pdf#section.6.3">Problema della vista del gioco</a>)</p></li>
+<li><p>fermare e far ripartire l’evoluzione del gioco</p></li>
+<li><p>pulire (a gioco fermo) la configurazione della griglia del gioco</p></li>
+</ul>
+</li>
+</ol>
+<p>Il passo successivo è impostare l’analisi del problema e delineare una architettura logica del
+sistema.</p>
+</section>
+<section id="conway26java-analisi-del-problema">
+<h2>conway26Java Analisi del problema<a class="headerlink" href="#conway26java-analisi-del-problema" title="Link to this heading">¶</a></h2>
+<p>Una prima analisi del problema
+si può trovare in  <a class="reference external" href="_static/docs/Protobook.pdf#section.6.4">Analsi del problema GofLife</a>,
+mentre un primo schema organizzativo del sistema da realizzare
+si trova in <a class="reference external" href="_static/docs/Protobook.pdf#subsection.6.4.2">Progetto ConwayLife26</a></p>
+<p>Lo schema rappresenta un <a class="reference external" href="_static/docs/Protobook.pdf#subsection.4.10.3">modello del sistema</a>,  espresso
+utilizzando notazioni grafiche in <a class="reference external" href="_static/docs/Protobook.pdf#subsection.4.10.4">stile UML</a>.
+Lo riportiamo qui sotto, come <strong>prodotto della analisi del problema</strong>, prima ancora che di progetto.</p>
+<p>Infatti:</p>
+<ol class="arabic simple">
+<li><p>I requisiti menzionano una <em>Griglia di Celle</em>. Questi termini sono formalizzati nelle classi <strong>Grid</strong> e <strong>Cell</strong>
+ritenendo adeguato che questi enti siano realizzati in software come <a class="reference external" href="_static/docs/Protobook.pdf#subsection.5.2.1">POJO</a>.</p></li>
+<li><p>Le <a class="reference external" href="_static/docs/Protobook.pdf#chapter.6">regole di Conway</a> sono il ‘core business’ applicativo e
+fanno riferimento a Grid. La specifica di queste regole è affidata a un altro  POJO, istanza di una classe <strong>Life</strong>.</p></li>
+<li><p>Il gico è zero-player, ma deve essere controllato dall’utente attraverso dispostivi di I/O. Come analisti, non
+riteniamo che questo compito sia responsabilità di nessuna delle classi precedenti, per cui si ritiene necessario
+introdurre un nuovo POJO, di classe <strong>LifeController</strong></p></li>
+<li><p>I dispositivi di I/O potrebbero essere i più diversi. Occorre rendere <em>LifeController</em> indipendente dai
+dettagli tecnologici dell’I/O definiìendo opportuni <strong>contratti</strong> (formalizzati come <strong>interface</strong> Java)
+che i dispostivi dovrenno rispettare.</p></li>
+</ol>
+<section id="conway26java-architetturalogica">
+<h3>conway26Java-ArchitetturaLogica<a class="headerlink" href="#conway26java-architetturalogica" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/LifeGameJava+.jpg"><img alt="_images/LifeGameJava%2B.jpg" class="align-center" src="_images/LifeGameJava%2B.jpg" style="width: 55%;" />
+</a>
+</div></blockquote>
+<p>Questo <span class="slide3">modello</span> è statto definito in fase di analisi del problema
+per delineare una <strong>architettura (logica)</strong> del sistema che:</p>
+<ul>
+<li><p>tiene conto dei <a class="reference external" href="_static/docs/Protobook.pdf#subsection.5.7.5">Principi SOLID</a> separando
+le responsabilità dei diversi componenti (espressi in
+<a class="reference external" href="_static/docs/Protobook.pdf#subsection.4.6.2">stile OOP</a> )</p></li>
+<li><p>imposta il componente <a class="reference external" href="_static/docs/Protobook.pdf#subsection.6.4.3">LifeController</a>
+in modo tale che la <em>parte proattiva</em> del gioco sia indipendente dalle parti
+che realizzano l’input-output di interazione con l’utente umano
+e dai dettagli tecnologici di realizzazione dei dispositivi di I/O.</p></li>
+<li><p>imposta il sistema software in modo molto diverso (e <strong>migliore</strong>) da come si presenta nel codice
+(ispirato al  <a class="reference external" href="_static/docs/Protobook.pdf#subsection.4.6.3">Paradigma Funzionale</a> )
+<a class="reference external" href="_static/ConwayLife.py">ConwayLife.py</a>
+proposto dalla AI, come detto nel <a class="reference external" href="_static/docs/Protobook.pdf#chapter.1">preludio</a></p>
+<div class="admonition-perche-migliore admonition">
+<p class="admonition-title">Perchè migliore?</p>
+<ul class="simple">
+<li><p>esprime in modo esplicito (con opportune classi Java) i concetti-base del dominio
+applicativo (<strong>Grid</strong> e <strong>Cell</strong>) stabilto nel <a class="reference internal" href="#conway26java-requirements"><span class="std std-ref">testo dei requisiti</span></a></p></li>
+<li><p>l’entità <strong>Cell</strong> non viene ‘ridotta’ a un array di interi o booleani</p></li>
+<li><p>introduce una entità (<strong>Life</strong>) che ha come sola responsabilità le regole del gioco,
+seprandola da una diversa entità (<strong>LifeController</strong>) responsabile della interazione
+cone l’utente (che nella versione Python viene espressa nel <em>main</em> !!)</p></li>
+<li><p>prevede la possibilità di <strong>configurare</strong> il sistema con diversi dispositivi di I/O,
+lasciando inalterato il codice realativo al controllo del gioco, come
+anticipato in <a class="reference external" href="_static/docs/Protobook.pdf#subsection.6.4.7">MainConwayLifeJava.java</a></p></li>
+<li><p>ammette la possibilità che <strong>LifeController</strong> possa interrompere e riavviare la esecuzione del gioco,
+cosa che la versione Python non fa</p></li>
+</ul>
+</div>
+</li>
+<li><p>permette di definire un primo insieme di <a class="reference external" href="_static/docs/Protobook.pdf#section.5.10">test funzionali</a>
+concentrati sulla <strong>classe Life</strong>, che definisce il <span class="remark">‘motore logico’</span> del gioco.</p></li>
+</ul>
+</section>
+<section id="conway26java-piani-di-testing-funzionale">
+<h3>conway26Java Piani di Testing funzionale<a class="headerlink" href="#conway26java-piani-di-testing-funzionale" title="Link to this heading">¶</a></h3>
+<p>La introduzione di un <span class="remark">Piano di test funzionale</span> fin dalle fasi di analisi,
+è fondamentale per guidare la fase di realizzazione del codice. Ma sorge un problema:</p>
+<p><strong>come si fa a definire un piano di test funzionale se non si è ancora scritto una riga di codice?</strong></p>
+<p>La risposta consiste nel basarsi sul cosa (<strong>WHAT</strong>) il sistema dovrà fare e non sul come (<strong>HOW</strong>)
+verrà realizzato il sistema software.</p>
+<p>Prendiamo ad esempio la classe <strong>Life</strong> che definisce il motore logico del gioco. Dalla specifica del gioco,
+possiamo dedurre che questa classe dovrà sostenere almeno a un insieme di  funzionalità
+esprimibile in modo formale mediante una <strong>sinterface</strong> Java:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">LifeInterface</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/** Restituisce il numero di righe e colonne della griglia*/</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="nf">getRows</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="nf">getCols</span><span class="p">();</span>
+<span class="w">    </span><span class="cm">/** Imposta lo stato di una cella */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">setCell</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">alive</span><span class="p">);</span>
+<span class="w">    </span><span class="cm">/** Restituisce lo stato di una cella specifica */</span>
+<span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isAlive</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">    </span><span class="cm">/** Calcola l&#39;evoluzione dello stato alla generazione successiva */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">nextGeneration</span><span class="p">();</span>
+<span class="w">    </span><span class="cm">/** Pulisce la griglia (nessuna cella viva) */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">clear</span><span class="p">();</span>
+<span class="w">    </span><span class="cm">/** Restituisce una rappresentazione grafica testuale della grglia*/</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">gridRep</span><span class="p">(</span><span class="w"> </span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A questo punto, possiamo definire un <em>piano di test funzionale</em> per il sistema,
+basandoci sui requisiti del gioco e sulla logica del gioco stesso. Ad esempio:</p>
+<section id="conway26java-impostazione-testing">
+<h4>conway26Java-Impostazione Testing<a class="headerlink" href="#conway26java-impostazione-testing" title="Link to this heading">¶</a></h4>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConwayLifeTest</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Before</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;setup&quot;</span><span class="p">);</span><span class="w">        </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@After</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">down</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;down&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="conway26java-testoscilla">
+<h4>conway26Java-testOscilla<a class="headerlink" href="#conway26java-testoscilla" title="Link to this heading">¶</a></h4>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nd">@Test</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testOscilla</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;testOscilla ---------&quot;</span><span class="w">  </span><span class="p">);</span>
+<span class="w">  </span><span class="n">LifeInterface</span><span class="w"> </span><span class="n">liferules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Life</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Configurazione orizzontale</span>
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">setCell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">setCell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">setCell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;testOscilla | Stato Iniziale:\n&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">gridRep</span><span class="p">());</span>
+
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">nextGeneration</span><span class="p">();</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;testOscilla | after 1 gen:\n&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">gridRep</span><span class="p">());</span>
+<span class="w">    </span><span class="c1">// Verifica che sia diventato verticale</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+<span class="w">    </span><span class="n">assertFalse</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">nextGeneration</span><span class="p">();</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;testOscilla | after 2 gen :\n&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">gridRep</span><span class="p">());</span>
+<span class="w">    </span><span class="c1">// Verifica che sia tornato orizzontale (Periodo 2)</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+<span class="w">    </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liferules</span><span class="p">.</span><span class="na">isAlive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="conway26java-testoscillafromfile">
+<h4>conway26Java-testOscillaFromFile<a class="headerlink" href="#conway26java-testoscillafromfile" title="Link to this heading">¶</a></h4>
+<p>Un test potrebbe anche essere impostato in modo <em>Data-Driven</em>, leggendo la configurazione
+iniziale da un file.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@Test</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testOscillaFromFile</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Carico un Blinker (periodo 2)</span>
+<span class="w">    </span><span class="kt">boolean</span><span class="o">[][]</span><span class="w"> </span><span class="n">initial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PatternLoader</span><span class="p">.</span><span class="na">loadFromResource</span><span class="p">(</span><span class="s">&quot;src/test/resources/blinker.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">Life</span><span class="w"> </span><span class="n">liferules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Life</span><span class="p">(</span><span class="n">initial</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">formatGrid</span><span class="p">()</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;__________________________________________&quot;</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">nextGeneration</span><span class="p">();</span><span class="w"> </span><span class="c1">// Generazione 1 (cambia stato)</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">formatGrid</span><span class="p">()</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;__________________________________________&quot;</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">liferules</span><span class="p">.</span><span class="na">nextGeneration</span><span class="p">();</span><span class="w"> </span><span class="c1">// Generazione 2 (deve tornare all&#39;originale)</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">formatGrid</span><span class="p">()</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;__________________________________________&quot;</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">assertArrayEquals</span><span class="p">(</span><span class="s">&quot;L&#39;oscillatore deve tornare allo stato iniziale dopo 2 passi&quot;</span><span class="p">,</span>
+<span class="w">                      </span><span class="n">initial</span><span class="p">,</span><span class="w"> </span><span class="n">liferules</span><span class="p">.</span><span class="na">getGrid</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="conway26java-costruttori">
+<h2>conway26Java-Costruttori<a class="headerlink" href="#conway26java-costruttori" title="Link to this heading">¶</a></h2>
+<p>Scrivere un <em>TestPlan</em> prima che la classe <em>Life</em> esista potrebbe indurre a decidere subito:</p>
+<p>“Come passo la (specifica della) griglia? Con una matrice di booleani? Con un array di oggetti Cell?
+Come leggo il risultato?”.</p>
+<p>Tuttavia ci sono modi per ‘differire’ queste scelte.</p>
+<p>La procedura di testing <a class="reference internal" href="#conway26java-testoscillafromfile"><span class="std std-ref">conway26Java-testOscillaFromFile</span></a> passa al costruttore di <em>Life</em>
+una griglia preconfigurata di nome <code class="docutils literal notranslate"><span class="pre">initial</span></code>.  Se il costruttore di <em>Life</em>
+scrive <code class="docutils literal notranslate"><span class="pre">this.grid=initial</span></code>, si copia un riferimento. Ciò può essere
+pericoloso, perchè una modifica (dall’esterno di <em>Life</em>) di <code class="docutils literal notranslate"><span class="pre">initial</span></code> modifica anche l’interno della classe.
+Per evitare problemi, è opportuno fare una <strong>deep copy</strong> dell’array:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">//Da Java8 in avanti</span>
+<span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[][]</span><span class="w"> </span><span class="nf">deepCopyJava</span><span class="p">(</span><span class="kt">boolean</span><span class="o">[][]</span><span class="w"> </span><span class="n">original</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="n">original</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="kt">boolean</span><span class="o">[]</span><span class="p">::</span><span class="n">clone</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">toArray</span><span class="p">(</span><span class="kt">boolean</span><span class="o">[][]</span><span class="p">::</span><span class="k">new</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition-come-gemini-spiega-il-codice admonition">
+<p class="admonition-title">Come Gemini spiega il codice</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Arrays.stream(original)</span></code>: Prende la matrice (che è un “array di array”)
+e la trasforma in un flusso di dati (Stream).
+Ogni elemento di questo stream è una singola riga (boolean[]).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.map(boolean[]::clone)</span></code>: Per ogni riga che passa nello stream, viene chiamato il metodo <code class="docutils literal notranslate"><span class="pre">clone()</span></code>.</p>
+<ul>
+<li><p>L’operatore <code class="docutils literal notranslate"><span class="pre">::</span></code> (<em>Method Reference</em>) dice a Java: “Prendi ogni riga e fanne una copia indipendente”.</p></li>
+<li><p>Questo assicura che le righe della nuova matrice siano fisicamente diverse da quelle della vecchia.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.toArray(boolean[][]::new)</span></code>: Infine, raccoglie tutte queste nuove righe clonate
+e le impacchetta in una nuova matrice bidimensionale (<code class="docutils literal notranslate"><span class="pre">boolean[][]</span></code>).</p></li>
+</ul>
+</div>
+</section>
+<section id="conway26java-progettazione-realizzazione">
+<h2>conway26Java-Progettazione&amp;realizzazione<a class="headerlink" href="#conway26java-progettazione-realizzazione" title="Link to this heading">¶</a></h2>
+<p>La  <a class="reference internal" href="#conway26java-architetturalogica"><span class="std std-ref">conway26Java-ArchitetturaLogica</span></a>, <em>Life</em> definisce la griglia
+come un oggetto di classe <code class="docutils literal notranslate"><span class="pre">Grid</span></code> che contiene al suo interno una array  (<code class="docutils literal notranslate"><span class="pre">Cell[][]</span> <span class="pre">gridrep</span></code>)
+di <code class="docutils literal notranslate"><span class="pre">Cell</span></code> che danno <strong>‘consistenza ontologica’</strong> alle celle, non più ‘ridotte’ ad array di
+booolean o di integer.</p>
+<p>La procedura di testing <a class="reference internal" href="#conway26java-testoscilla"><span class="std std-ref">conway26Java-testOscilla</span></a> è più aderente a questa impostazione
+in quanto passa al costruttore di <em>Life</em> il numero
+di righe e colonne, lasciando alla classe la responsabilità
+(e l’opportunità) di definire la griglia come crede.</p>
+<p>Si potrebbe anche pensare (con riferimento ai
+<a class="reference external" href="_static/docs/Protobook.pdf#subsection.5.6.1">design patterns</a>) di introdurre
+un <a class="reference external" href="https://it.wikipedia.org/wiki/Factory_method">Factory method</a> in cui le dimensioni della griglia possono essere:</p>
+<ul class="simple">
+<li><p>stabilite di default</p></li>
+<li><p>lette da un file di configurazione</p></li>
+<li><p>passate come parametri al metodo</p></li>
+</ul>
+<section id="mainconwaylifejava">
+<h3>MainConwayLifeJava<a class="headerlink" href="#mainconwaylifejava" title="Link to this heading">¶</a></h3>
+<p>Il Main (o <strong>Composition Root</strong>) è il luogo in cui la teoria dell’architettura incontra la pratica
+dell’esecuzione. In questa fase, invece di lasciare che le classi si istanzino tra loro
+(creando accoppiamento), è il programmatore a “iniettare” le dipendenze.</p>
+<p>Ecco come Gemini propone di assemblare il sistema seguendo il diagramma UML:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="k">class</span> <span class="nc">Main</span> <span class="p">{</span>
+    <span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="n">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="o">//</span> <span class="mf">1.</span> <span class="n">Inizializziamo</span> <span class="n">il</span> <span class="n">Modello</span> <span class="p">(</span><span class="n">Il</span> <span class="s2">&quot;Cosa&quot;</span><span class="p">)</span>
+        <span class="o">//</span> <span class="n">Life</span> <span class="n">crea</span> <span class="n">internamente</span> <span class="n">la</span> <span class="n">sua</span> <span class="n">Grid</span> <span class="p">(</span><span class="n">Composizione</span><span class="p">)</span>
+        <span class="n">Life</span> <span class="n">gameModel</span> <span class="o">=</span> <span class="n">new</span> <span class="n">Life</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+
+        <span class="o">//</span> <span class="mf">2.</span> <span class="n">Inizializziamo</span> <span class="n">l</span><span class="s1">&#39;Output (Il &quot;Dove&quot;)</span>
+        <span class="o">//</span> <span class="n">Possiamo</span> <span class="n">decidere</span> <span class="n">qui</span> <span class="n">se</span> <span class="n">usare</span> <span class="n">la</span> <span class="n">Console</span> <span class="n">o</span> <span class="n">una</span> <span class="n">GUI</span>
+        <span class="n">IOutDev</span> <span class="n">outputDevice</span> <span class="o">=</span> <span class="n">new</span> <span class="n">OutDev</span><span class="p">();</span>
+
+        <span class="o">//</span> <span class="mf">3.</span> <span class="n">Inizializziamo</span> <span class="n">il</span> <span class="n">Controller</span> <span class="p">(</span><span class="n">Il</span> <span class="s2">&quot;Come&quot;</span><span class="p">)</span>
+        <span class="o">//</span> <span class="n">Iniettiamo</span> <span class="n">il</span> <span class="n">modello</span> <span class="n">e</span> <span class="n">l</span><span class="s1">&#39;output nel controller (Dependency Injection)</span>
+        <span class="n">GameController</span> <span class="n">lifeController</span> <span class="o">=</span> <span class="n">new</span> <span class="n">LifeController</span><span class="p">(</span><span class="n">gameModel</span><span class="p">,</span> <span class="n">outputDevice</span><span class="p">);</span>
+
+        <span class="o">//</span> <span class="mf">4.</span> <span class="n">Inizializziamo</span> <span class="n">l</span><span class="s1">&#39;Input (L&#39;</span> <span class="s2">&quot;Innesco&quot;</span><span class="p">)</span>
+        <span class="o">//</span> <span class="n">L</span><span class="s1">&#39;input comunica con il controller</span>
+        <span class="n">InputDev</span> <span class="n">inputDevice</span> <span class="o">=</span> <span class="n">new</span> <span class="n">InputDev</span><span class="p">(</span><span class="n">lifeController</span><span class="p">);</span>
+
+        <span class="o">//</span> <span class="mf">5.</span> <span class="n">Avvio</span> <span class="k">del</span> <span class="n">sistema</span>
+        <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;Sistema S: Inizializzazione completata.&quot;</span><span class="p">);</span>
+        <span class="n">inputDevice</span><span class="o">.</span><span class="n">onStartButtonPressed</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="conway26java-coding">
+<h3>conway26Java-Coding<a class="headerlink" href="#conway26java-coding" title="Link to this heading">¶</a></h3>
+<p>Il <strong>passaggio dal modello al codice</strong> richiede che quanto definito dall’analista sia
+ben compreso dal progettista e che questi lo traduca in codice in modo confacente alla specifica.</p>
+<p>Anche in questa fase, la AI può aiutare: si veda <a class="reference internal" href="conway26Java-Chiesto%20a%20Gemini.html#id1"><span class="std std-ref">conway26Java-Chiesto a Gemini</span></a>.
+In pratica, utilizziamo la AI come un ‘generatore di codice’ <strong>guidato dal nostro modello</strong> di sistema
+e non semplicemente da quanto la AI trova in rete.</p>
+<div class="admonition-un-prompt-per-gemini admonition">
+<p class="admonition-title">Un prompt per Gemini</p>
+<p>La figura allegata vuole definire l’architettura logica di un sistema software che realizza
+il gioco Life di Conway. Vorrei che tu ricavassi i concetti importanti che si possono desumere
+da questo daigramma (in stile UML)</p>
+</div>
+<p><span class="slide3">— Uno schema per partire —</span></p>
+</section>
+<section id="uno-schema-per-partire">
+<h3>Uno schema per partire<a class="headerlink" href="#uno-schema-per-partire" title="Link to this heading">¶</a></h3>
+<p>Per agevolare questa transizione, è disponibile un workspace di riferimento nella cartella
+<a class="reference external" href="https://github.com/anatali/issLab2026/tree/main/ConwayLife">ConwayLifeProject</a> (in <a class="reference external" href="https://github.com/anatali/issLab2026/tree/main/ConwayLife/Sprint1/conway26Java">ConwayLifeSprint1</a>).
+Si noti che:</p>
+<ul class="simple">
+<li><p>sono definiti due package (<code class="docutils literal notranslate"><span class="pre">domain</span></code> e <code class="docutils literal notranslate"><span class="pre">devices</span></code>) per non mescolare il
+codice relativo al dominio e il codice relativo ai dispositivi di I/O.</p></li>
+<li><p>le interfacce <code class="docutils literal notranslate"><span class="pre">IOutDev.java</span></code> e <code class="docutils literal notranslate"><span class="pre">GameController.java</span></code> sono definite nel package
+<strong>domain</strong> per ribadire che sono i dispositivi che dovranno adattarsi alle esigenze
+del dominioe non viceversa</p></li>
+</ul>
+</section>
+<section id="conway26java-testreports">
+<h3>conway26Java-TestReports<a class="headerlink" href="#conway26java-testreports" title="Link to this heading">¶</a></h3>
+<p>Una volta definito il codice, le specifiche di testing possono essere eseguite come
+<code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">As</span> <span class="pre">Junit</span> <span class="pre">Test</span></code> oppore attivando gradle:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">test</span></code> e aprire il file <code class="docutils literal notranslate"><span class="pre">build\reports\tests\test\index.html</span></code>
+per vedere il risultato del test</p></li>
+</ul>
+</section>
+<section id="conway26java-javacodecoverage">
+<h3>conway26Java-JavaCodeCoverage<a class="headerlink" href="#conway26java-javacodecoverage" title="Link to this heading">¶</a></h3>
+<p>Aggingiamo nel file <em>build.gradle</em> il <strong>plugin JaCoCo</strong> e la configurazione del task <em>jacocoTestReport</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jacocoTestReport</span> <span class="p">{</span>
+  <span class="n">dependsOn</span> <span class="n">test</span> <span class="o">//</span> <span class="n">Il</span> <span class="n">report</span> <span class="n">viene</span> <span class="n">generato</span> <span class="n">solo</span> <span class="n">dopo</span> <span class="n">l</span><span class="s1">&#39;esecuzione dei test</span>
+
+  <span class="n">reports</span> <span class="p">{</span>
+      <span class="n">xml</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="n">false</span>
+      <span class="n">csv</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="n">false</span>
+      <span class="n">html</span><span class="o">.</span><span class="n">outputLocation</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">buildDirectory</span><span class="o">.</span><span class="n">dir</span><span class="p">(</span><span class="s1">&#39;reports/jacoco&#39;</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Ora possiamo generare report che mostrano quali righe di codice sono state “visitate” dai test JUnit:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">test</span> <span class="pre">jacocoTestReport</span></code> e aprire il file <code class="docutils literal notranslate"><span class="pre">build\reports\jacoco\index.html</span></code>
+per vedere il risultato del test</p></li>
+</ul>
+<div class="admonition-jacoco-sessions-html admonition">
+<p class="admonition-title">jacoco-sessions.html</p>
+<p>Questo file è uno strumento di diagnostica che dice “quando” e “come” è avvenuta la raccolta dei dati.
+Serve a confermare che il “motore” di JaCoCo stia effettivamente analizzando i file .class
+giusti nel momento in cui JUnit esegue i test.</p>
+</div>
+</section>
+<section id="conway26java-esecuzione">
+<h3>conway26Java-Esecuzione<a class="headerlink" href="#conway26java-esecuzione" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>In <strong>build.gradle</strong> definiamo <code class="docutils literal notranslate"><span class="pre">mainClassName='conway26Java.MainConwayLifeJava'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">run</span></code> per eseguire il sistema</p></li>
+</ul>
+</section>
+</section>
+<section id="conway26java-deployment">
+<h2>conway26Java-Deployment<a class="headerlink" href="#conway26java-deployment" title="Link to this heading">¶</a></h2>
+<p>Al momento, ci limitiamo a generare un file jar con le classi dello Sprint1:</p>
+<div class="admonition-il-file-jar admonition">
+<p class="admonition-title">Il file .jar</p>
+<p>Un file .jar (<strong>Java ARchive</strong>) è un formato compresso basato su ZIP utilizzato per raggruppare
+classi Java, risorse (immagini, suoni) e metadati in un unico file per una facile
+distribuzione ed esecuzione.
+Richiede Java Runtime Environment (<strong>JRE</strong>) installato per funzionare e spesso contiene
+un file “manifest” per definire la classe principale eseguibile.</p>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gradlew</span> <span class="pre">jar</span></code> per generare il file jar <code class="docutils literal notranslate"><span class="pre">conway26Java-1.0.jar</span></code> nella directory <code class="docutils literal notranslate"><span class="pre">build\libs</span></code></p></li>
+</ul>
+<p>Il file <span class="remark">non è eseguibile</span>, perchè non include le librerie per le dipendenze.
+Tuttavia esso può essere usato come libreria nello <em>Sprint2</em> del progetto.</p>
+<section id="generazione-di-un-file-jar-eseguibile">
+<h3>Generazione di un file jar eseguibile<a class="headerlink" href="#generazione-di-un-file-jar-eseguibile" title="Link to this heading">¶</a></h3>
+<p>Volendo generare codice eseguibile autocontenuto,
+il modo più semplice è usare il task <strong>distZip</strong> (o <em>distTar</em>) reso disponibile dal <span class="slide3">plugin application</span>.</p>
+<p>Questo task impacchetta tutto il necessario per far girare il programma (file JAR,
+dipendenze esterne e script di avvio per Windows/Linux) in un unico archivio compresso.
+Il task deposita il risultato nella directory <code class="docutils literal notranslate"><span class="pre">build/distributions/conway26Java-1.0.zip</span></code></p>
+<p>Il file zip contiene due directory:</p>
+<ul class="simple">
+<li><p><strong>bin/</strong> : Contiene gli script eseguibili (uno shell script per Linux/Mac e un file .bat per Windows).
+Questi script impostano automaticamente il CLASSPATH e lanciano la classe <em>Main</em></p></li>
+<li><p><strong>lib/</strong> : Contiene il  file JAR del sistema più tutti i file JAR delle librerie esterne.</p></li>
+</ul>
+<p>Per eseguire il sistema:</p>
+<ol class="arabic simple">
+<li><p>scompattare il file <code class="docutils literal notranslate"><span class="pre">build/distributions/-conway26Java1.0.zip</span></code> in una directory</p></li>
+<li><p>nella directory <a href="#id2"><span class="problematic" id="id3">``</span></a>bin/<cite>,</cite> eseguire (in Windows) lo script</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conway26Java</span>
+</pre></div>
+</div>
+</div></blockquote>
+<section id="generare-un-file-jar-fat">
+<h4>Generare un file jar ‘fat’<a class="headerlink" href="#generare-un-file-jar-fat" title="Link to this heading">¶</a></h4>
+<p>In alternativa, si può creare un file jar “fat” che ingloba i file jar delle librerie esterne.
+Un esempio di un tale task è
+come ad esempio il <code class="docutils literal notranslate"><span class="pre">task</span> <span class="pre">jarfat(type:</span> <span class="pre">Jar)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code> definito in:
+<a class="reference external" href="https://github.com/anatali/issLab2026/blob/main/ConwayLife/Sprint1/conway26Java/build.gradle">https://github.com/anatali/issLab2026/blob/main/ConwayLife/Sprint1/conway26Java/build.gradle</a>.
+Il comando:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gradlew</span> <span class="n">jarfat</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>crea il file  <code class="docutils literal notranslate"><span class="pre">build/libs/conway26JavaFat-1.0.jar</span></code> che può essere eseguito con il comando:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">conway26JavaFat</span><span class="o">-</span><span class="mf">1.0</span><span class="o">.</span><span class="n">jar</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+</section>
+<section id="attivare-github-pages">
+<h2>Attivare GitHub Pages<a class="headerlink" href="#attivare-github-pages" title="Link to this heading">¶</a></h2>
+<p>Per rendere leggibile il file <em>conway26Java_v0.html</em> direttamente dal proprio repository GIT, procediamo come segue:</p>
+<ol class="arabic simple">
+<li><p>Premessa: il sito deve essere <strong>public</strong></p></li>
+<li><p>Creiamo la cartella <strong>docs</strong> e poi:</p>
+<ul class="simple">
+<li><p>copiamo in <em>docs</em> il file <code class="docutils literal notranslate"><span class="pre">conway26Java_v0.html</span></code> insieme alle directories di <em>userDocs</em>
+(se sono usate dal file) <code class="docutils literal notranslate"><span class="pre">css</span></code> e <code class="docutils literal notranslate"><span class="pre">img</span></code></p></li>
+<li><p>insseriamo un file <strong>index.html</strong></p></li>
+</ul>
+</li>
+<li><p>Attiviamo <strong>le GitHub Pages</strong>:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Vai in <em>Settings</em> del repository GIT.</p></li>
+<li><p>Clicca su <em>Pages</em> nella colonna a sinistra.</p></li>
+<li><p>Sotto “Build and deployment”, imposta la sorgente su <strong>“Deploy from a branch”</strong>.</p></li>
+<li><p>Scegli il branch (es. <strong>main</strong>) e la cartella <strong>/docs</strong>.</p></li>
+<li><p>Clicca su Save.</p></li>
+</ul>
+</div></blockquote>
+<p>Dopo un paio di minuti, il sito sarà online all’indirizzo
+<code class="docutils literal notranslate"><span class="pre">https://utente.github.io/nome-repo/</span></code>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Project conway26Java</a><ul>
+<li><a class="reference internal" href="#il-file-readme-md">Il file README.md</a></li>
+<li><a class="reference internal" href="#conway26java-build-gradle">conway26Java-build.gradle</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conway26java-dai-requisiti-al-deployment">conway26Java Dai requisiti al deployment</a><ul>
+<li><a class="reference internal" href="#conway26java-requirements">conway26Java-Requirements</a></li>
+<li><a class="reference internal" href="#conway26java-analisi-del-problema">conway26Java Analisi del problema</a><ul>
+<li><a class="reference internal" href="#conway26java-architetturalogica">conway26Java-ArchitetturaLogica</a></li>
+<li><a class="reference internal" href="#conway26java-piani-di-testing-funzionale">conway26Java Piani di Testing funzionale</a><ul>
+<li><a class="reference internal" href="#conway26java-impostazione-testing">conway26Java-Impostazione Testing</a></li>
+<li><a class="reference internal" href="#conway26java-testoscilla">conway26Java-testOscilla</a></li>
+<li><a class="reference internal" href="#conway26java-testoscillafromfile">conway26Java-testOscillaFromFile</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conway26java-costruttori">conway26Java-Costruttori</a></li>
+<li><a class="reference internal" href="#conway26java-progettazione-realizzazione">conway26Java-Progettazione&amp;realizzazione</a><ul>
+<li><a class="reference internal" href="#mainconwaylifejava">MainConwayLifeJava</a></li>
+<li><a class="reference internal" href="#conway26java-coding">conway26Java-Coding</a></li>
+<li><a class="reference internal" href="#uno-schema-per-partire">Uno schema per partire</a></li>
+<li><a class="reference internal" href="#conway26java-testreports">conway26Java-TestReports</a></li>
+<li><a class="reference internal" href="#conway26java-javacodecoverage">conway26Java-JavaCodeCoverage</a></li>
+<li><a class="reference internal" href="#conway26java-esecuzione">conway26Java-Esecuzione</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conway26java-deployment">conway26Java-Deployment</a><ul>
+<li><a class="reference internal" href="#generazione-di-un-file-jar-eseguibile">Generazione di un file jar eseguibile</a><ul>
+<li><a class="reference internal" href="#generare-un-file-jar-fat">Generare un file jar ‘fat’</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#attivare-github-pages">Attivare GitHub Pages</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="TemaFinale25.html"
+                          title="previous chapter">TemaFinale25</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Project conway26Java.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="TemaFinale25.html" title="TemaFinale25"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">iss26 1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Project conway26Java</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2026, Antonio Natali.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+.. role:: red 
+.. role:: blue 
+.. role:: brown 
+.. role:: magenta    
+.. role:: remark
+.. role:: worktodo
+.. role:: slide
+.. role:: slide1
+.. role:: slide2
+.. role:: slide3     
+.. role:: slidekp
+
+.. _domande.html: ../../../../../it.unibo.issLabStart/userDocs/domande.html
+.. _msoIEEE.pdf: ./_static/msoIEEE.pdf
+
+=========================================
+TemaFinale25
+=========================================
+
+A *Maritime Cargo shipping company* (fron now on, simply :blue:`company`) intends to automate the operations 
+of load of freight in the 
+ship's cargo hold (or simply :blue:`hold`). To this end, the company plans to employ a *Differential Drive Robot* 
+(from now, called :blue:`cargorobot`)
+for the loading of goods (named :blue:`products`) in the ship's hold.
+
+The products to be loaded must be placed in a container of predefined dimensions and registered,
+by specifying its  :blue:`weight`, within a database,
+by using a proper service (:blue:`productservice`).   After the registration, the *productservice* returns a 
+**unique product identifier** as a natural number ``PID, PID>0``.
+
+
+
+The hold  is a rectangular, flat area with an Input/Output port (:blue:`IOPort`).
+The area  provides ``4 slots`` for the product containers.
+ 
+
+
+   .. image:: ./_static/img/tf25sceneAnnotated.jpg
+      :align: center
+      :width: 80%
+
+
+In the picture above:
+  
+- The :slide3:`slots` depict the *hold storage areas*, when they are ocuupied by *product containes*
+- The :slide3:`slots5` area is :brown:`permanentely occupied`, while the other slots are initially empty
+- The :slide3:`sensor` put in front of the :blue:`IOPort` is a sonar used to detect the presence of a product container,
+  when it measures a distance ``D``, such that ``D < DFREE/2``, during a reasonable time 
+  (e.g. ``3`` secs).
+
+-----------------------------------------
+TF2025 Requirements
+-----------------------------------------
+
+The company asks us to build a software systems (named :blue:`cargoservice`) that:
+
+#. is able to receive the **request to load** on the cargo a product container already registered in the :blue:`productservice`.
+ 
+   The request is rejected when:
+
+   - the product-weight is evaluated too high, since the ship can carry a maximum load of ``MaxLoad>0  kg``.
+   - the  hold is already full, i.e. the ``4 slots`` are alrready occupied.
+
+   If the request is accepted, the :blue:`cargoservice` associates a slot to the product ``PID`` and returns the name 
+   of the reserved slot. Afttwerds, it waits that the  product container is delivered to the :blue:`ioport`.
+   In the meantime, other requests are not elaborated.
+#. is able to detect (by means of the :blue:`sonar` :slide3:`sensor`) the presence of the product container at the :blue:`ioport`  
+#. is able  to ensure that the product container is placed by the  :blue:`cargorobot` within its reserved slot.
+   At the end of the  work:
+
+   - the  :blue:`cargorobot` should returns to its :brown:`HOME` location.
+   - the :blue:`cargoservice`  can process another *load-request*
+#. is able to show the current state of the :blue:`hold`, by mesans of a dynamically updated :slide3:`web-gui`.
+#. :brown:`interrupts` any activity and turns on a led if the :blue:`sonar sensor` measures a distance ``D > DFREE``   
+   for at least ``3`` secs (perhaps a sonar failure). The service continues its activities as soon as the sonar
+   measures a distance ``D <= DFREE``.
+
+
+
+
+
+
+ 
+ 

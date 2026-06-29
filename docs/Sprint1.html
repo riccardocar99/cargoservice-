@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js" crossorigin="anonymous"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+<style type="text/css">
+body
+{
+    margin-left:  30px;
+    margin-right: 30px;
+};
+
+P
+{
+    font-family: Tahoma;
+    font-size: 10pt;
+};
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+
+#i {
+    color: #ff1010;
+}
+tt{
+	font-family: "Arial";
+    font-size: 90%;
+	color: #006600;
+}
+em{
+	font-family: "Arial";
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-family: "Arial";
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre{
+	font-family: "Consolas";
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	font-family: "Helvetica";
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+	 
+    font-size: 18px;
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+	width: 700px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+</style>
+<title>Sprint 1: cargoservice</title></head>
+
+<body>
+<div id="top">
+<h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE <font size="5"></font> </h1>
+</div>  
+
+<div class="body"> 
+<h2>Introduction</h2>
+<p>Questo documento descrive il lavoro svolto nello <strong>Sprint 1</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.</p>
+ 
+<h2>Goal</h2>
+<p>Come definito al termine dello Sprint 0, l'obiettivo dello Sprint 1 &egrave; <strong>implementare e raffinare la logica centrale dell'attore <code>cargoservice</code></strong> e realizzare i <strong>test automatizzati JUnit</strong> associati ai Test Plans individuati.</p>
+
+<h2>Problem analysis</h2>
+<p>Per raggiungere l'obiettivo, &egrave; necessario approfondire l'architettura logica e la distribuzione del lavoro per questo sprint.</p>
+
+<h3>Architettura logica (Sottosistema)</h3>
+<p>Il focus dello sprint &egrave; sul componente <code>cargoservice</code>. Gli altri componenti (robot, sonar, marker, led, display) continueranno ad essere dei <em>mock</em>, in modo da poter testare in isolamento la logica di business e la corretta gestione degli stati (libero, impegnato, fuori servizio).</p>
+
+<h3>Piano di Lavoro e Distribuzione dei Compiti</h3>
+<ul>
+    <li><strong>Implementazione logica QAK</strong>: Sviluppo degli stati e delle transizioni del <code>cargoservice</code> (stima: X ore/uomo).</li>
+    <li><strong>TestPlan Automatizzati (JUnit)</strong>: Sviluppo della suite di test per validare i requisiti funzionali (stima: Y ore/uomo).</li>
+</ul>
+
+<h2>Project</h2> 
+<p>La progettazione del prototipo (architettura di progetto) e il codice eseguibile sono posizionati nel progetto autonomo <code>sprint1</code>.</p>
+<p>L'architettura aggiornata del modello si trova in <a href="../sprint1/src/cargoservice.qak">sprint1/src/cargoservice.qak</a>.</p>
+
+<h2>Testing</h2> 
+<p>Sono stati implementati i seguenti test JUnit, derivati dai Test Plans funzionali definiti nello Sprint 0:</p>
+<ul>
+    <li>Test 1: Flusso Normale (Happy Path)</li>
+    <li>Test 2: Rifiuto Stiva Piena</li>
+    <li>Test 3: Timeout del Cliente</li>
+    <li>Test 4: Guasto al Sonar (Fuori Servizio)</li>
+</ul>
+<p>Risultati: <em>(Tutti i test superati con successo - da aggiornare a fine sviluppo)</em></p>
+
+<h2>Deployment</h2> 
+<p>Per eseguire il prototipo dello Sprint 1:</p>
+<pre>
+cd sprint1
+./gradlew run
+</pre>
+<p>Per eseguire i test automatizzati:</p>
+<pre>
+cd sprint1
+./gradlew test
+</pre>
+
+<h2>Sprint Summary</h2>
+<p>I tempi di sviluppo previsti sono stati rispettati <em>(da confermare)</em>. L'architettura logica si &egrave; dimostrata solida e i test coprono tutti i casi d'uso principali del core business.</p>
+
+<h3>Goal dello SPRINT 2</h3>
+<p><em>(Esempio di goal successivo: Implementazione dell'interazione reale col robot fisico / simulatore, oppure lo sviluppo delle interfacce grafiche reali (GUI) per l'IOPort.)</em></p>
+
+<br/><br/> 	
+</div>  
+
+<div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+Luigi Riccardo Simone
+<img src="img/stiva.png" alt="stiva" width="15%" height="15%" style="border-radius: 5px;">
+GIT repo: https://github.com/riccardocar99/cargoservice- 
+</div> 
+</body>
+</html>

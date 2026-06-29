@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Primi passi operativi &#8212; iss26 1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/custom.js"></script>
+    <link rel="canonical" href="https://anatali.github.io/issLab2026/Primi passi operativi.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GradleIntro25" href="GradleIntro25.html" />
+    <link rel="prev" title="Introduzione al corso" href="Introduzione%20al%20corso.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="GradleIntro25.html" title="GradleIntro25"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Introduzione%20al%20corso.html" title="Introduzione al corso"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">iss26 1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Primi passi operativi</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="primi-passi-operativi">
+<h1>Primi passi operativi<a class="headerlink" href="#primi-passi-operativi" title="Permalink to this heading">¶</a></h1>
+<section id="installare-su-pc">
+<h2>Installare su PC<a class="headerlink" href="#installare-su-pc" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Installare <strong>firefox</strong> per la consulatzione del materiale didattico</p></li>
+<li><p>Installare <cite>Java JDK 17</cite> ( <em>Windows-&gt;Preferences-&gt;Java-&gt;InstalledJRE</em>)</p></li>
+<li><p>Installare <cite>GIT</cite> e un <span class="remark">Git repository PERSONALE PRIVATO</span> e <strong>dare accesso al docente</strong></p></li>
+<li><p>Installare <cite>Gradle</cite>  (8.4, 8.6)
+(per accedere a <em>System Properties Advanced</em> su Windows: <code class="docutils literal notranslate"><span class="pre">sysdm.cpl</span></code>)</p></li>
+<li><p>Installare  <cite>Eclipse IDE</cite>: <a class="reference external" href="https://www.eclipse.org/downloads/packages/">Eclipse IDE for Java and DSL Developers</a></p></li>
+<li><p>Installare <cite>Docker</cite> e provarne l’uso</p></li>
+</ol>
+<p>In un secondo momento:</p>
+<ol class="arabic simple">
+<li><p>Installare <cite>Python (3.9.13)</cite> (usando <strong>Anaconda</strong>)</p></li>
+<li><p>Installare <cite>IntelliJ</cite></p></li>
+<li><p>Installare <cite>Node.js</cite></p></li>
+</ol>
+</section>
+<section id="inviare-al-docente">
+<h2>Inviare al docente<a class="headerlink" href="#inviare-al-docente" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Compilare il file <a class="reference external" href="_static/templateToFill.html">templateToFill.html</a> nella sezione finale, relativa ai dati dello studente</p></li>
+<li><p>Stampare il file in <strong>formato pdf</strong> con nome <span class="remark">&lt;CognomeNomeMatricola&gt;</span> e inviare il file al docente
+(<em>antonio.natali&#64;unibo.it</em>)</p></li>
+</ul>
+</section>
+<section id="il-ruolo-di-gradle">
+<h2>Il ruolo di Gradle<a class="headerlink" href="#il-ruolo-di-gradle" title="Permalink to this heading">¶</a></h2>
+<p>La costruzione di un sistema software non può oggi prescindere dall’uso di un <strong>IDE</strong> e di
+strumenti di come <a class="reference external" href="https://gradle.org/">Gradle</a>, uno strumento open source per automatizzare la costruzione (build)
+del software.</p>
+<p>Gradle è ormai uno standard di fatto in questo settore ed è interessante non solo in quanto
+strumento, ma anche perchè applica i principi del <a class="reference external" href="https://it.wikipedia.org/wiki/Domain-driven_design">Domain Driven Design</a> (<strong>DDD</strong>)
+per modellare il suo proprio  domain-building software.</p>
+<p>Ne consegue che non poco tempo deve essere dedicato allo studio di questi tools e
+alla preparazione del file <code class="docutils literal notranslate"><span class="pre">build.gradle</span></code> che governa lo sviluppo e il deployment
+del sistema software.</p>
+<p>Le rete offre numerosi tutorial su Gradle, come ad esempio:
+<a class="reference external" href="https://tomgregory.com/gradle/gradle-tutorial-for-complete-beginners/">https://tomgregory.com/gradle/gradle-tutorial-for-complete-beginners/</a>
+( <a class="reference internal" href="GradleIntro25.html#gradleintro25"><span class="std std-ref">GradleIntro25</span></a>)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Per usare Eclipse insieme a Gradle, potrebbe essere necessario eseguire i seguenti passi
+(Grazie a <em>Stefano Arasi</em>):</p>
+<ol class="arabic simple">
+<li><p>Help-&gt;Eclipse MarketPlace</p></li>
+<li><p>Search “Gradle”</p></li>
+<li><p>Go to “BuildShop Gradle Integration 3.0” (the elephant) which is indicated as installed and
+clic on the grayed installed button.</p></li>
+<li><p>Either click on update or uninstall and reinstall it, this will restart eclipse.</p></li>
+</ol>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Primi passi operativi</a><ul>
+<li><a class="reference internal" href="#installare-su-pc">Installare su PC</a></li>
+<li><a class="reference internal" href="#inviare-al-docente">Inviare al docente</a></li>
+<li><a class="reference internal" href="#il-ruolo-di-gradle">Il ruolo di Gradle</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Introduzione%20al%20corso.html"
+                          title="previous chapter">Introduzione al corso</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="GradleIntro25.html"
+                          title="next chapter">GradleIntro25</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Primi passi operativi.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="GradleIntro25.html" title="GradleIntro25"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Introduzione%20al%20corso.html" title="Introduzione al corso"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">iss26 1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Primi passi operativi</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2026, Antonio Natali.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

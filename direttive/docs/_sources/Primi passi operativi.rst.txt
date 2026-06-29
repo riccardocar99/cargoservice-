@@ -1,0 +1,74 @@
+.. role:: red 
+.. role:: blue 
+.. role:: brown 
+.. role:: magenta       
+.. role:: remark
+.. role:: worktodo
+.. role:: slide
+.. role:: slide1
+.. role:: slide2
+.. role:: slide3     
+.. role:: slidekp
+
+============================================
+Primi passi operativi
+============================================
+
+------------------------------------
+Installare su PC
+------------------------------------
+
+#. Installare `Java JDK 17` ( *Windows->Preferences->Java->InstalledJRE*)
+#. Installare `GIT` e un :remark:`Git repository PERSONALE PRIVATO` e **dare accesso al docente**
+#. Installare `Gradle`  (8.4, 8.6)  
+   (per accedere a *System Properties Advanced* su Windows: ``sysdm.cpl``)
+#. Installare  `Eclipse IDE`: `Eclipse IDE for Java and DSL Developers`_    
+#. Installare `Docker` e provarne l'uso
+
+In un secondo momento:
+
+#. Installare `Python (3.9.13)` (usando **Anaconda**)
+#. Installare `IntelliJ`
+#. Installare `Node.js` 
+
+------------------------------------
+Inviare al docente
+------------------------------------
+
+- Compilare il file `templateToFill.html`_ nella sezione finale, relativa ai dati dello studente
+- Stampare il file in **formato pdf** con nome :remark:`<CognomeNomeMatricola>` e inviare il file al docente
+  (*antonio.natali@unibo.it*)
+
+ 
+------------------------------------
+Il ruolo di Gradle
+------------------------------------
+
+La costruzione di un sistema software non può oggi prescindere dall'uso di un **IDE** e di 
+strumenti di come `Gradle`_, uno strumento open source per automatizzare la costruzione (build) 
+del software.
+
+Gradle è ormai uno standard di fatto in questo settore ed è interessante non solo in quanto
+strumento, ma anche perchè applica i principi del `Domain Driven Design`_ (**DDD**) 
+per modellare il suo proprio  domain-building software.
+
+Ne consegue che non poco tempo deve essere dedicato allo studio di questi tools e 
+alla preparazione del file ``build.gradle`` che governa lo sviluppo e il deployment
+del sistema software.
+
+Le rete offre numerosi tutorial su Gradle, come ad esempio:
+https://tomgregory.com/gradle/gradle-tutorial-for-complete-beginners/
+( :ref:`GradleIntro25`)
+
+.. note::
+
+  Per usare Eclipse insieme a Gradle, potrebbe essere necessario eseguire i seguenti passi 
+  (Grazie a *Stefano Arasi*):
+
+  #. Help->Eclipse MarketPlace
+  #. Search "Gradle"
+  #. Go to "BuildShop Gradle Integration 3.0" (the elephant) which is indicated as installed and 
+    clic on the grayed installed button.
+  #. Either click on update or uninstall and reinstall it, this will restart eclipse.
+
+

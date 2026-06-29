@@ -1,0 +1,246 @@
+=======================================================
+APIDescription
+=======================================================
+
+
+
+
+.. _OpenAPI Specification:
+
+--------------------------------------------
+OpenAPI Specification
+--------------------------------------------
+
+`OpenAPI`_ (precedentemente noto come **Swagger**) è oggi lo standard de facto per descrivere 
+API HTTP/REST.
+
+Un *documento OpenAPI* rappresenta una descrizione formale di un'API, 
+(endpoint, metodi (GET, POST, …), parametri, tipi di dato, schemi di richiesta/risposta, 
+sicurezza, metadati, ecc) che può essere utilizzata da diversi 
+strumenti per generare codice, documentazione, test case e altro ancora.
+Il documento:
+
+- può essere serializzato in JSON o YAML ed essere letto da tool che **generano**
+  *client*, *server-stub*, *documentazione interattiva*, *test automatici*, ecc.  
+- **REST API** 
+  rappresenta il contratto formale che definisce **cosa offre il servizio**, senza esporre l'implementazione. 
+  Questo facilita interoperabilità, evoluzione indipendente dei servizi.  
+- non è un formalismo “semantico” come quelli della teoria del calcolo. 
+  Serve a descrivere *API*, **non** a definire *comportamenti dinamici, proprietà concorrenti, tipologie di stato, 
+  invarianti, transazioni, sincronizzazione*
+
+Una specifica come la **OAS** (:ref:`OpenAPI Specification`) può servire come **contratto di superficie** 
+(quello che un sistema-servizio “dichiara di offrire”, come **endpoint** e - nelle versioni più recenti - 
+anche **eventi**, **webhooks**), 
+ma **non** come modello completo per la dinamica del servizio.
+
+.. note::
+
+   webhooks sono una funzionalità introdotta nativamente con la versione 3.1,
+   per descrivere comunicazioni "out-of-band" o asincrone iniziate dal server.
+
+   A differenza delle API tradizionali (**PULL**), dove il client interroga il server, 
+   i *webhooks* seguono un modello **PUSH**: il server invia proattivamente dati al client 
+   quando si verifica un evento specifico.
+
+
+Il livello descrittivo **OAS** rimane un'astrazione relativamente semplice, 
+vicina al modello 'REST + callback HTTP'.
+
+Poichè **non tutti i sistemi software sono servizi**,
+per sistemi complessi, distribuiti, dinamici, event-driven — la documentazione API non basta: 
+serve un formalismo di **comportamento e coordinazione**, non soltanto di interfaccia.
+
+.. _AsyncAPI:
+
+---------------------------------------
+AsyncAPI
+---------------------------------------
+
+Mentre per un'API HTTP è il Client a decidere quando chiamare il sistema, 
+con gli *eventi* è il sistema che decide quando informare il mondo esterno.
+Per le forme di interazione ad eventi uno standard usato è **AsyncAPI**
+che (in un file *asyncapi.yaml*) elenca i **Channels** e le operazioni di *Publish* (quello che il sistema emette) 
+e *Subscribe* (quello che il sistema riceve). 
+
+*AsyncAPI* non è una tecnologia di comunicazione, ma uno standard di documentazione. 
+È nato per affiancare OpenAPI per coprire ciò che OpenAPI non poteva fare: il mondo asincrono.
+Permette di documentare cosa succede quando un servizio lancia un messaggio (es. su ``RabbitMQ`` o ``Kafka``) 
+per avvisare tutti gli altri di un allarme o di un fatto applicativo.
+
+- *OpenAPI*: Descrive una conversazione *Domanda -> Risposta immediata* (**Sincrona**) con possibile 
+   semplici notifiche con webhooks
+- *AsyncAPI*: Descrive un *flusso di messaggi* dove chiunque può inviare qualcosa in qualsiasi momento (**Asincrona**). 
+  È perfetto per le WebSocket perché gestisce sia chi "Invia" (*Publish*) sia chi "Ascolta" (*Subscribe*).
+
+*AsyncAPI* ricalca la struttura di OpenAPI ma la adatta ai sistemi di messaggistica asincrona
+e permette di definire il "contratto" di un'interfaccia :ref:`WebSockets` in modo 
+che sia leggibile dalle macchine.
+
+*AsyncAPI* usa un file (``YAML`` o ``JSON``) per descrivere formalmente:
+
+- **Servers**: L'indirizzo del server (es. ``ws://localhost:8080``).
+- **Channels** (I percorsi): Specifica che esiste un canale ``/xxx``.
+- **Messages** (Il contenuto): Descrive la forma dei dati.
+
+.. code::
+
+    asyncapi: 2.6.0
+    info:
+      title: Sistema S API
+      version: 1.0.0
+    channels:
+      /f1:
+        subscribe: # Messaggi che il CLIENT riceve dal server
+          message:
+            payload:
+              type: string
+              description: "Il risultato dell'elaborazione di f1"
+        publish: # Messaggi che il CLIENT può inviare al server
+          message:
+            payload:
+              type: object
+              properties:
+                inputString:
+                  type: string  
+ 
+A partire da questo documento, è possibile:
+
+- **Documentazione Automatica**: Esistono tool che leggono il file AsyncAPI e generano una pagina web 
+  (simile a Swagger UI) dove chiunque può vedere come interagire con il  sistema .
+- **Generazione del Codice**: Dal file è possibile generare automaticamente le classi Java o i client JavaScript. 
+  Invece di scrivere manualmente frasi del tipo ``socket.send(...)``, le funzioni generate impediscono di 
+  commettere errori.
+- **Validazione**: Si può inserire nel server un "validatore" che controlla se i messaggi in arrivo 
+  rispettano il contratto. Se un client invia un numero invece di una stringa, il sistema lo rifiuta automaticamente.
+
+Ad esempio, una volta scritto il contratto in `AsyncAPI Studio`_ (editor visuale online), si potrebbe usare:
+
+- `Modelina`_ per generare le classi Java dei messaggi.
+- `AsyncAPI Generator`_ per creare lo scheletro del client che i tuoi colleghi useranno.
+- `Microcks`_ per simulare il server mentre si scrive la logica reale in Javalin o Vert.x.
+
+
+
+.. Se ti connetti al canale /chat, puoi inviare o ricevere messaggi con questo schema.
+
+ 
+.. se la tua app deve reagire istantaneamente a eventi esterni senza che l'utente debba ricaricare la pagina
+
+
+.. _gRPC:
+
+---------------------------------------
+gRPC
+---------------------------------------
+
+**gRPC** sta per `gRPC Remote Procedure Call`_.
+
+.. note::
+
+  la **"g"** non ha un significato fisso. Sebbene il framework sia stato creato originariamente da Google, 
+  il significato della lettera cambia per ogni versione rilasciata. 
+  Ad esempio, nella versione 1.1 significava "gentle", nella 1.10 "glowing", e così via.
+
+
+gRPC è un'architettura e un sistema API open source governati dalla *Cloud Native Computing Foundation*. 
+È è un'implementazione specifica basata sul modello **RPC** (*Remote Procedure Call*).  
+
+Mentre in *REST* un client richiede o aggiorna i dati sul sistema-servizio,
+in *gRPC*, il client chiama o invoca funzioni specifiche del server, visto come un altro componente software. 
+
+gRPC è stato progettato da Google specificamente per essere più efficiente di REST nella comunicazione 
+tra :ref:`microservizi<Microservices>`.
+
+- gRPC è progettato per far sì che un client possa invocare un metodo su un server remoto 
+  come se fosse una chiamata a una funzione locale, scoendo un 'contratto' definito nel file ``.proto``.
+- un server gRPC è solitamente stateless 
+- REST usa JSON (testuale, pesante da leggere per le macchine).
+  gRPC usa *Protocol Buffers* (binario, molto più piccolo e veloce da processare).
+- gRPC usa **HTTP/2**, che permette di inviare più richieste contemporaneamente 
+  sulla stessa connessione (multiplexing).
+- gRPC non è un sostituto totale di REST: È **difficile da usare direttamente dal browser** (richiede dei proxy). 
+  Inoltre, essendo binario, non puoi "leggere" i messaggi semplicemente guardando 
+  il traffico di rete senza strumenti appositi.
+- in architetture a m :ref:`microservizi<Microservices>`icroservizi, se due servizi risiedono nello stesso processo, 
+  la specifica può indicare un trasporto locale **In-Process**. Questo elimina l'overhead della rete e 
+  della serializzazione, pur mantenendo l'interfaccia definita nel file di configurazione (``.proto``).
+- gRPC ha come uso ideale: Comunicazione interna tra :ref:`microservizi<Microservices>` (**Backend-to-Backend**).
+
+gRPC è estremamente efficiente per lo sviluppatore perché genera automaticamente il codice per il client 
+e per il server. Non occorre scrivere a mano  chiamate o gestire gli errori di parsing JSON: 
+il codice generato si comporta come se si stesse chiamando una funzione locale sul client.
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++
+gRPC vs. OAS
++++++++++++++++++++++++++++++++++++++++++++++++
+
+Il rapporto tra gRPC e OAS è un tema centrale nell'architettura moderna, poiché rappresenta l'incontro tra due mondi: 
+quello della comunicazione binaria ad alte prestazioni e quello della documentazione testuale standardizzata.
+
+++++++++++++++++++++++++++++++++++++++++++++
+Code-First" vs "Contract-First
+++++++++++++++++++++++++++++++++++++++++++++
+
+.. Il rapporto tra gRPC rappresenta l'incontro tra due mondi: 
+  quello della comunicazione binaria ad alte prestazioni e quello della documentazione testuale standardizzata.
+
+ 
+
+- **OAS (REST)**: Nasce per descrivere interfacce HTTP esistenti o per progettarne di nuove basate su verbi (GET, POST) 
+  e risorse. È molto flessibile e orientato all'essere umano. 
+  Molte implementazioni REST fatte con Spring Boot o ASP.NET Web API partono (**Code-First**)
+  da una classe in C# o Java, in cui si aggiungono dei metadati (es. @Annotation);
+  un software scansiona il codice per produrre un file descrittivo (come *swagger.json*).
+
+- **gRPC (Protobuf)**: Il contratto ``.proto`` non è solo una documentazione, ma è il codice stesso. 
+  Dal file *.proto* si generano le classi e le funzioni da usere nel software. 
+  È un approccio "Schema-First" o  **Contract-First** ((Il contratto prima di tutto)) per definizione.
+
+
+In generale si può dire che:
+
+- il rapporto OAS/gRPC evideniza un punto fondamentale dell'ingegneria del software: 
+  la distinzione tra interfaccia di superficie (contratto 'passivo' su cosa si può chiamare - endpoint, verbi, parametri) e 
+  contratto funzionale (contratto "Vincolante": Tipizzazione Forte, Gestione degli errori, ...).
+- gRPC sposta il contratto dalla documentazione alla compilazione e 
+  il contratto include aspetti inerenti alla **logica della comunicazione**
+  Client e Server usano lo stesso identico codice generato dal file ``.proto``. 
+  Se il contratto cambia, entrambi devono essere ricompilati. 
+  È impossibile avere un client che "pensa" che l'API sia fatta in un modo mentre il server la implementa in un altro.
+  Dunque gRPC fa meglio se l'obiettivo è la correttezza del sistema: evita ambiguità, elimina gli errori di parsing 
+  e garantisce che la dinamica tra i servizi sia coerente.
+- OAS fa meglio se l'obiettivo è l'accessibilità: chiunque, con un semplice browser o un comando **curl**, 
+  deve poter interagire con la superficie del servizio senza dover scaricare compilatori o file di schema.
+  OAS rimane superiore anche per la scoperta (**Discoverability**) dei servizi
+
+Nelle architetture a :ref:`microservizi<Microservices>`, ``gRPC`` e ``OAS`` convivono spesso secondo questo schema:
+
+- **Front-End - Back-End** (``OAS/REST``): Per la comunicazione verso il mondo esterno (browser, app mobile, partner esterni), 
+  si usa OAS. È universale, facile da testare con un browser e attraversa facilmente i firewall.
+
+- **Back-End - Back-End** (``gRPC``): Per la comunicazione interna tra i microservizi, si usa gRPC. 
+  È molto più veloce, riduce il carico della CPU e garantisce che se un servizio cambia il suo "contratto" 
+  (il file ``.proto``), gli altri se ne accorgano in fase di compilazione.
+
+ 
+La comunità ha creato strumenti per trasformare l'uno nell'altro. Il più famoso è il **gRPC-Gateway**.
+Si tratta di un plugin che i file .proto e genera automaticamente:
+
+- Un server Reverse Proxy che accetta chiamate REST/JSON e le traduce in gRPC.
+- Un file OpenAPI che documenta quegli stessi endpoint.
+
+In questo modo, si può scrivere il  servizio  in gRPC e fornire agli utenti 
+una documentazione OAS standard per usare il servvio via HTTP.
+
+
+.. Qualunque sia la forma di comunicazione, ancora una volta è una questione 
+   di **livelli descrittivi**: prima dei dettagli tecnologici che realizzano
+   la comunicazione (reti, protocolli, DNS, etc.) può essere conveniente/opportuno focalizzare l'attenzione
+   sulla **logica della comunicazione<**, utilizzando un linguaggio apposito 
+   per 'parlare' a questo livello di astrazione.
+
+.. Prima di addentrarci in questa specifica problematica, può essere utile
+   richiamare alcuni aspetti essenziali relativi agli attuali ``LdP``.

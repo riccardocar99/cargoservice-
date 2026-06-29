@@ -1,0 +1,181 @@
+.. role:: red 
+.. role:: blue 
+.. role:: brown 
+.. role:: magenta       
+.. role:: remark
+.. role:: worktodo
+.. role:: slide
+.. role:: slide1
+.. role:: slide2
+.. role:: slide3     
+.. role:: slidekp
+    
+=============================================
+Project conway26Java
+=============================================
+
+.. Si veda `Progetto conway26Java <_static/docs/Protobook.pdf#section.17.3>`_ 
+
+
+**Impostiamo il progetto in Eclipse**
+
+.. list-table::
+    :widths: 25,75
+    :width: 100%
+    
+    * - .
+
+        .. image::  ./_static/img/conway25JavaProjectEclipse.PNG
+           :align: center 
+           :width: 100%     
+
+      - Inizializzazione
+        
+        - nella directory **conway26Java** eseguire: ``gradle init 1 2 - -`` 
+        - aggiunta *Java nature* 
+        - definito il :ref:`build.gradle<build.gradle e Main di conway26Java>`
+        - aggiunta (se non esiste) come `sourcefolder`: **src/main/java**  e le altre directory 
+          specificate in :ref:`build.gradle<build.gradle e Main di conway26Java>`
+        - eseguito  ``gradlew eclipse`` per generare i file per Eclipse
+        
+        Parte applicativa
+         
+        - aggiunto ``package conway`` con i file ``java`` dell'applicazione,
+          incluso :ref:`Main di conway26Java<build.gradle e Main di conway26Java>` 
+        - aggiunto ``package conway.devices`` con i file ``java`` dei dispositivi di I/O
+        - aggiunto ``folder userDocs`` e al suo interno:
+          
+          - il file di nome ``conway25Java_v0.html`` ricavato da `template`_  che ha il ruolo di un `diario di bordo`
+            (con varie versioni) 
+          - la subdirectory ``userDocs/css`` per gli stili usati dal diario
+          - la subdirectory ``userDocs/img`` per le immagini usate dal diario      
+
+    * - Esecuzione del prodotto
+      -  - ``gradlew run``  o da Eclipse
+
+Settaggio filtri per redere visibili **resources** e **Gradle build folder**
+
+         .. image::  ./_static/img/eclipseProjectFilers.png
+           :align: center 
+           :width: 40%     
+
+ 
++++++++++++++++++++++++++++++++++++++++
+build.gradle e Main di conway26Java
++++++++++++++++++++++++++++++++++++++++
+
+.. list-table::
+    :widths: 60,40
+    :width: 100%
+
+    * -  
+        .. code::
+
+          plugins {
+              id 'java'
+              id 'eclipse'
+          }               
+          version '1.0'
+          java {
+            toolchain.languageVersion.set(
+                  JavaLanguageVersion.of(17))
+          }
+          repositories {
+              mavenCentral()
+              flatDir {   dirs '../unibolibs'	 }
+          }
+          sourceSets {
+                main {
+                    java {
+                        srcDirs = ['src/main/java']
+                    }
+                    resources {
+                        srcDirs = ['src/main/resources']
+                    }
+                }
+                test {
+                    java {
+                        srcDirs = ['src/test/java']
+                    }
+                    resources {
+                        srcDirs = ['src/test/resources']
+                    }
+                }
+          }
+          dependencies {
+              testImplementation 'junit:junit:4.13.2'
+          }
+
+          task run(type: JavaExec){
+              classpath = sourceSets.main.runtimeClasspath
+              mainClass = "conway.MainConway"
+          }
+
+          jar {
+            println("building jar")
+            from sourceSets.main.allSource
+            manifest { attributes 
+              'Main-Class':'src/main/java/conway.MainConway'
+            }
+          } 
+      - 
+        In questa versione `vi sono dipendenze` solo relative alla libreria JUnit per 
+        `fare testing <_static/docs/Protobook.pdf#iltesting>`_.
+         
+
+        **unibolibs** contiene le librerie 
+         
+        -  2p301.jar
+        -  uniboInterfaces.jar
+        - `unibo.basicomm23-1.0.jar <_static/docs/Protobook.pdf#unibo.basicomm23-1.0>`_.
+        
+        
+        .. file:///C:/Didattica2025/issLab2026/iss25Material/docs/_build/html/ConcettiFondamentali.html#testing. 
+        .. Si veda :ref:`Creazione progetto con Gradle`
+        .. della :ref:`Qak infrastructure`
+
+Riprendiamo la specifica di 
+`MainConwayLifeJava.java <_static/docs/Protobook.pdf#MainConwayLifeJava.java>`_
+configurando il sistema 
+con un MockOutdev
+
+.. code::
+
+  public class MainConway  {
+              
+    public static void main(String[] args) {             
+                
+      //configureTheSystem
+      Life life           =  new Life( 3,3 );
+      LifeController cc   =  new LifeController(life);   
+      ConwayInputMock cim =  new ConwayInputMock(cc,life);               
+      //start the system
+      cim.simulateUserControl();               
+    }
+  }
+
+++++++++++++++++++++++++++++++++
+conway26Java testing
+++++++++++++++++++++++++++++++++
+
+Per il `Sul testing <_static/docs/Protobook.pdf#section.5.10>`_
+
+`Costruiamo? <_static/docs/Protobook.pdf#section.5.8>`_
+
+file:///C:/Didattica2026/protobookmaterial/contentLab/build/html/_static/docs/Protobook.pdf#section.5.8
+ 
+- ``gradlew test`` e aprire il file ``build\reports\tests\test\index.html`` 
+    per vedere il risultato del test
+- ``gradlew run`` per vedere il risultato dell'esecuzione del programma
+
+#. Seguendo quanto detto in `Il nostro metodo di lavoro <_static/docs/Protobook.pdf#Il-nostro-metodo-di-lavoro>`_, 
+   consideriamo questo progetto come 
+   il primo Sprint
+   per la costruzione incrementale ed evolutiva di un prodotto software
+
+    
+.. Vedi la sezione :ref:`Il metodo di lavoro <_static/docs/Protobook.pdf#Il nostro metodo di lavoro>`
+
+.. Vedi la sezione `Protoattori <_static/docs/Protobook.pdf#Protoattori>`_
+   
+.. Vedi la sezione `book`_

@@ -1,0 +1,135 @@
+.. role:: red 
+.. role:: blue 
+.. role:: brown 
+.. role:: magenta       
+.. role:: remark
+.. role:: worktodo
+.. role:: slide
+.. role:: slide1
+.. role:: slide2
+.. role:: slide3     
+.. role:: slidekp
+
+=============================================
+Attività di laboratorio
+=============================================
+
+L'attività di laboratorio è volta a sviluppare abilità teorico/pratiche
+nell'analisi, progettazione e costruzione di sistemi software.
+
+Come ogni ogni attività umana,
+anche l'attività di costruzione del software si svolge in  un contesto di riferimento,
+sia di tipo culturale, sia relativo agli obiettivi che si intendono raggiungere.
+
+Per definire questo contesto, è disponibile un testo di riferimento, 
+ccon l'obiettivo di introdurre un percorso incrememtale 
+di transizione dalla programmazione ad oggetti alla costruzione di sistemi software 
+basati su componenti software distribuiti che comunicano mediante protocolli di rete.
+ 
+Lo scenario applicativo di riferimento è quello dei 
+`Sistemi a Microservizi <_static/docs/Protobook.pdf#chapter.12>`_  
+e dei `Sistemi Embedded/IoT <_static/docs/Protobook.pdf#subsection.5.3.2>`_.
+
+L'intento è di dimostrare come l'ingegnere del software possa affrontare 
+la costruzione di sistemi eterogenei, in domini applicativi diversi, 
+avvendosi di un insieme di concetti volti a supeerare 
+`L'Abstraction gap <_static/docs/Protobook.pdf#subsection.4.9.2>`_
+tra gli obiettivi di alto livello che si intendono raggiungere e i dettagli di basso livello 
+legati alle tecnologie software e hardware disponibili.
+
+Si vuole dimostrare come sia possibile costruire non solo prodotti finali,
+ma anche gli opportuni insiemi di strumenti di supporto alla progettazione e allo sviluppo,
+avvalendosi di tecniche tipiche dei
+`Domain-Specific Languages <_static/docs/Protobook.pdf#section.4.10>`_ .
+ 
+
+
+con particolare riferimento a sistemi IOT e a sistemi software
+distribuiti e di `Sistemi a Microservizi <_static/docs/Protobook.pdf#chapter.12>`_.  
+
+
+
+-----------------------------------------------
+Il ruolo del testo di riferimento
+-----------------------------------------------
+
+Il   
+`Testo di riferimento <_static/docs/Protobook.pdf>`_ :
+
+#. contiene informazioni che ogni costruttore di software dovrebbe avere  
+   nel proprio bagaglio culturale
+
+   .. admonition:: Leggere il testo
+
+    Il testo dovrebbe essere letto in modo sequenziale almemo fino al  
+    `Capitolo6  <_static/docs/Protobook.pdf#chapter.5>`_
+
+    #.  `PRELUDIO  <_static/docs/Protobook.pdf#chapter.1>`_
+    #.  `COSA SI INTENDE PER SISTEMA   <_static/docs/Protobook.pdf#chapter.2>`_
+    #.  `COSA VUOL DIRE COMPUTARE   <_static/docs/Protobook.pdf#chapter.3>`_
+    #.  `I LINGUAGGI   <_static/docs/Protobook.pdf#chapter.4>`_
+    #.  `SISTEMI SOFTWARE   <_static/docs/Protobook.pdf#chapter.5>`_
+    #.  `GAME OF LIFE DI CONWAY   <_static/docs/Protobook.pdf#chapter.6>`_
+
+    
+#. introduce un percorso incrememtale di transizione dalla programmazione 
+   ad oggetti alla costruzione di sistemi software distribuiti e di 
+   `Sistemi a Microservizi <_static/docs/Protobook.pdf#chapter.12>`_
+
+  .. admonition:: Consultare il testo
+
+    Dal `Capitolo6  <_static/docs/Protobook.pdf#chapter.6>`_ in avanti, il Testo
+    riporta contenuti specificatamente orientati al `CorsoISS2026`_  
+
+    .. `72939 - INGEGNERIA DEI SISTEMI SOFTWARE M <CorsoISS2026>`_
+
+La parte più orientata al corso:
+
+- introduce librerie che realizzano l'idea astratta di 
+  `Interconnessione <_static/docs/Protobook.pdf#section.8.3>`_
+  tra componenti software distribuiti che comunicano mediante protocolli di rete
+  quali TCP, MQTT, CoAP, etc.
+- introduce all'uso del paradigma computazionele ad attori
+  `paradigma computazionele ad attori <_static/docs/Protobook.pdf#section.4.6>`_
+
+------------------------------------------
+Organizzazione del corso
+------------------------------------------
+
+
+#. Parte A: *Dai programmi* ai `Sistemi a Microservizi <_static/docs/Protobook.pdf#chapter.12>`_ 
+#. Parte B: *Sviluppo di applicazioni distribuite* e sperimentazione di 
+   `Sistemi IOT <_static/docs/Protobook.pdf#subsection.5.3.2>`_ 
+#. Parte C: *Dai requisiti al prodotto* mediante
+   `Processi di sviluppo agili e incrementali <_static/docs/Protobook.pdf#section.5.9>`_ 
+   basati su `modelli <_static/docs/Protobook.pdf#subsection.4.9.3>`_ 
+
+
+Nelle tre fasi, faremo riferimento a un
+`Filo conduttore <_static/docs/Protobook.pdf#Isubsection.5.8.1>`_
+costituito dal `Game of Life di Conway <_static/docs/Protobook.pdf#chapter.6>`_
+che  implica 
+
+- un `sistema semplice <_static/docs/Protobook.pdf#section2.2>`_ 
+  da capire e da costruire nel concentrato
+- un `sistema conmplicato <_static/docs/Protobook.pdf#section2.3>`_ nel distribuito
+- un `sistema complesso <_static/docs/Protobook.pdf#section2.4>`_ 
+  dal punto dei vista dei risultati che presenta
+
+
+------------------------------------------
+Organizzazione delle attività 
+------------------------------------------
+
+
+#. :ref:`Primi passi operativi` 
+#. `Il nostro metodo di lavoro <_static/docs/Protobook.pdf#subsection.5.10.1>`_
+
+
+.. file:///C:/Didattica2026/protobookmaterial/contentLab/source/_static/docs/Protobook.pdf#subsection.5.10.1
+
+------------------------------------------
+Modalità di (auto)valutazione
+------------------------------------------
+ 
+Si veda anche :ref:`La (auto)valutazione`

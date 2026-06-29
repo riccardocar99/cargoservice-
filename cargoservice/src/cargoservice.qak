@@ -1,0 +1,9 @@
+System cargoservice
+
+Context ctxcargoservice ip [host="localhost" port=8020]
+
+QActor cargoservice context ctxcargoservice {
+	State s0 initial {
+		println("cargoservice | starts") color blue
+	}
+}

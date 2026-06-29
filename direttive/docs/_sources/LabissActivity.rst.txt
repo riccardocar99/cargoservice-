@@ -1,0 +1,28 @@
+
+=============================================
+LabissActivity
+=============================================
+
+Le attività di laboratorio sono strettamente legate al  
+`Testo di riferimento <_static/docs/Protobook.pdf>`_.
+
+Procederemo in tre fasi:
+
+#. Parte A: Dai programmi ai Microservizi
+#. Parte B: Sviluppo di applicazioni distribuite e IOT
+#. Parte C: Dai requisiti al prodotto con Processi agili e incrementali basati su modelli 
+
+Nelle tre fasi faremo riferimento a un
+`Filo conduttore <_static/docs/Protobook.pdf#Il_filo_conduttore>`_
+costituito dal `Game of Life di Conway <_static/docs/Protobook.pdf#Game of Life di Conway>`_
+che  implica 
+
+- un `sistema semplice <_static/docs/Protobook.pdf#sistemisemplici>`_ 
+  da capire e da costruire nel concentrato
+- un `sistema conmplicato <_static/docs/Protobook.pdf#Sistemi compilcati>`_ nel distribuito
+- un `sistema complesso <_static/docs/Protobook.pdf#Sistemi complessi>`_ 
+  dal punto dei vista dei risultati che presenta
+
+:ref:`Primi passi operativi` 
+
+`Il nostro metodo di lavoro <_static/docs/Protobook.pdf#section.5.10.1>`_,

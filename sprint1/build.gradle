@@ -1,0 +1,82 @@
+plugins {
+    id 'application'
+    id 'java'
+    id 'eclipse'
+    id "org.jetbrains.kotlin.jvm" version "1.9.22"
+}
+
+version '1.0'
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+kotlin {
+  jvmToolchain {
+    languageVersion.set(JavaLanguageVersion.of("17"))
+  }
+}
+
+repositories {
+    mavenCentral()
+    flatDir { dirs '../../issLab2026/unibolibs' }
+}
+
+dependencies {
+    implementation platform('org.jetbrains.kotlin:kotlin-bom')
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.9.22"
+
+    // Coroutines
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '1.7.3'
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core-jvm', version: '1.7.3'
+
+    // HTTP & JSON
+    implementation 'org.apache.httpcomponents:httpclient:4.5'
+    implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.5'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation group: 'org.json', name: 'json', version: '20180130'
+
+    // COAP
+    implementation group: 'org.eclipse.californium', name: 'californium-core', version: '3.5.0'
+    implementation group: 'org.eclipse.californium', name: 'californium-proxy2', version: '3.5.0'
+
+    // OKHttp for Websockets
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.3'
+
+    // Logback
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+
+    // Unibo libs from issLab2026
+    implementation name: 'uniboInterfaces'
+    implementation name: '2p301'
+    implementation name: 'unibo.qakactor23-5.0'
+    implementation name: 'unibo.basicomm23-1.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+            srcDir 'src-gen'
+        }
+    }
+}
+
+tasks.withType(Copy).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+application {
+    mainClassName = 'it.unibo.ctxcargoservice.MainCtxcargoserviceKt'
+}
+
+task dovesiamo {
+    doLast {
+        println("projectDir= $projectDir")
+        println("buildDir  = $buildDir")
+    }
+}

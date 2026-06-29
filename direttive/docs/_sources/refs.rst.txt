@@ -1,0 +1,179 @@
+.. _Sito Web Attività Progettuale : https://www.unibo.it/it/studiare/dottorati-master-specializzazioni-e-altra-formazione/insegnamenti/insegnamento/2024/468018
+.. _Sito Web corso ISS2025: https://www.unibo.it/it/studiare/dottorati-master-specializzazioni-e-altra-formazione/insegnamenti/insegnamento/2024/468003
+.. _Lectures2025: ../LectureBologna2025.html
+.. _Sprint review : https://www.agileway.it/sprint-review-meeting/
+.. _template: _static/templateToFill.html
+.. _Conway Life: https://it.wikipedia.org/wiki/Gioco_della_vita
+.. _Conway Life play: https://playgameoflife.com/
+.. _ConwayLife.py: https://github.com/anatali/protobook/blob/main/material/source/code/ConwayLife.py  
+.. _conway25Gemini.js: https://github.com/anatali/protobook/blob/main/material/source/code/conway25JsGemini.js
+.. _robot reali: _static/devsDdr.html
+
+.. _GOFAI: https://en.wikipedia.org/wiki/GOFAI
+.. _RL: https://en.wikipedia.org/wiki/Reinforcement_learning
+
+.. _UTF-8: https://en.wikipedia.org/wiki/UTF-8
+.. _fire-and-forget: https://medium.com/mandiri-engineering/fire-and-forget-e59b745c9f97
+.. _Publish–subscribe: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
+.. _interaction patterns: https://docs.oracle.com/cd/E24001_01/doc.1111/e17363/chapter05.htm
+
+
+.. _Small world network: https://en.wikipedia.org/wiki/Small-world_network
+.. _sei gradi di sperazione: https://it.wikipedia.org/wiki/Sei_gradi_di_separazione
+.. _sinergetica : https://en.wikipedia.org/wiki/Synergetics_(Haken)
+.. _laser: https://it.wikipedia.org/wiki/Laser
+.. _powerlaw: https://it.wikipedia.org/wiki/Legge_di_potenza
+
+.. _Model-driven engineering:  https://en.wikipedia.org/wiki/Model-driven_engineering
+
+.. _Akka: https://akka.io/
+.. _Modello computazionale ad attori: https://en.wikipedia.org/wiki/Actor_model
+.. _Akka Actors: https://doc.akka.io//docs/akka/current/typed/guide/actors-motivation.html
+.. _Domain Specific Language: https://www.jetbrains.com/mps/concepts/domain-specific-languages/
+
+.. _Teoria delle reti: https://www.isc.cnr.it/public-outreach/divulgazione/scienza-della-complessita-e-teoria-delle-reti/
+.. _Legge di potenza: https://it.wikipedia.org/wiki/Legge_di_potenza
+.. _Willard Van Orman Quine: https://it.wikipedia.org/wiki/Willard_Van_Orman_Quine
+.. _Ipotesi Sapir-Whorf: https://it.wikipedia.org/wiki/Ipotesi_di_Sapir-Whorf
+
+.. _Tezos: https://en.wikipedia.org/wiki/Tezos
+.. _Michelson: https://docs.tezos.com/smart-contracts/languages/michelson
+
+.. _Qubit: https://it.wikipedia.org/wiki/Qubit
+.. _Funzioni serverless: https://it.wikipedia.org/wiki/Function_as_a_service
+.. _Agenti: https://it.wikipedia.org/wiki/Agente_intelligente
+.. _Microservizi: https://en.wikipedia.org/wiki/Microservices
+.. _Meccanica quantistica: https://it.wikipedia.org/wiki/Meccanica_quantistica
+
+.. _Edsger Dijkstra: https://it.wikipedia.org/wiki/Edsger_Dijkstra
+.. _Gemello Digitale: https://it.wikipedia.org/wiki/Gemello_digitale
+.. _Internet of Things: https://en.wikipedia.org/wiki/Internet_of_things
+.. _Model driven engineering: https://en.wikipedia.org/wiki/Model-driven_engineering
+.. _Ontologia: https://it.wikipedia.org/wiki/Ontologia
+
+.. _Gerarchia di Chomsky: https://it.wikipedia.org/wiki/Gerarchia_di_Chomsky
+.. _Macchina astratta: https://it.wikipedia.org/wiki/Macchina_astratta
+
+.. _Alan Kay: https://en.wikipedia.org/wiki/Alan_Kay
+.. _Computer a DNA: https://it.wikipedia.org/wiki/Computer_a_DNA
+.. _Natural computing: https://en.wikipedia.org/wiki/Natural_computing
+.. _Quantum computing: https://en.wikipedia.org/wiki/Quantum_computing
+.. _Quantum gates: https://en.wikipedia.org/wiki/Quantum_logic_gate
+.. _Rule 110: https://en.wikipedia.org/wiki/Rule_110
+.. _previsione di Wolff, Anthropic: https://www.dday.it/redazione/55487/wolff-anthropic-la-figura-del-programmatore-e-al-capolinea-come-cambiera-in-futuro-lo-sviluppo-del-software
+
+.. _sinergetica: https://en.wikipedia.org/wiki/Synergetics_(Haken)
+.. _Il Sorprendente Segreto della Sincronizzazione: https://www.youtube.com/watch?v=p4jwj8IJjNg
+.. _Stigmergia: https://it.wikipedia.org/wiki/Stigmergia
+
+.. _CCS: https://en.wikipedia.org/wiki/Calculus_of_communicating_systems
+.. _CSP: https://en.wikipedia.org/wiki/Communicating_sequential_processes
+.. _Pi calcolo: https://it.wikipedia.org/wiki/Pi_calcolo
+.. _Alan M. Turing: https://it.wikipedia.org/wiki/Alan_Turing
+.. _Marvin Minsky: https://en.wikipedia.org/wiki/Marvin_Minsky
+.. _Counter machine: https://en.wikipedia.org/wiki/Counter_machine
+.. _John von Neumann: https://it.wikipedia.org/wiki/John_von_Neumann
+.. _David Hilbert: https://it.wikipedia.org/wiki/David_Hilbert
+.. _Kurt Gödel: https://it.wikipedia.org/wiki/Kurt_G%C3%B6del
+.. _Teorema di Rice: https://it.wikipedia.org/wiki/Teorema_di_Rice
+.. _Niklaus Wirth: https://it.wikipedia.org/wiki/Niklaus_Wirth
+
+.. _Linguaggio assembly: https://it.wikipedia.org/wiki/Linguaggio_assembly
+
+.. _mshistory: _static/docs/msoIEEE.pdf
+.. _Microservices: https://en.wikipedia.org/wiki/Microservices
+.. _Fallacies: https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing
+
+.. _OpenAPI: https://it.wikipedia.org/wiki/Specifiche_OpenAPI
+
+.. _Raspberry Pi: https://it.wikipedia.org/wiki/Raspberry_Pi
+
+.. _Qaksyntax: _static/docs/Qactork_xtext.pdf
+.. _Macchina di Moore: https://it.wikipedia.org/wiki/Macchina_di_Moore
+.. _tuProlog: https://amsacta.unibo.it/id/eprint/5450/7/tuprolog-guide.pdf
+
+.. _Xtext grammar: https://eclipse.dev/Xtext/documentation/301_grammarlanguage.html
+.. _Xtext tutorial: https://eclipse.dev/Xtext/documentation/102_domainmodelwalkthrough.html
+
+.. _Software testing : https://en.wikipedia.org/wiki/Software_testing 
+.. _Automated-Testing-Plan FAQ : http://sqa.fyicenter.com/FAQ/Automated-Testing-Plan/
+.. _JUnit : https://www.html.it/articoli/junit-unit-testing-per-applicazioni-java/
+.. _Junit FAQ : http://sqa.fyicenter.com/FAQ/JUnit/What_Is_JUnit_.html
+.. _Software testing IBM : https://www.ibm.com/it-it/topics/software-testing
+.. _Software testing quotes : https://softwaretestingfundamentals.com/software-testing-quotes/
+.. _User Stories : https://en.wikipedia.org/wiki/User_story
+.. _Linguaggio UML: https://it.wikipedia.org/wiki/Unified_Modeling_Language
+.. _Profili UML : https://en.wikipedia.org/wiki/Profile_(UML)
+.. _MDE : https://en.wikipedia.org/wiki/Model-driven_engineering
+
+.. _gRPC Remote Procedure Call: https://it.wikipedia.org/wiki/gRPC
+.. _SOAP: https://it.wikipedia.org/wiki/SOAP
+.. _URL: https://it.wikipedia.org/wiki/Uniform_Resource_Locator
+.. _WebSocket: https://it.wikipedia.org/wiki/WebSocket
+.. _javalin: https://javalin.io/
+
+.. _Spring Boot: https://spring.io/projects/spring-boot
+.. _Jetty: https://it.wikipedia.org/wiki/Jetty
+.. _vert.x: https://www.baeldung.com/vertx
+.. _AsyncAPI Studio: https://studio.asyncapi.com/
+.. _Modelina: https://modelina.org/
+.. _AsyncAPI Generator: https://www.asyncapi.com/tools/generator
+.. _Microcks: https://microcks.io/
+
+.. _Clean Architecture: https://clevercoder.net/2018/09/08/clean-architecture-summary-review/
+.. _Opinionated vs. Non-Opinionated Frameworks: https://dev.to/muhammadmedhat/opinionated-vs-non-opinionated-frameworks-understanding-the-difference-2379
+.. _WsContext: https://javalin.io/documentation#wscontext
+.. _WsMessageContext: https://javalin.io/documentation#wscontext:~:text=Copy-,WsMessageContext,-message()&text=Copy-,WsMessageContext,-message()
+.. _io.javalin.http.Context: https://javalin.io/documentation#context
+
+.. _Principle of least astonishment: https://en.wikipedia.org/wiki/Principle_of_least_astonishment
+.. _CompletableFuture Java: https://www.baeldung.com/java-completablefuture
+.. _CountDownLatch: https://www.baeldung.com/java-countdown-latch
+
+.. _Java record: https://www.baeldung.com/java-16-new-features#records-jep-395
+.. _ExecutorService: https://www.baeldung.com/java-executor-service-tutorial
+.. _canvas: https://www.w3schools.com/html/html5_canvas.asp
+
+.. _Sito Web Attività Progettuale : https://www.unibo.it/it/studiare/dottorati-master-specializzazioni-e-altra-formazione/insegnamenti/insegnamento/2024/468018
+.. _Sito Web corso ISS2025: https://www.unibo.it/it/studiare/dottorati-master-specializzazioni-e-altra-formazione/insegnamenti/insegnamento/2024/468003
+.. _Lectures2025: ../LectureBologna2025.html
+.. _Sprint review : https://www.agileway.it/sprint-review-meeting/
+.. _template: _static/templateToFill.html
+.. _Conway Life: https://it.wikipedia.org/wiki/Gioco_della_vita
+.. _Conway Life play: https://playgameoflife.com/
+.. _robot reali: _static/devsDdr.html
+
+.. _rst editor: http://rst.ninjs.org/
+
+.. _mosquittoOnly.yml: _static/mosquittoOnly.yml 
+.. _gradle-tutorial: _static/GradleTutorialForCompleteBeginners.pdf
+
+.. _Domain Driven Design : https://it.wikipedia.org/wiki/Domain-driven_design
+.. _gradle: https://gradle.org/ 
+.. _GradleIntro: ../../../../GradleIntro/userdocs/Gradle.intro.html
+.. _IntelliJ: https://www.jetbrains.com/idea/
+.. _template: _static/templateToFill.html
+.. _Eclipse IDE for Java and DSL Developers: https://www.eclipse.org/downloads/packages/
+.. _Basic Git commands: https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html
+.. _Video on GIT: https://www.youtube.com/watch?v=HVsySz-h9r4
+.. _github: https://github.com/
+.. _opinionated: https://govdevsecopshub.com/2021/02/26/opinionated-software-what-it-is-and-how-it-enables-devops/
+
+.. _SpringBoot: https://spring.io/projects/spring-boot
+.. _SCRUM : https://it.wikipedia.org/wiki/Scrum_(informatica)
+.. _SCRUM Guide :   https://scrumguides.org/
+
+.. _Design Pattern: https://it.wikipedia.org/wiki/Design_pattern
+.. _DevOps: https://it.wikipedia.org/wiki/DevOps
+
+.. _Meta Object Facility: https://it.wikipedia.org/wiki/Meta-Object_Facility
+.. _Ecore: https://wiki.eclipse.org/Ecore
+.. _Linguaggio di modellazione: https://it.wikipedia.org/wiki/Linguaggio_di_modellazione
+.. _Linguaggio formale: https://it.wikipedia.org/wiki/Linguaggio_formale
+.. _Turing Machine : https://plato.stanford.edu/entries/turing-machine/
+.. _Automa a stati finiti: https://it.wikipedia.org/wiki/Automa_a_stati_finiti
+.. _pushdown automaton : https://it.wikipedia.org/wiki/Automa_a_pila 
+
+.. _PrologUsage: ./_static/LabQakPrologUsage2020.html
+.. _Logo: https://it.wikipedia.org/wiki/Logo_(informatica)  
+

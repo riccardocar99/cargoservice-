@@ -1,0 +1,117 @@
+==================================
+GradleIntro25
+==================================
+
+Gradle è un potente strumento di build che consente l'automazione della compilazione, test, gestione delle dipendenze e distribuzione di software. Questo documento fornisce un riepilogo dei concetti fondamentali e dei comandi principali che un software designer deve conoscere per utilizzarlo efficacemente.
+
+---------------------------------------
+Concetti Fondamentali
+---------------------------------------
+
+1. **Build Script**: Il file `build.gradle` definisce le dipendenze e le configurazioni del progetto.
+2. **Task**: Un'unità di lavoro in Gradle (compilazione, test, packaging, ecc.).
+3. **Project**: Un'istanza di un'applicazione Gradle, che può contenere uno o più moduli.
+4. **Dependency Management**: Gradle utilizza un modello dichiarativo per gestire le dipendenze.
+5. **Plugins**: Espandono le funzionalità di Gradle (es. `java`, `application`, `spring-boot`).
+6. **Gradle Wrapper**: (`gradlew`) permette di eseguire Gradle senza doverlo installare manualmente.
+
+---------------------------------------
+Comandi Principali
+---------------------------------------
+
+### 1. Inizializzazione e Informazioni sul Progetto
+
+- **Creare un nuovo progetto**:
+
+  .. code-block:: sh
+
+      gradle init
+
+- **Visualizzare i task disponibili**:
+
+  .. code-block:: sh
+
+      gradle tasks
+
+- **Mostrare le dipendenze del progetto**:
+
+  .. code-block:: sh
+
+      gradle dependencies
+
+### 2. Compilazione e Esecuzione
+
+- **Compilare il codice**:
+
+  .. code-block:: sh
+
+      gradle build
+
+- **Eseguire un'applicazione Java**:
+
+  .. code-block:: sh
+
+      gradle run
+
+- **Pulire i file di build generati**:
+
+  .. code-block:: sh
+
+      gradle clean
+
+### 3. Test e Qualità del Codice
+
+- **Eseguire i test**:
+
+  .. code-block:: sh
+
+      gradle test
+
+- **Generare un report della qualità del codice**:
+
+  .. code-block:: sh
+
+      gradle check
+
+### 4. Gestione delle Dipendenze
+
+- **Aggiornare le dipendenze**:
+
+  .. code-block:: sh
+
+      gradle dependencies --refresh-dependencies
+
+- **Forzare il download di tutte le dipendenze**:
+
+  .. code-block:: sh
+
+      gradle build --refresh-dependencies
+
+### 5. Gradle Wrapper
+
+- **Generare lo script Wrapper**:
+
+  .. code-block:: sh
+
+      gradle wrapper
+
+- **Utilizzare Gradle Wrapper invece di Gradle direttamente**:
+
+  .. code-block:: sh
+
+      ./gradlew build
+
+---------------------------------------
+Best Practices
+---------------------------------------
+
+- **Utilizzare il Wrapper** per garantire la compatibilità del progetto tra gli sviluppatori.
+- **Organizzare il build script** separando i plugin, le dipendenze e la configurazione dei task.
+- **Evitare di hardcodare versioni delle dipendenze** e utilizzare `dependencyManagement` per una gestione centralizzata.
+- **Abilitare build caching** per migliorare le performance della compilazione.
+
+---------------------------------------
+Conclusione
+---------------------------------------
+
+Gradle è uno strumento potente per la gestione dei progetti software. Comprendere i concetti chiave e i comandi principali aiuta un software designer a ottimizzare il processo di sviluppo e distribuzione delle applicazioni. 

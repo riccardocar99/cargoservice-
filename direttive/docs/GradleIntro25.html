@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>GradleIntro25 &#8212; iss26 1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/custom.js"></script>
+    <link rel="canonical" href="https://anatali.github.io/issLab2026/GradleIntro25.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="La (auto)valutazione" href="La%20%28auto%29valutazione.html" />
+    <link rel="prev" title="Primi passi operativi" href="Primi%20passi%20operativi.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="La%20%28auto%29valutazione.html" title="La (auto)valutazione"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Primi%20passi%20operativi.html" title="Primi passi operativi"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">iss26 1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GradleIntro25</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="gradleintro25">
+<h1>GradleIntro25<a class="headerlink" href="#gradleintro25" title="Permalink to this heading">¶</a></h1>
+<p>Gradle è un potente strumento di build che consente l’automazione della compilazione, test, gestione delle dipendenze e distribuzione di software. Questo documento fornisce un riepilogo dei concetti fondamentali e dei comandi principali che un software designer deve conoscere per utilizzarlo efficacemente.</p>
+<section id="concetti-fondamentali">
+<h2>Concetti Fondamentali<a class="headerlink" href="#concetti-fondamentali" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Build Script</strong>: Il file <cite>build.gradle</cite> definisce le dipendenze e le configurazioni del progetto.</p></li>
+<li><p><strong>Task</strong>: Un’unità di lavoro in Gradle (compilazione, test, packaging, ecc.).</p></li>
+<li><p><strong>Project</strong>: Un’istanza di un’applicazione Gradle, che può contenere uno o più moduli.</p></li>
+<li><p><strong>Dependency Management</strong>: Gradle utilizza un modello dichiarativo per gestire le dipendenze.</p></li>
+<li><p><strong>Plugins</strong>: Espandono le funzionalità di Gradle (es. <cite>java</cite>, <cite>application</cite>, <cite>spring-boot</cite>).</p></li>
+<li><p><strong>Gradle Wrapper</strong>: (<cite>gradlew</cite>) permette di eseguire Gradle senza doverlo installare manualmente.</p></li>
+</ol>
+</section>
+<section id="comandi-principali">
+<h2>Comandi Principali<a class="headerlink" href="#comandi-principali" title="Permalink to this heading">¶</a></h2>
+<p>### 1. Inizializzazione e Informazioni sul Progetto</p>
+<ul>
+<li><p><strong>Creare un nuovo progetto</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle init
+</pre></div>
+</div>
+</li>
+<li><p><strong>Visualizzare i task disponibili</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle tasks
+</pre></div>
+</div>
+</li>
+<li><p><strong>Mostrare le dipendenze del progetto</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle dependencies
+</pre></div>
+</div>
+</li>
+</ul>
+<p>### 2. Compilazione e Esecuzione</p>
+<ul>
+<li><p><strong>Compilare il codice</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle build
+</pre></div>
+</div>
+</li>
+<li><p><strong>Eseguire un’applicazione Java</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle run
+</pre></div>
+</div>
+</li>
+<li><p><strong>Pulire i file di build generati</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle clean
+</pre></div>
+</div>
+</li>
+</ul>
+<p>### 3. Test e Qualità del Codice</p>
+<ul>
+<li><p><strong>Eseguire i test</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle <span class="nb">test</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Generare un report della qualità del codice</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle check
+</pre></div>
+</div>
+</li>
+</ul>
+<p>### 4. Gestione delle Dipendenze</p>
+<ul>
+<li><p><strong>Aggiornare le dipendenze</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle dependencies --refresh-dependencies
+</pre></div>
+</div>
+</li>
+<li><p><strong>Forzare il download di tutte le dipendenze</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle build --refresh-dependencies
+</pre></div>
+</div>
+</li>
+</ul>
+<p>### 5. Gradle Wrapper</p>
+<ul>
+<li><p><strong>Generare lo script Wrapper</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gradle wrapper
+</pre></div>
+</div>
+</li>
+<li><p><strong>Utilizzare Gradle Wrapper invece di Gradle direttamente</strong>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./gradlew build
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Utilizzare il Wrapper</strong> per garantire la compatibilità del progetto tra gli sviluppatori.</p></li>
+<li><p><strong>Organizzare il build script</strong> separando i plugin, le dipendenze e la configurazione dei task.</p></li>
+<li><p><strong>Evitare di hardcodare versioni delle dipendenze</strong> e utilizzare <cite>dependencyManagement</cite> per una gestione centralizzata.</p></li>
+<li><p><strong>Abilitare build caching</strong> per migliorare le performance della compilazione.</p></li>
+</ul>
+</section>
+<section id="conclusione">
+<h2>Conclusione<a class="headerlink" href="#conclusione" title="Permalink to this heading">¶</a></h2>
+<p>Gradle è uno strumento potente per la gestione dei progetti software. Comprendere i concetti chiave e i comandi principali aiuta un software designer a ottimizzare il processo di sviluppo e distribuzione delle applicazioni.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">GradleIntro25</a><ul>
+<li><a class="reference internal" href="#concetti-fondamentali">Concetti Fondamentali</a></li>
+<li><a class="reference internal" href="#comandi-principali">Comandi Principali</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a></li>
+<li><a class="reference internal" href="#conclusione">Conclusione</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Primi%20passi%20operativi.html"
+                          title="previous chapter">Primi passi operativi</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="La%20%28auto%29valutazione.html"
+                          title="next chapter">La (auto)valutazione</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/GradleIntro25.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="La%20%28auto%29valutazione.html" title="La (auto)valutazione"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Primi%20passi%20operativi.html" title="Primi passi operativi"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">iss26 1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GradleIntro25</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2026, Antonio Natali.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

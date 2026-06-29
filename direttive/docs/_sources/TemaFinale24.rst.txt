@@ -1,0 +1,149 @@
+.. role:: red 
+.. role:: blue 
+.. role:: brown 
+.. role:: magenta    
+.. role:: remark
+.. role:: worktodo
+.. role:: slide
+.. role:: slide1
+.. role:: slide2
+.. role:: slide3     
+.. role:: slidekp
+
+.. _domande.html: ../../../../../it.unibo.issLabStart/userDocs/domande.html
+
+=========================================
+TemaFinale24
+=========================================
+
+A company intends to build a :slide3:`WasteIncineratorService` to treat waste by burning it
+and requires a software system service (:blue:`WIS`) that controls a robot (called  :blue:`OpRobot`) in order to move 
+the waste.
+
+----------------------------------------
+The structural part of the building
+----------------------------------------
+
+THe :blue:`Incinerator` is situated within a service area (rectangular, flat) as shown in the following picture:
+ 
+   .. image:: ./_static/img/TF24Annotated.PNG
+      :align: center
+      :width: 80%
+
+Outside the service area, there are:
+
+#.  a :blue:`WasteStorage` container,  devoted to store waste material in the form of Roll Packets (:blue:`RP`). Each :blue:`RP`
+    has a weigth :blue:`WRP` = **50 Kg** (approximately);
+#.  a :blue:`AshStorage` container,  devoted to store the ashes produced by the incineration process. This container can store 
+    (approximately) the ashes of ``3-4`` :blue:`RP`.
+#.  a :blue:`MonitoringDevice`, composed by a a :magenta:`Sonar` and a :magenta:`Led` working on a RaspberryPi.
+
+
+
+The waste can be introduced into the :blue:`Incinerator` through its :brown:`BURNIN` port, while
+the ash produced by the :blue:`Incinerator` can be extracted using the :brown:`BURNOUT` port.
+
+The service area includes:
+
+#. a :brown:`WASTEIN` port, that can be used to enter into the service area the :blue:`RP` of waste.
+#. a :brown:`ASHOUT` port, that can be used to move out of the service area the ash produced by the incineration process.
+
+----------------------------------------
+The behavior of the :blue:`Incinerator`
+----------------------------------------
+
+- The :blue:`Incinerator` is able to perceive a  proper activation command sent by using a wireless (*wifi, bluetotth*) connection.
+- The :blue:`Incinerator` can process one :blue:`RP` at the time. The burning process requires  (approximately) :blue:`BTIME` seconds.
+- At the end of a burning phase, the :blue:`Incinerator` 
+  emits a (acustic, or other) signal that can be perceived by the :blue:`OpRobot` and by the :blue:`WIS`.
+
+
+----------------------------------------
+The behavior of the :blue:`OpRobot`
+----------------------------------------
+
+The company provides a :blue:`DDR robot` (and its own control software), that should be used as the physical actuator for
+the behavior of the :blue:`OpRobot`, that can be listed as follows:
+
+
+#. stay in the :brown:`HOME` location when the is no work to do;
+#. if the :blue:`WasteStorage` container is not empty, the  :blue:`AshStorage` container is not full, and the :blue:`Incinerator` 
+   is not in a burning phase, move to the :brown:`WASTEIN` port. 
+   If one of the conditions is **not true**, wait at :brown:`HOME`, until it becomes *true*.
+#. get a :blue:`RP` from the :blue:`WasteStorage` container;
+#. move to the :blue:`BURNIN` port and deposit the :blue:`RP` into the :blue:`Incinerator`;
+#. move to the :brown:`HOME` location when the :blue:`Incinerator` is in its burning phase;
+#. move to  the :blue:`BURNOUT` port to extract the ash, when the :blue:`Incinerator` has completed a burning phase;
+#. move to the :brown:`ASHOUT` port and deposit the ash into the :blue:`AshStorage` container;
+#. reconsider the point ``2`` (and go back to :brown:`HOME`, if it is the case).
+
+
+----------------------------------------
+The management of Containers
+----------------------------------------
+
+- A new :blue:`RP` is put into the  :blue:`WasteStorage` container by some external agent.
+- The  :blue:`WasteStorage` owns a *weighing device* (:blue:`Scale`) that reports the current weigth af all the 
+  :blue:`RP` currently stored into the container. The container can be considered :brown:`empty` when  the value of the 
+  :blue:`Scale` is (approximately) ``0``.
+- Onother exetrnal agent provides to remove the ash from the :blue:`AshStorage` container. This actions modifies 
+  the value measured by the :magenta:`Sonar` of the :ref:`MonitoringDevice<The behavior of the MonitoringDevice>`.
+
+The :blue:`WIS` can acquire information from the input devices  :blue:`Scale` and :magenta:`Sonar` through 
+software supports that must be properly designed and implemented.
+
+----------------------------------------
+The ServiceStatusGUI
+----------------------------------------
+
+The :blue:`WIS` system must also provide a :slide3:`ServiceStatusGUI` (:blue:`SSGUI`)  that must show:
+
+#. the current state of the :blue:`WasteStorage`, i.e. the number of :blue:`RP` currently stored in it;
+#. the current state of the :blue:`AshStorage`, i.e. an indication of the level of its capacity currently used;
+#. the current state of the :blue:`Incinerator`, i.e. if it burning or not;
+#. the state of the :blue:`OpRobot`, i.e. an indication of its current location in the service area 
+   and of the job that it is doing.
+   
+   
+..   Each :blue:`RP` produces an amount of ash that occupies roughly the ``20%`` of the :blue:`AshStorage` container.
+
+----------------------------------------
+The behavior of the MonitoringDevice
+----------------------------------------
+
+The :magenta:`Sonar` of the :blue:`MonitoringDevice` is used to measures the level of the ash in the :blue:`AshStorage` container,
+by measuring the distance between the top of the ash and the `Sonar` itself.
+When the distance is less than a prefixed value **DLIMT**, the :blue:`AshStorage` container is considered full.
+ 
+The :magenta:`Led` is used as a :blue:`warning device`, according to the following rules:
+
+   - the :magenta:`Led` is **on** when the :blue:`Incinerator` is  burning a :blue:`RP`.
+   - the :magenta:`Led` is **off** when the :blue:`Incinerator` is not burning.
+   - the :magenta:`Led` **blinks** while the :blue:`AshStorage` is full or the :blue:`AshStorage` is empty
+
+ 
+
+ 
+-----------------------------
+Service users story
+-----------------------------
+
+An an user of the :blue:`WIS`, I see that:
+
+
+#.  The :blue:`OpRobot` is somewhere in the service area (initially in the :brown:`HOME` location).
+#.  If the :blue:`WasteStorage` container is not empty, and :blue:`AshStorage` container is not full,  
+    (i.e. the `Led` is not blinking ) and the :blue:`Incinerator` is not burning,
+    the :blue:`OpRobot` moves to the :brown:`WASTEIN` port and  
+    gets a :blue:`RP` from the :blue:`WasteStorage` container.  Otherwise, if returns to :brown:`HOME`, if not already here.
+#.  Fron now on, :ref:`The ServiceStatusGUI` shall properly change  (part of) its content.
+#.  The :blue:`OpRobot` moves to the :brown:`BURNIN` port and deposits the :blue:`RP` into the :blue:`Incinerator`
+    (the :magenta:`Led` is on). 
+#.  While the :blue:`Incinerator` is burning, the :blue:`OpRobot` moves to its :brown:`HOME` port.
+#.  Whan the :blue:`Incinerator` has completed a burning phase, the :magenta:`Led` is off, and the :blue:`OpRobot` moves 
+    to the :brown:`BURNOUT` port, picks up the ash and moves to the :brown:`ASHOUT` port.
+#.  The :blue:`OpRobot` deposits the ash into the :blue:`AshStorage` container and the :magenta:`Sonar` gives a value 
+    less the the previous one.
+#.  The :blue:`OpRobot` restarts from point ``1``.  
+
+ 
