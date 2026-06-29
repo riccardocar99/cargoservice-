@@ -198,7 +198,7 @@ div.imagedesc{
 <div class="body"> 
 <h2>Introduction</h2>
 <p>Questo documento descrive il lavoro svolto nello <strong>Sprint 0</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.
-L'obiettivo principale &egrave; analizzare, formalizzare e delineare il modello concettuale del sistema software che automatizza le operazioni di carico dei container nella stiva di una nave utilizzando un robot a guida differenziale (<code>cargorobot</code>).</p>
+L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e rendere non ambiguo il linguaggio utilizzato per descrivere i requisiti, chiarendo le entit&agrave; in gioco. L'automatizzazione effettiva delle operazioni di carico dei container nella stiva di una nave rappresenta invece il <em>core business</em> del sistema finale, la cui architettura verr&agrave; delineata progressivamente.</p>
  
 <h2>Requirements</h2>
 <div class="remark">
@@ -223,134 +223,57 @@ L'obiettivo principale &egrave; analizzare, formalizzare e delineare il modello 
     <li>the message '<strong>Out of service</strong>' if the <em>sonar sensor</em> measures a distance D &gt; DFREE for at least 3 secs (perhaps a failure of the <em>sonar</em>).</li>
 </ul>
 
-<h2>Requirement analysis</h2>
-<p>Sulla base dei requisiti forniti, costruiamo un primo dizionario per identificare e mappare i termini del dominio su concetti computazionali formali forniti dal metamodello QAK.</p>
+<h2>Requirement analysis | Vocabolario</h2>
+<p>Al fine di abbattere le ambiguit&agrave;, definiamo un dizionario in formato discorsivo in cui esploriamo prima il significato funzionale e di dominio dei termini, per poi mapparli (dove opportuno) sulle logiche computazionali ad attori fornite dal metamodello QAK.</p>
     
-<h3>Identificazione dei Componenti e Dizionario (Nomi)</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Termine del Dominio</th>
-            <th>Natura / Entit&agrave; Logica (QAK)</th>
-            <th>Descrizione Formale</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>cargoservice</strong></td>
-            <td>QActor</td>
-            <td>Attore (componente software attivo) che agisce come orchestratore centrale. Implementa la logica di business.</td>
-        </tr>
-        <tr>
-            <td><strong>cargorobot</strong></td>
-            <td>QActor</td>
-            <td>Attore che modella il robot a guida differenziale. Il sistema non distingue tra robot fisico e simulato (VirtualRobot).</td>
-        </tr>
-        <tr>
-            <td><strong>IOPort Pushbutton</strong></td>
-            <td>Event Emitter (Alieno)</td>
-            <td>Dispositivo di input hardware/software in grado di emettere eventi o richieste verso <code>cargoservice</code>.</td>
-        </tr>
-        <tr>
-            <td><strong>IOPort Display</strong></td>
-            <td>QActor</td>
-            <td>Dispositivo di output che mostra lo stato aggiornato del sistema, controllato da <code>cargoservice</code>.</td>
-        </tr>
-        <tr>
-            <td><strong>Sonar Sensor</strong></td>
-            <td>Event Emitter / QActor</td>
-            <td>Sensore di distanza. Emette eventi di dispatch al superamento di certe soglie (D &gt; DFREE).</td>
-        </tr>
-        <tr>
-            <td><strong>Marker</strong></td>
-            <td>QActor</td>
-            <td>Dispositivo attivo nello <code>slot5</code>. Riceve il comando di marcatura ed emette una notifica di fine lavoro.</td>
-        </tr>
-        <tr>
-            <td><strong>Led</strong></td>
-            <td>QActor</td>
-            <td>Attuatore visivo di output. Riceve comandi per accendersi o lampeggiare a seconda dello stato di <code>cargoservice</code>.</td>
-        </tr>
-        <tr>
-            <td><strong>hold (Stiva)</strong></td>
-            <td>Struttura Dati / POJO</td>
-            <td>Modello logico interno allo stato del <code>cargoservice</code>, suddiviso in <code>slots1-4</code> e <code>slot5</code>.</td>
-        </tr>
-    </tbody>
-</table>
+<h3>IOPort (WebGUI)</h3>
+<p>Nei requisiti si parla di un <em>pushbutton</em> e di un <em>display</em> sull'IOPort. Per scelta del committente, questi due elementi non sono dispositivi fisici separati, bens&igrave; costituiscono un'unica interfaccia utente software, ovvero una <strong>WebGUI</strong>. Questa interfaccia viene hostata sullo stesso dispositivo hardware in cui &egrave; in esecuzione il programma principale (il <code>gradlew run</code> per intenderci). Di conseguenza, l'<strong>IOPort</strong> rappresenta il punto d'accesso software per l'utente, un'interfaccia esterna (o aliena rispetto al modello QAK stretto) capace di inviare comandi HTTP o WebSocket.</p>
 
-<h3>Stati del Sistema ed Azioni Logiche (Verbi)</h3>
-<p>Le azioni logiche sono formalizzate come macro-stati all'interno della FSM (Finite State Machine) dell'attore <code>cargoservice</code>:</p>
+<h3>VirtualRobot e Cargorobot</h3>
+<p>Il sistema deve comandare un robot fisico o simulato. Il committente fornisce gi&agrave; vari ambienti e robot virtuali pronti all'uso (come <em>VirtualRobot26</em>, <em>RobotObj26</em>, <em>RobotService26</em>, <em>RobotSmart26</em>). Dalla documentazione (Protobook) emerge che la scelta pi&ugrave; indicata per questo progetto &egrave; il <strong>RobotSmart26</strong>, poich&eacute; esso non si limita ad accettare comandi base, ma integra nativamente funzionalit&agrave; di movimento autonomo e pianificazione (es. <code>step</code>, <code>doplan</code>), sgravando il sistema dal dover calcolare millimetricamente i percorsi.</p>
+<p>Il <strong>cargorobot</strong>, invece, &egrave; l'<strong>attore logico</strong> che noi svilupperemo. Esso funge da "driver" intelligente: riceve comandi logici di alto livello (es. "vai allo slot 1") e li traduce in istruzioni comprensibili dal <em>RobotSmart26</em> sottostante.</p>
+
+<h3>Cargoservice, Stiva (hold), Sonar e Led</h3>
+<p>Il <strong>cargoservice</strong> &egrave; l'orchestratore dell'intero sistema. Implementa la logica di business pura, valuta le condizioni della stiva (piena/libera) e del sensore, e dirige il <em>cargorobot</em>. Computazionalmente, &egrave; un <strong>attore QAK</strong> reattivo.</p>
+<p>La <strong>stiva (hold)</strong> rappresenta le postazioni fisiche (slot 1-4 per l'immagazzinamento e slot 5 per la marcatura). &Egrave; un'entit&agrave; puramente informativa, il cui stato (libero/occupato) sar&agrave; tracciato internamente alla logica del <em>cargoservice</em> o demandato ad un componente di servizio, modellabile come semplice struttura dati (POJO).</p>
+<p>Il <strong>sonar</strong> &egrave; un dispositivo di rilevazione della distanza. Poich&eacute; deve comunicare attivamente l'evento "fuori servizio" (rilevazione prolungata oltre i 3 secondi), &egrave; un componente reattivo indipendente, modellabile come <strong>attore</strong>.</p>
+<p>Il <strong>led</strong> &egrave; un dispositivo luminoso. Pur essendo passivo per natura, poich&eacute; si suppone distribuito su una macchina hardware a s&eacute; stante insieme al sonar (es. un Raspberry Pi), &egrave; comodo modellarlo come <strong>attore</strong> in ascolto di eventi o comandi.</p>
+
+<h3>Modello delle Interazioni Logiche (Base)</h3>
+<p>Tra le interazioni descritte nei requisiti, individuiamo fin da subito il pattern comunicativo cardine per l'utente:</p>
 <ul>
-    <li><strong>Stato di attesa / validazione</strong>: ricezione della richiesta <code>load</code>, controllo di disponibilit&agrave; (stato <em>engaged</em>) e risposta <code>retrylater</code> o assegnazione dello slot.</li>
-    <li><strong>Stato di posizionamento</strong>: attesa temporizzata (30 secondi). Se scatta il timeout, ritorno a stato iniziale (disimpegno).</li>
-    <li><strong>Sequenza logica coordinata</strong>: interazione con <code>cargorobot</code> per percorrere le tappe: <code>IOPort</code> &rarr; <code>slot5</code> &rarr; <code>slot assegnato</code> &rarr; <code>HOME</code>.</li>
+    <li><strong>Request / Reply</strong> (Interazione sincrona o asincrona che attende risposta): Utilizzata dalla WebGUI (IOPort) verso il <code>cargoservice</code> per la richiesta di scarico (<code>request load : load(X)</code>). A tale richiesta seguir&agrave; necessariamente una <code>reply</code> contenente l'assegnazione dello slot o un messaggio di rifiuto (<code>retrylater</code>).</li>
 </ul>
 
 <h2>Problem analysis</h2>
-<p>Chiariti i requisiti ed individuate le entit&agrave; logiche, analizziamo i problemi architetturali legati alla costruzione del sistema.
-Poich&eacute; il sistema interagisce con diversi dispositivi hardware (e.g. Robot, Sonar, Marker, Led) e software in esecuzione in nodi distribuiti, adottiamo l'infrastruttura QAK per modellare nativamente un sistema distribuito a scambio di messaggi.</p>
-    
-<h3>Modello delle Interazioni Logiche</h3>
-<p>Il coordinamento tra gli attori deve avvenire tramite un preciso scambio di messaggi, modellati secondo la semantica del linguaggio QAK:</p>
+<p>L'infrastruttura QAK ci permette di affrontare le problematiche relative ai sistemi distribuiti. Di seguito esploriamo i nodi fondamentali dell'architettura.</p>
+
+<h3>Abstraction Gap</h3>
+<p>Esiste un chiaro <strong>abstraction gap</strong> tra le operazioni richieste dal <em>core business</em> (es. "carica il container allo slot 2") e i movimenti elementari offerti dal software fornito (il <em>RobotSmart26</em>). Il problema viene risolto introducendo l'entit&agrave; <strong>cargorobot</strong>: esso maschera le complessit&agrave; del robot fisico/virtuale e offre un'interfaccia ad alto livello al <em>cargoservice</em>, colmando cos&igrave; il divario astrattivo.</p>
+
+<h3>Definizione dei Contesti (Nodi di Deployment)</h3>
+<p>Poich&eacute; abbiamo pi&ugrave; componenti software che girano su macchine e ambiti differenti, l'architettura logica richiede la definizione di almeno tre <strong>contesti</strong> QAK separati:</p>
 <ul>
-    <li><strong>Request / Reply</strong> (Interazione sincrona/asincrona bidirezionale): Utilizzata dal Cliente verso il <code>cargoservice</code> per la richiesta di scarico (<code>request load : load(X)</code> e <code>reply load_ans : load_ans(SLOT)</code>). Anche l'interazione con il robot per lo spostamento prevede una Response per notificare l'avvenuto arrivo a destinazione.</li>
-    <li><strong>Dispatch</strong> (Messaggio asincrono "fire-and-forget" destinato ad un preciso ricevente): Utilizzato dal <code>cargoservice</code> per inviare comandi fire-and-forget al <code>Led</code>, al <code>Display</code> o al <code>Marker</code>.</li>
-    <li><strong>Event</strong> (Messaggio emesso verso tutti gli interessati / publish-subscribe): Il Sonar emetter&agrave; eventi per notificare all'intero sistema (o al <code>cargoservice</code> in ascolto) le variazioni di distanza o anomalie prolungate (timeout &gt; 3s).</li>
+    <li><code>ctx_cargoservice</code>: Il contesto principale hostato sul PC. Questo nodo conterr&agrave; le entit&agrave; decisionali e orchestranti, in particolare l'attore <strong>cargoservice</strong> e l'attore <strong>cargorobot</strong>. Inoltre, su questa stessa macchina hardware verr&agrave; esposta la WebGUI.</li>
+    <li><code>ctx_gui</code>: Il contesto logico che racchiude l'interfaccia utente (IOPort). Pur risiedendo sullo stesso hardware del <em>cargoservice</em>, la WebGUI mantiene un'identit&agrave; logica separata in grado di comunicare via HTTP/WebSocket/CoAP.</li>
+    <li><code>ctx_picow</code>: Un contesto remoto (es. un microcontrollore Raspberry Pi Pico) in cui sono connessi fisicamente i dispositivi di I/O. All'interno di questo contesto posizioneremo le entit&agrave; <strong>sonar</strong> e <strong>led</strong>, modellandole come attori capaci di ricevere e scambiare messaggi sulla rete con il <em>cargoservice</em>.</li>
 </ul>
 
-<h3>Architettura Logica Concettuale</h3>
-<div class="mermaid">
-graph TD
-    Customer[Cliente / Pulsante] -- Richiesta: load --> CS[cargoservice]
-    Sonar[Sensore Sonar] -- Dispatch: distance(D) --> CS
-    CS -- Richiesta: move_to --> Robot[cargorobot / virtualRobot]
-    CS -- Dispatch: blink / turn_off --> Led[Led Blinker]
-    CS -- Dispatch: start_marking --> Marker[Marker Device]
-    Marker -- Dispatch: marking_done --> CS
-    CS -- Stato del sistema --> Display[IOPort Display]
-    
-    style CS fill:#b2c0ff,stroke:#333,stroke-width:2px
-    style Robot fill:#e1f4d7,stroke:#333,stroke-width:1px
-    style Sonar fill:#fff1f2,stroke:#333,stroke-width:1px
-    style Display fill:#fff7ed,stroke:#333,stroke-width:1px
+<div class="remark">
+    <p><em>Per l'analisi di dettaglio delle interazioni, le problematiche legate allo stato del robot, alla gestione del timeout e la pianificazione approfondita dell'architettura si rimanda allo <strong>Sprint 1</strong>.</em></p>
 </div>
 
 <h2>Test plans</h2>
-<p>Al fine di verificare preventivamente che il modello logico progettato e il codice sviluppato rispettino i requisiti forniti dal committente, definiamo i seguenti piani di testing funzionale, che andranno automatizzati (e.g. tramite JUnit) per un corretto Continuous Testing.</p> 
-<div class="req">
-    <b>Test Funzionale 1: Flusso Normale (Happy Path)</b><br>
-    <i>Obiettivo:</i> Verificare il core-business a condizioni ideali.<br>
-    <i>Stato Iniziale:</i> Stiva vuota. Robot in HOME. Sonar funzionante.<br>
-    <i>Azione:</i> Si invia una Request <code>load</code>. Si attende l'assegnazione dello slot, si simula la presenza del container. Si verifica il corretto iter di dispacciamento del robot (HOME &rarr; IOPort &rarr; slot5 &rarr; slot assegnato &rarr; HOME).
-</div>
-<div class="req">
-    <b>Test Funzionale 2: Rifiuto Stiva Piena</b><br>
-    <i>Obiettivo:</i> Assicurare che non venga mai superata la capienza massima (nessun over-booking).<br>
-    <i>Stato Iniziale:</i> Gli slot 1-4 sono impostati come occupati.<br>
-    <i>Azione:</i> Si invia una Request <code>load</code>. Si verifica che il sistema risponda con l'appropriato messaggio di rifiuto della richiesta.
-</div>
-<div class="req">
-    <b>Test Funzionale 3: Gestione Timeout Cliente</b><br>
-    <i>Obiettivo:</i> Testare la robustezza temporale (timeout 30s) per l'inserimento del container.<br>
-    <i>Stato Iniziale:</i> Stiva vuota. Robot in HOME.<br>
-    <i>Azione:</i> Si invia una Request <code>load</code>. Il test non invia conferme di posizionamento del container per pi&ugrave; di 30 secondi. Si verifica che il sistema torni allo stato disimpegnato liberando lo slot temporaneamente riservato.
-</div>
-<div class="req">
-    <b>Test Funzionale 4: Guasto al Sonar (Fuori Servizio)</b><br>
-    <i>Obiettivo:</i> Testare la gestione dell'evento di errore inviato dal sonar (D &gt; DFREE per 3s).<br>
-    <i>Azione:</i> Si forza l'invio prolungato di eventi anomali dal sonar. Si verifica che il <code>cargoservice</code> transiti nello stato di "Out of service" e risponda con <code>retrylater</code> a qualsiasi nuova request <code>load</code>.
-</div>
+<p><em>In accordo con gli obiettivi dello Sprint 0, la definizione formale dei piani di test viene rimandata allo <strong>Sprint 1</strong>, dove le interazioni tra i componenti saranno sufficientemente consolidate.</em></p> 
 
 <h2>Project</h2> 
-<p>L'architettura logica QAK sviluppata in questa fase preliminare &egrave; disponibile in <a href="../src/cargoservice.qak">cargoservice.qak</a>.</p>
-<p><strong>Piano iniziale di lavoro:</strong> A partire dal modello QAK iniziale elaborato in questo Sprint 0, nello Sprint 1 il team proceder&agrave; all'implementazione e al raffinamento della logica centrale dell'attore <strong>cargoservice</strong>. Contestualmente si realizzeranno e integreranno i test automatizzati JUnit precedentemente definiti, per garantire la validazione dell'avanzamento.</p>
+<p><em>(La definizione del piano di progetto operativo e i file `.qak` preliminari verranno affrontati nello Sprint 1)</em></p>
 
 <h2>Testing</h2> 
-<p><em>(I test automatizzati JUnit saranno implementati nel prossimo sprint come definito nei Test Plans)</em></p>
+<p><em>(Da compilare negli sprint successivi)</em></p>
 
 <h2>Deployment</h2> 
-<p><em>(Sezione da compilare al termine degli sprint di sviluppo)</em></p>
+<p><em>(Da compilare al termine del progetto)</em></p>
 
 <h2>Maintenance</h2> 
 <p><em>(N/A per Sprint 0)</em></p>
