@@ -224,26 +224,33 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 </ul>
 
 <h2>Requirement analysis | Vocabolario</h2>
-<p>Al fine di abbattere le ambiguit&agrave;, definiamo un dizionario in formato discorsivo in cui esploriamo prima il significato funzionale e di dominio dei termini, per poi mapparli (dove opportuno) sulle logiche computazionali ad attori fornite dal metamodello QAK.</p>
+<p>Al fine di abbattere le ambiguit&agrave;, definiamo un dizionario in formato discorsivo in cui esploriamo prima il significato funzionale e di dominio dei termini, per poi mapparli (dove opportuno) sulle logiche computazionali ad attori.</p>
+<div class="remark">
+    <p><strong>Nota Metodologica: Il Metamodello QAK</strong><br>
+    Per la modellazione formale e l'implementazione adotteremo il linguaggio <strong>QAK</strong>. Un <em>QActor</em> &egrave; un'entit&agrave; computazionale autonoma, reattiva e message-driven, nativamente predisposta per operare in sistemi distribuiti. Da qui in avanti, quando identificheremo un componente attivo del dominio, lo designeremo esplicitamente come <strong>QActor</strong>, assoggettandolo alla rigorosa semantica di tale linguaggio.</p>
+</div>
     
 <h3>IOPort (WebGUI)</h3>
-<p>Nei requisiti si parla di un <em>pushbutton</em> e di un <em>display</em> sull'IOPort. Per scelta del committente, questi due elementi non sono dispositivi fisici separati, bens&igrave; costituiscono un'unica interfaccia utente software, ovvero una <strong>WebGUI</strong>. Questa interfaccia viene hostata sullo stesso dispositivo hardware in cui &egrave; in esecuzione il programma principale (il <code>gradlew run</code> per intenderci). Di conseguenza, l'<strong>IOPort</strong> rappresenta il punto d'accesso software per l'utente, un'interfaccia esterna (o aliena rispetto al modello QAK stretto) capace di inviare comandi HTTP o WebSocket.</p>
+<p>Nei requisiti si parla di un <em>pushbutton</em> e di un <em>display</em> sull'IOPort. Essendo una scelta progettuale approvata dal committente, questi due elementi non sono trattati come dispositivi fisici separati, bens&igrave; costituiscono un'unica interfaccia utente software, ovvero una <strong>WebGUI</strong>. Tale interfaccia sar&agrave; ospitata sul medesimo nodo hardware deputato all'esecuzione del servizio principale. Di conseguenza, l'<strong>IOPort</strong> rappresenta il punto d'accesso software per l'utente, un'interfaccia esterna capace di dialogare tramite i comuni protocolli di rete (es. HTTP o WebSocket).</p>
 
 <h3>VirtualRobot e Cargorobot</h3>
-<p>Il sistema deve comandare un robot fisico o simulato. Il committente fornisce gi&agrave; vari ambienti e robot virtuali pronti all'uso (come <em>VirtualRobot26</em>, <em>RobotObj26</em>, <em>RobotService26</em>, <em>RobotSmart26</em>). Dalla documentazione (Protobook) emerge che la scelta pi&ugrave; indicata per questo progetto &egrave; il <strong>RobotSmart26</strong>, poich&eacute; esso non si limita ad accettare comandi base, ma integra nativamente funzionalit&agrave; di movimento autonomo e pianificazione (es. <code>step</code>, <code>doplan</code>), sgravando il sistema dal dover calcolare millimetricamente i percorsi.</p>
-<p>Il <strong>cargorobot</strong>, invece, &egrave; l'<strong>attore logico</strong> che noi svilupperemo. Esso funge da "driver" intelligente: riceve comandi logici di alto livello (es. "vai allo slot 1") e li traduce in istruzioni comprensibili dal <em>RobotSmart26</em> sottostante.</p>
+<p>Il sistema deve pilotare un robot fisico o simulato. Considerando i molteplici ambienti e robot virtuali pre-forniti a disposizione per la simulazione e il collaudo (VirtualRobot26, RobotObj26, RobotService26, RobotSmart26), l'analisi ha decretato l'adozione di <strong>RobotSmart26</strong> come la scelta architetturalmente ottimale per questo progetto. Questa decisione scaturisce dal fatto che RobotSmart26 non si limita ad eseguire comandi cinematici di base, ma integra nativamente funzionalit&agrave; di movimento autonomo e pianificazione dei percorsi, sollevando l'orchestratore dal gravoso onere del calcolo millimetrico delle traiettorie.</p>
+<p>&Egrave; fondamentale chiarire che il robot virtuale (in questo caso RobotSmart26) &egrave; un'<strong>entit&agrave; esterna e separata</strong> rispetto al nostro software. Il <strong>cargorobot</strong>, invece, &egrave; il <strong>QActor logico interno</strong> che noi svilupperemo. Esso funge da "driver" intelligente: riceve comandi logici di alto livello (es. "vai allo slot 1") e li traduce in istruzioni comprensibili dal <em>RobotSmart26</em> sottostante.</p>
 
 <h3>Cargoservice, Stiva (hold), Sonar e Led</h3>
-<p>Il <strong>cargoservice</strong> &egrave; l'orchestratore dell'intero sistema. Implementa la logica di business pura, valuta le condizioni della stiva (piena/libera) e del sensore, e dirige il <em>cargorobot</em>. Computazionalmente, &egrave; un <strong>attore QAK</strong> reattivo.</p>
+<p>Il <strong>cargoservice</strong> &egrave; l'orchestratore dell'intero sistema. Implementa la logica di business pura, valuta le condizioni della stiva (piena/libera) e del sensore, e dirige il <em>cargorobot</em>. Computazionalmente, &egrave; un <strong>QActor</strong> reattivo centrale.</p>
 <p>La <strong>stiva (hold)</strong> rappresenta le postazioni fisiche (slot 1-4 per l'immagazzinamento e slot 5 per la marcatura). &Egrave; un'entit&agrave; puramente informativa, il cui stato (libero/occupato) sar&agrave; tracciato internamente alla logica del <em>cargoservice</em> o demandato ad un componente di servizio, modellabile come semplice struttura dati (POJO).</p>
-<p>Il <strong>sonar</strong> &egrave; un dispositivo di rilevazione della distanza. Poich&eacute; deve comunicare attivamente l'evento "fuori servizio" (rilevazione prolungata oltre i 3 secondi), &egrave; un componente reattivo indipendente, modellabile come <strong>attore</strong>.</p>
-<p>Il <strong>led</strong> &egrave; un dispositivo luminoso. Pur essendo passivo per natura, poich&eacute; si suppone distribuito su una macchina hardware a s&eacute; stante insieme al sonar (es. un Raspberry Pi), &egrave; comodo modellarlo come <strong>attore</strong> in ascolto di eventi o comandi.</p>
+<p>Il <strong>sonar</strong> &egrave; un dispositivo di rilevazione della distanza. Poich&eacute; deve comunicare attivamente l'evento "fuori servizio" (rilevazione prolungata oltre i 3 secondi), &egrave; un componente reattivo indipendente, modellabile formalmente come <strong>QActor</strong>.</p>
+<p>Il <strong>led</strong> &egrave; un dispositivo luminoso. Pur essendo passivo per natura, poich&eacute; si suppone distribuito su una macchina hardware a s&eacute; stante insieme al sonar (es. un Raspberry Pi), &egrave; opportuno modellarlo come <strong>QActor</strong> in ascolto di eventi o comandi.</p>
 
-<h3>Modello delle Interazioni Logiche (Base)</h3>
+<h3>Modello delle Interazioni Logiche (Base) e Modello Eseguibile</h3>
 <p>Tra le interazioni descritte nei requisiti, individuiamo fin da subito il pattern comunicativo cardine per l'utente:</p>
 <ul>
     <li><strong>Request / Reply</strong> (Interazione sincrona o asincrona che attende risposta): Utilizzata dalla WebGUI (IOPort) verso il <code>cargoservice</code> per la richiesta di scarico (<code>request load : load(X)</code>). A tale richiesta seguir&agrave; necessariamente una <code>reply</code> contenente l'assegnazione dello slot o un messaggio di rifiuto (<code>retrylater</code>).</li>
 </ul>
+<div class="remark">
+    <p>Il risultato concreto di questa fase di analisi &egrave; la definizione di un primo <strong>modello eseguibile dell'architettura desunta dai requisiti</strong>. Il file QAK preliminare (es. <code>cargoservice_req.qak</code>) modeller&agrave; esclusivamente i componenti qui descritti e i loro scambi di messaggi base, offrendo una rappresentazione logicamente validabile prima ancora di scendere nei dettagli architetturali.</p>
+</div>
 
 <h2>Problem analysis</h2>
 <p>L'infrastruttura QAK ci permette di affrontare le problematiche relative ai sistemi distribuiti. Di seguito esploriamo i nodi fondamentali dell'architettura.</p>
@@ -260,14 +267,38 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 </ul>
 
 <div class="remark">
-    <p><em>Per l'analisi di dettaglio delle interazioni, le problematiche legate allo stato del robot, alla gestione del timeout e la pianificazione approfondita dell'architettura si rimanda allo <strong>Sprint 1</strong>.</em></p>
+    <p>L'esito di questa fase &egrave; un'<strong>architettura logica del sistema</strong> definita ed eseguibile. Per l'analisi di dettaglio delle singole interazioni interne, la risoluzione delle problematiche legate allo stato del robot e la gestione dei timeout operativi, si rimanda all'implementazione formale dello <strong>Sprint 1</strong>.</p>
 </div>
 
 <h2>Test plans</h2>
-<p><em>In accordo con gli obiettivi dello Sprint 0, la definizione formale dei piani di test viene rimandata allo <strong>Sprint 1</strong>, dove le interazioni tra i componenti saranno sufficientemente consolidate.</em></p> 
+<p>Coerentemente con la teoria dello Sprint 0, viene qui definito un primo <strong>TestPlan di Functional Tests</strong>. Questi test mirano a validare logicamente il comportamento del sistema desunto strettamente dai requisiti base, verificandone le macro-risposte (Happy Path e scenari di fallimento).</p>
+<div class="req">
+    <b>Test Funzionale 1: Carico Rifiutato (Stiva Piena)</b><br>
+    <i>Stato:</i> Il <code>cargoservice</code> registra che gli slot da 1 a 4 sono occupati.<br>
+    <i>Azione:</i> Invio richiesta <code>load</code>.<br>
+    <i>Risultato Atteso:</i> Il sistema risponde immediatamente con il messaggio <code>retrylater</code> senza attivare la movimentazione robotica.
+</div>
+<div class="req">
+    <b>Test Funzionale 2: Carico Rifiutato (Fuori Servizio)</b><br>
+    <i>Stato:</i> Il <code>sonar</code> ha emesso un evento di anomalia persistente prolungata.<br>
+    <i>Azione:</i> Invio richiesta <code>load</code>.<br>
+    <i>Risultato Atteso:</i> Il sistema risponde con <code>retrylater</code> poich&eacute; si trova nello stato di "Out of service".
+</div>
+<div class="req">
+    <b>Test Funzionale 3: Accettazione Carico (Happy Path)</b><br>
+    <i>Stato:</i> Stiva parzialmente vuota e sistema pienamente funzionante.<br>
+    <i>Azione:</i> Invio richiesta <code>load</code>.<br>
+    <i>Risultato Atteso:</i> Il sistema accetta la richiesta prenotando uno slot e fa lampeggiare il Led di segnalazione (sistema impegnato).
+</div> 
 
 <h2>Project</h2> 
-<p><em>(La definizione del piano di progetto operativo e i file `.qak` preliminari verranno affrontati nello Sprint 1)</em></p>
+<p>L'architettura logica QAK sviluppata e il corrispettivo TestPlan pongono le basi per l'avanzamento dei lavori. Di seguito la pianificazione strategica e operativa.</p>
+<p><strong>Piano di Lavoro e Definizione dello Sprint 1:</strong></p>
+<ul>
+    <li>Costruzione del primo prototipo eseguibile per il <code>cargoservice</code> e implementazione automatizzata dei Test Funzionali base individuati (es. via JUnit).</li>
+    <li>Raffinamento del driver logico (<code>cargorobot</code>) per superare completamente l'Abstraction Gap, interfacciandosi con il <em>RobotSmart26</em> in ambiente di collaudo e gestendo le eccezioni di movimento.</li>
+    <li>Definizione dei modelli di comunicazione via rete (HTTP/CoAP) tra la WebGUI (<code>ctx_gui</code>) e l'orchestratore centrale.</li>
+</ul>
 
 <h2>Testing</h2> 
 <p><em>(Da compilare negli sprint successivi)</em></p>
