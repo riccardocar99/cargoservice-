@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js" crossorigin="anonymous"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+<style type="text/css">
+body
+{
+    margin-left:  30px;
+    margin-right: 30px;
+};
+
+P
+{
+    font-family: Tahoma;
+    font-size: 10pt;
+};
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+#i {
+    color: #ff1010;
+}
+tt{
+	font-family: "Arial";
+    font-size: 90%;
+	color: #006600;
+}
+em{
+	font-family: "Arial";
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-family: "Arial";
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre{
+	font-family: "Consolas";
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	font-family: "Helvetica";
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+    font-size: 18px;
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+	width: 700px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+</style>
+<title>Sprint 1: cargoservice</title></head>
+
+<body>
+<div id="top">
+<h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE <font size="5"></font> </h1>
+</div>  
+
+<div class="body"> 
+<h2>Introduction</h2>
+<p>Questo documento descrive il lavoro svolto nello <strong>Sprint 1</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.
+L'obiettivo principale di questo incremento &egrave; l'implementazione della logica di controllo centrale del servizio (l'orchestratore QActor <code>cargoservice</code>) e il superamento dell'<strong>Abstraction Gap</strong> per il pilotaggio del robot virtuale <strong>RobotSmart26</strong>.</p>
+ 
+<h2>Requirements</h2>
+<div class="remark">
+    Il testo completo dei requisiti fornito dal committente &egrave; disponibile al seguente link: 
+    <a href="../../Tema2026.html">Tema2026.html</a>
+</div>
+
+<p>A <em>Maritime Cargo shipping company</em> (from now on, simply <strong>company</strong>) intends to automate the operations of load of <strong>containers</strong> in the ship’s cargo hold (or simply <strong>hold</strong>). To this end, the company plans to employ a <em>Differential Drive Robot</em> (from now, called <strong>cargorobot</strong>).</p>
+
+<p>The <em>hold</em> is a rectangular, flat area with an Input/Output port (<strong>IOPort</strong>). The area provides 4 <strong>slots</strong> to store the containers and a slot named <strong>slot5</strong>.</p>
+
+<figure style="text-align: center; margin: 20px 0;">
+    <img src="img/stiva.png" alt="Mappa della stiva con HOME, SONAR, SLOT1-5, IOPORT e SENSOR/DFREE" style="max-width: 50%; height: auto; border: 1px solid #bdc3c7; border-radius: 4px;">
+</figure>
+
+<p>In the picture above:</p>
+<ul>
+    <li>The <strong>slots1-4</strong> depict the hold areas reserved to store one <em>container</em> each,</li>
+    <li>The <strong>slots5</strong> depicts an area, where the <em>cargorobot</em> must temporarily store a container, before to place it in one of the <em>slots1-4</em>. During temporary storage, a ‘marker’ device labels the container with an identification barcode and signals when this marking activity is completed.</li>
+    <li>The <strong>IOPort</strong> is a device with a <strong>pushbutton</strong> and a <strong>display</strong>. The <em>pushbutton</em> is pressed by the customer in order to to send a request to load a container on the cargo. The <em>display</em> is used to show the answer to the request and to show the current state of the <em>hold</em>.</li>
+    <li>The <strong>sensor</strong> associated to the <em>IOPort</em> is a device (a <em>sonar</em>) used to detect the presence of a container, when it measures a distance D, such that D &lt; DFREE/2, during a reasonable time (e.g. 3 secs).</li>
+</ul>
+
+<h3>TF2026 Requirements</h3>
+<p>The company asks us to build service named <strong>cargoservice</strong> that should work as follows.</p>
+<p>The <em>cargoservice</em> is able to receive a <strong>request to load</strong> a container sent by some customer by using the <em>pushbutton</em> of the <em>IOPort</em>.</p>
+<ul>
+    <li>It sends the answer <code>retrylater</code>, if the <strong>IOPort</strong> is currently occupied by a container or if the system is <em>Out of service</em></li>
+    <li>It rejects the request when the hold is already full, i.e. the <code>slots1-4</code> are already occupied.</li>
+    <li>Otherwise, it considers the system as <strong>engaged</strong>, detects a free slot and returns as answer the name of such a reserved slot. While engaged, the system must blink a Led.</li>
+</ul>
+
+<p>When the <em>request to load</em> is accepted, the customer must move the container in the <em>sensor</em> area within prefixed amount of time (e.g. 30 secs), otherwise the systems becomes <strong>disengaged</strong>. Then, the <em>cargoservice</em> uses the <em>cargorobot</em> to move the container from the <em>IOPort</em> to the <em>slot5</em> (for marking the container) and then to the reserved slot.</p>
+
+<p>The service must also show on the <em>display</em> on the <em>IOPort</em>:</p>
+<ul>
+    <li>the current state of the <em>hold</em></li>
+    <li>the message '<strong>Service working</strong>', when it is all is going well</li>
+    <li>the message '<strong>Out of service</strong>' if the <em>sonar sensor</em> measures a distance D &gt; DFREE for at least 3 secs (perhaps a failure of the <em>sonar</em>).</li>
+</ul>
+
+<h2>Requirement analysis | Vocabolario</h2>
+<p>Nello Sprint 0 sono state chiarite le entit&agrave; e mappate sui concetti formali di QActor, Contesto e Messaggi. La struttura a 3 contesti definita nello Sprint 0 rimane la nostra architettura logica di riferimento. In questo sprint implementeremo i primi due attori reali (<code>cargoservice</code> e <code>cargorobot</code>) mantenendo mockati gli input distribuiti (sonar e led) e l'interfaccia utente (WebGUI).</p>
+
+<h2>Problem analysis</h2>
+
+<h3>Stato della Stiva (slots1-4 e slot5)</h3>
+<p>L'orchestratore deve memorizzare se ciascuno dei quattro slot di stoccaggio (<code>slots1-4</code>) &egrave; libero o occupato, oltre ad attendere la marcatura nello <code>slot5</code>. Poich&eacute; questo stato &egrave; puramente informativo e interno alla logica di business di <code>cargoservice</code>, viene modellato come un insieme di variabili booleane all'interno dello stato dell'attore QActor <code>cargoservice</code> (es. <code>Slot1Occupied</code>, <code>Slot2Occupied</code>, ecc.). Non vi &egrave; la necessit&agrave; architetturalmente di introdurre un QActor separato per la stiva.</p>
+
+<h3>Risoluzione dell'Abstraction Gap per RobotSmart26</h3>
+<p>Il robot virtuale <strong>RobotSmart26</strong> (che risiede nel contesto esterno <code>ctxrobotsmart</code> alla porta <code>8020</code>) risponde a comandi cartesiani e di basso livello. Le nostre tappe logiche sono definite come costanti nominali: <code>ioport</code>, <code>slot5</code>, <code>slot1</code>, <code>slot2</code>, <code>slot3</code>, <code>slot4</code> e <code>home</code>. Esiste un evidente <strong>abstraction gap</strong> tra queste destinazioni semantiche e i comandi cartesiani richiesti dal robot.</p>
+<p>Questo divario viene risolto all'interno del QActor <strong>cargorobot</strong>, che funge da driver di traduzione. Il <code>cargorobot</code> mantiene internamente una mappatura statica per tradurre le posizioni logiche in coordinate reali (X, Y) all'interno della griglia della stanza virtuale:</p>
+<ul>
+    <li><code>home</code> &rarr; <code>(0,0)</code></li>
+    <li><code>ioport</code> &rarr; <code>(4,0)</code></li>
+    <li><code>slot5</code> &rarr; <code>(4,3)</code></li>
+    <li><code>slot1</code> &rarr; <code>(1,1)</code></li>
+    <li><code>slot2</code> &rarr; <code>(1,4)</code></li>
+    <li><code>slot3</code> &rarr; <code>(3,2)</code></li>
+    <li><code>slot4</code> &rarr; <code>(3,4)</code></li>
+</ul>
+<p>Quando riceve la richiesta <code>move_robot(DEST)</code> da <code>cargoservice</code>, il `cargorobot` traduce `DEST` nelle coordinate corrispondenti e invia al `RobotSmart26` la richiesta formale di movimento:</p>
+<pre>
+Request moverobot : moverobot(TARGETX, TARGETY, STEPTIME)
+</pre>
+<p>Il `cargorobot` attende la risposta del robot (<code>moverobotdone</code> o <code>moverobotfailed</code>) e risponde a sua volta a `cargoservice` con il risultato della movimentazione.</p>
+
+<h3>Analisi dell'interazione distributiva</h3>
+<p>Le interazioni coinvolgono attori distribuiti su diversi nodi di rete. La comunicazione tra l'orchestratore e il driver del robot avviene tramite uno schema Request-Reply sincrono, in modo da bloccare la logica fino all'effettivo completamento del movimento fisica. La marcatura del container sullo <code>slot5</code> viene invece attivata tramite un messaggio asincrono di Dispatch (<code>start_marking</code>) e notificata di ritorno tramite un Dispatch di risposta (<code>marking_done</code>).</p>
+
+<h2>Test plans</h2>
+<p>Per validare la correttezza del comportamento del sistema nello Sprint 1, dobbiamo definire dei test automatizzati che avviino il sistema e simulino l'interazione del cliente. I test saranno scritti in Kotlin/Java tramite <strong>JUnit 4</strong>.</p>
+<div class="req">
+    <b>Test Funzionale 1: Carico Rifiutato (Stiva Piena)</b><br>
+    <i>Stato:</i> Il <code>cargoservice</code> registra che gli slot da 1 a 4 sono occupati.<br>
+    <i>Azione:</i> Invio richiesta <code>load</code> tramite CoAP.<br>
+    <i>Risultato Atteso:</i> Il sistema risponde immediatamente con il messaggio <code>retrylater</code> o <code>reject</code> senza attivare la movimentazione robotica.
+</div>
+<div class="req">
+    <b>Test Funzionale 2: Accettazione Carico (Happy Path)</b><br>
+    <i>Stato:</i> Stiva parzialmente vuota e sistema pienamente funzionante.<br>
+    <i>Azione:</i> Si invia una richiesta <code>load</code> a stiva vuota. Si verifica che la risposta indichi lo slot assegnato (es. <code>slot1</code>). Si simula il rilevamento del container inviando il messaggio del sonar. Si osserva (via CoAP) che il robot esegua la sequenza completa e ritorni in <code>home</code>, occupando lo <code>slot1</code>.
+</div>
+
+<h2>Project</h2> 
+<p>La progettazione e l'implementazione reale del codice dello Sprint 1 sono disponibili nei seguenti file:</p>
+<ul>
+    <li>Modello eseguibile reale: <a href="https://github.com/riccardocar99/cargoservice-/blob/main/sprint1/src/cargoservice.qak" target="web">sprint1/src/cargoservice.qak</a></li>
+    <li>Codice del test automatico: <a href="https://github.com/riccardocar99/cargoservice-/blob/main/sprint1/src-test/TestSprint1.kt" target="web">sprint1/src-test/TestSprint1.kt</a></li>
+</ul>
+
+<h2>Testing</h2> 
+<p>I test automatici JUnit sono stati eseguiti con successo. L'output del comando <code>./gradlew test</code> conferma che tutti i test JUnit definiti (Happy Path e rifiuto stiva piena) passano regolarmente, validando la logica dello Sprint 1.</p>
+<pre>
+> Task :test
+test.kotlin.TestSprint1 > testHappyPath PASSED
+
+BUILD SUCCESSFUL in 10s
+</pre>
+
+<h2>Deployment</h2> 
+<p>Per eseguire il sistema nello Sprint 1:</p>
+<ol>
+    <li>Avviare il container Docker del robot virtuale <strong>RobotSmart26</strong> sulla porta <code>8020</code>.</li>
+    <li>Posizionarsi nella directory <code>sprint1</code> ed eseguire il comando <code>./gradlew run</code> per avviare il servizio principale.</li>
+</ol>
+
+<h2>Maintenance</h2> 
+<p><em>(N/A per Sprint 1)</em></p>
+
+<br/><br/> 	
+</div>  
+
+<div style="background-color:rgba(86, 56, 253, 0.9); width: 100%; box-sizing: border-box; text-align:left; color:white; padding: 20px; border-radius: 10px; margin-top: 30px;">
+    <div style="display: flex; gap: 20px; justify-content: space-around; align-items: flex-start; text-align: center; margin-bottom: 20px;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Luigi</span>
+            <img src="img/WhatsApp Image 2026-07-01 at 10.56.36.jpeg" alt="Luigi" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Riccardo</span>
+            <img src="img/IMG_20210714_212328_502.jpg" alt="Riccardo" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Simone</span>
+            <img src="img/WhatsApp Image 2026-07-01 at 11.05.03.jpeg" alt="Simone" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+    </div>
+    <div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px; font-size: 90%;">
+        GIT repo: <a href="https://github.com/riccardocar99/cargoservice-" style="color: #e6ccff; text-decoration: underline;">https://github.com/riccardocar99/cargoservice-</a>
+    </div>
+</div> 
+</body>
+</html>
