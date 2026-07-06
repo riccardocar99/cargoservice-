@@ -203,7 +203,7 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 <h2>Requirements</h2>
 <div class="remark">
     Il testo completo dei requisiti fornito dal committente &egrave; disponibile al seguente link: 
-    <a href="../Tema2026.html">Tema2026.html</a>
+    <a href="../../Tema2026.html">Tema2026.html</a>
 </div>
 <p>The company asks us to build service named <strong>cargoservice</strong> that should work as follows.</p>
 
@@ -226,7 +226,7 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 <h2>Requirement analysis | Vocabolario</h2>
 <p>Al fine di abbattere le ambiguit&agrave;, definiamo un dizionario in formato discorsivo in cui esploriamo prima il significato funzionale e di dominio dei termini, per poi mapparli (dove opportuno) sulle logiche computazionali ad attori.</p>
 <div class="remark">
-    <p><strong>Nota Metodologica: Il Metamodello QAK</strong><br>
+    <p><strong>Nota Metodologica: Il Metamodello QAK</strong> (<a href="https://anatali.github.io/issLab2026/_static/docs/Protobook.pdf#chapter.17" target="web">Descrizione QAK</a>)<br>
     Per la modellazione formale e l'implementazione adotteremo il linguaggio <strong>QAK</strong>. Un <em>QActor</em> &egrave; un'entit&agrave; computazionale autonoma, reattiva e message-driven, nativamente predisposta per operare in sistemi distribuiti. Da qui in avanti, quando identificheremo un componente attivo del dominio, lo designeremo esplicitamente come <strong>QActor</strong>, assoggettandolo alla rigorosa semantica di tale linguaggio.</p>
 </div>
     
@@ -249,7 +249,7 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
     <li><strong>Request / Reply</strong> (Interazione sincrona o asincrona che attende risposta): Utilizzata dalla WebGUI (IOPort) verso il <code>cargoservice</code> per la richiesta di scarico (<code>request load : load(X)</code>). A tale richiesta seguir&agrave; necessariamente una <code>reply</code> contenente l'assegnazione dello slot o un messaggio di rifiuto (<code>retrylater</code>).</li>
 </ul>
 <div class="remark">
-    <p>Il risultato concreto di questa fase di analisi &egrave; la definizione di un primo <strong>modello eseguibile dell'architettura desunta dai requisiti</strong>. Il file QAK preliminare (es. <code>cargoservice_req.qak</code>) modeller&agrave; esclusivamente i componenti qui descritti e i loro scambi di messaggi base, offrendo una rappresentazione logicamente validabile prima ancora di scendere nei dettagli architetturali.</p>
+    <p>Il risultato concreto di questa fase di analisi &egrave; la definizione di un primo <strong>modello eseguibile dell'architettura desunta dai requisiti</strong>. Il file QAK preliminare (disponibile in <a href="https://github.com/riccardocar99/cargoservice-/blob/main/sprint0/src/cargoservice.qak" target="web">cargoservice.qak</a>) modeller&agrave; esclusivamente i componenti qui descritti e i loro scambi di messaggi base, offrendo una rappresentazione logicamente validabile prima ancora di scendere nei dettagli architetturali.</p>
 </div>
 
 <h2>Problem analysis</h2>
@@ -279,24 +279,18 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
     <i>Risultato Atteso:</i> Il sistema risponde immediatamente con il messaggio <code>retrylater</code> senza attivare la movimentazione robotica.
 </div>
 <div class="req">
-    <b>Test Funzionale 2: Carico Rifiutato (Fuori Servizio)</b><br>
-    <i>Stato:</i> Il <code>sonar</code> ha emesso un evento di anomalia persistente prolungata.<br>
-    <i>Azione:</i> Invio richiesta <code>load</code>.<br>
-    <i>Risultato Atteso:</i> Il sistema risponde con <code>retrylater</code> poich&eacute; si trova nello stato di "Out of service".
-</div>
-<div class="req">
-    <b>Test Funzionale 3: Accettazione Carico (Happy Path)</b><br>
+    <b>Test Funzionale 2: Accettazione Carico (Happy Path)</b><br>
     <i>Stato:</i> Stiva parzialmente vuota e sistema pienamente funzionante.<br>
     <i>Azione:</i> Invio richiesta <code>load</code>.<br>
     <i>Risultato Atteso:</i> Il sistema accetta la richiesta prenotando uno slot e fa lampeggiare il Led di segnalazione (sistema impegnato).
 </div> 
 
 <h2>Project</h2> 
-<p>L'architettura logica QAK sviluppata e il corrispettivo TestPlan pongono le basi per l'avanzamento dei lavori. Di seguito la pianificazione strategica e operativa.</p>
+<p>L'architettura logica QAK sviluppata (disponibile in <a href="https://github.com/riccardocar99/cargoservice-/blob/main/sprint0/src/cargoservice.qak" target="web">cargoservice.qak</a>) e il corrispettivo TestPlan pongono le basi per l'avanzamento dei lavori. Di seguito la pianificazione strategica e operativa.</p>
 <p><strong>Piano di Lavoro e Definizione dello Sprint 1:</strong></p>
 <ul>
     <li>Costruzione del primo prototipo eseguibile per il <code>cargoservice</code> e implementazione automatizzata dei Test Funzionali base individuati (es. via JUnit).</li>
-    <li>Raffinamento del driver logico (<code>cargorobot</code>) per superare completamente l'Abstraction Gap, interfacciandosi con il <em>RobotSmart26</em> in ambiente di collaudo e gestendo le eccezioni di movimento.</li>
+    <li>Raffinamento del QActor <code>cargorobot</code> (che funge da driver logico) per superare completamente l'Abstraction Gap, interfacciandosi con il <em>RobotSmart26</em> in ambiente di collaudo e gestendo le eccezioni di movimento.</li>
     <li>Definizione dei modelli di comunicazione via rete (HTTP/CoAP) tra la WebGUI (<code>ctx_gui</code>) e l'orchestratore centrale.</li>
 </ul>
 

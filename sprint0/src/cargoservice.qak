@@ -5,7 +5,7 @@ Request load : load(CLIENT_ID)
 Reply reserved : reserved(SLOT) for load
 Reply retrylater : retrylater(REASON) for load
 Reply reject : reject(REASON) for load
-
+ 
 // Sonar data
 Dispatch sonar_data : sonar_data(D)
 Dispatch sonar_ok : sonar_ok(D)
@@ -25,12 +25,14 @@ Dispatch led_cmd : led_cmd(CMD) // CMD is "blink" or "off"
 // Display updates
 Dispatch display_update : display_update(STATE)
 
-Context ctxcargoservice ip [ host="localhost" port=8082 ]
+Context ctx_cargoservice ip [ host="localhost" port=8082 ]
+Context ctx_gui          ip [ host="localhost" port=8083 ]
+Context ctx_picow        ip [ host="localhost" port=8084 ]
 
 /*
  * cargoservice: the core manager actor
  */
-QActor cargoservice context ctxcargoservice {
+QActor cargoservice context ctx_cargoservice {
     [#
         var Slot1Occupied = false
         var Slot2Occupied = false
@@ -54,7 +56,6 @@ QActor cargoservice context ctxcargoservice {
     Transition t0
         whenRequest load -> handleLoadRequest
         whenMsg sonar_fail -> handleSonarFail
-        whenMsg sonar_data -> handleSonarData
 
     State handleLoadRequest {
         printCurrentMessage color blue
@@ -199,7 +200,7 @@ QActor cargoservice context ctxcargoservice {
  * Mocks of external components/devices for Sprint 0 conceptual model
  */
 
-QActor cargorobot context ctxcargoservice {
+QActor cargorobot context ctx_cargoservice {
     State s0 initial {
         println("$name | ready") color green
     }
@@ -218,15 +219,15 @@ QActor cargorobot context ctxcargoservice {
         whenRequest move_robot -> doMove
 }
 
-QActor sonar context ctxcargoservice {
+QActor sonar context ctx_picow {
     State s0 initial {
         println("$name | starting distance emissions") color yellow
         // Emits normal distance initially
-        forward cargoservice -m sonar_data : sonar_data(20.0)
+        forward cargoservice -m sonar_data : sonar_data(20)
     }
 }
 
-QActor led context ctxcargoservice {
+QActor led context ctx_picow {
     State s0 initial {
         println("$name | starting...") color magenta
     }
@@ -243,7 +244,7 @@ QActor led context ctxcargoservice {
         whenMsg led_cmd -> handleCmd
 }
 
-QActor marker context ctxcargoservice {
+QActor marker context ctx_cargoservice {
     State s0 initial {
         println("$name | ready") color cyan
     }
@@ -261,7 +262,7 @@ QActor marker context ctxcargoservice {
         whenMsg start_marking -> doMarking
 }
 
-QActor ioport context ctxcargoservice {
+QActor ioport context ctx_gui {
     State s0 initial {
         println("$name | display init: service working") color yellow
     }

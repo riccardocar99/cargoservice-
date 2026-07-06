@@ -71,7 +71,7 @@ tasks.withType(Copy).configureEach {
 }
 
 application {
-    mainClassName = 'it.unibo.ctxcargoservice.MainCtxcargoserviceKt'
+    mainClassName = 'it.unibo.ctx_cargoservice.MainCtx_cargoserviceKt'
 }
 
 task dovesiamo {
