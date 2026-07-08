@@ -5,7 +5,7 @@ request( load, load(CLIENT_ID) ).
 reply( reserved, reserved(SLOT) ).  %%for load
 reply( retrylater, retrylater(REASON) ).  %%for load
 reply( reject, reject(REASON) ).  %%for load
-dispatch( sonar_data, sonar_data(D) ).
+dispatch( distance, distance(D) ).
 dispatch( sonar_ok, sonar_ok(D) ).
 dispatch( sonar_fail, sonar_fail(D) ).
 request( move_robot, move_robot(DEST) ).
@@ -15,8 +15,8 @@ reply( moverobotdone, moverobotdone(ARG) ).  %%for moverobot
 reply( moverobotfailed, moverobotfailed(PLANDONE,PLANTODO) ).  %%for moverobot
 dispatch( start_marking, start_marking(SLOT) ).
 dispatch( marking_done, marking_done(SLOT) ).
-dispatch( led_cmd, led_cmd(CMD) ).
-dispatch( display_update, display_update(STATE) ).
+dispatch( led_state, led_state(STATE) ).
+dispatch( display_msg, display_msg(MSG) ).
 %====================================================================================
 context(ctx_cargoservice, "localhost",  "TCP", "8082").
 context(ctx_gui, "localhost",  "TCP", "8083").

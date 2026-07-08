@@ -192,48 +192,18 @@ div.imagedesc{
 
 <div class="body"> 
 <h2>Introduction</h2>
-<p>Questo documento descrive il lavoro svolto nello <strong>Sprint 1</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.
-L'obiettivo principale di questo incremento &egrave; l'implementazione della logica di controllo centrale del servizio (l'orchestratore QActor <code>cargoservice</code>) e il superamento dell'<strong>Abstraction Gap</strong> per il pilotaggio del robot virtuale <strong>RobotSmart26</strong>.</p>
+<p>Questo documento descrive il lavoro svolto nello <strong>Sprint 1</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.</p>
+
+<h3>Goal dello Sprint 1</h3>
+<div class="remark" style="background-color: #E8F5E9; border: 1.5px solid #2E7D32;">
+    L'obiettivo (<strong>Goal</strong>) dello Sprint 1 è la realizzazione dell'architettura logica di controllo fondamentale del servizio (l'attore orchestratore <code>cargoservice</code>) e il pilotaggio del robot virtuale <code>RobotSmart26</code> tramite un driver di traduzione (l'attore <code>cargorobot</code>) per superare l'abstraction gap cartesiano. Il corretto funzionamento della logica ( Happy Path del deposito container e rifiuto a stiva piena) deve essere validato tramite test di integrazione automatici in JUnit.
+</div>
  
 <h2>Requirements</h2>
 <div class="remark">
-    Il testo completo dei requisiti fornito dal committente &egrave; disponibile al seguente link: 
+    Il testo dei requisiti finali del tema &egrave; consultabile direttamente nel file di specifica fornito dal committente: 
     <a href="../../Tema2026.html">Tema2026.html</a>
 </div>
-
-<p>A <em>Maritime Cargo shipping company</em> (from now on, simply <strong>company</strong>) intends to automate the operations of load of <strong>containers</strong> in the ship’s cargo hold (or simply <strong>hold</strong>). To this end, the company plans to employ a <em>Differential Drive Robot</em> (from now, called <strong>cargorobot</strong>).</p>
-
-<p>The <em>hold</em> is a rectangular, flat area with an Input/Output port (<strong>IOPort</strong>). The area provides 4 <strong>slots</strong> to store the containers and a slot named <strong>slot5</strong>.</p>
-
-<figure style="text-align: center; margin: 20px 0;">
-    <img src="img/stiva.png" alt="Mappa della stiva con HOME, SONAR, SLOT1-5, IOPORT e SENSOR/DFREE" style="max-width: 50%; height: auto; border: 1px solid #bdc3c7; border-radius: 4px;">
-</figure>
-
-<p>In the picture above:</p>
-<ul>
-    <li>The <strong>slots1-4</strong> depict the hold areas reserved to store one <em>container</em> each,</li>
-    <li>The <strong>slots5</strong> depicts an area, where the <em>cargorobot</em> must temporarily store a container, before to place it in one of the <em>slots1-4</em>. During temporary storage, a ‘marker’ device labels the container with an identification barcode and signals when this marking activity is completed.</li>
-    <li>The <strong>IOPort</strong> is a device with a <strong>pushbutton</strong> and a <strong>display</strong>. The <em>pushbutton</em> is pressed by the customer in order to to send a request to load a container on the cargo. The <em>display</em> is used to show the answer to the request and to show the current state of the <em>hold</em>.</li>
-    <li>The <strong>sensor</strong> associated to the <em>IOPort</em> is a device (a <em>sonar</em>) used to detect the presence of a container, when it measures a distance D, such that D &lt; DFREE/2, during a reasonable time (e.g. 3 secs).</li>
-</ul>
-
-<h3>TF2026 Requirements</h3>
-<p>The company asks us to build service named <strong>cargoservice</strong> that should work as follows.</p>
-<p>The <em>cargoservice</em> is able to receive a <strong>request to load</strong> a container sent by some customer by using the <em>pushbutton</em> of the <em>IOPort</em>.</p>
-<ul>
-    <li>It sends the answer <code>retrylater</code>, if the <strong>IOPort</strong> is currently occupied by a container or if the system is <em>Out of service</em></li>
-    <li>It rejects the request when the hold is already full, i.e. the <code>slots1-4</code> are already occupied.</li>
-    <li>Otherwise, it considers the system as <strong>engaged</strong>, detects a free slot and returns as answer the name of such a reserved slot. While engaged, the system must blink a Led.</li>
-</ul>
-
-<p>When the <em>request to load</em> is accepted, the customer must move the container in the <em>sensor</em> area within prefixed amount of time (e.g. 30 secs), otherwise the systems becomes <strong>disengaged</strong>. Then, the <em>cargoservice</em> uses the <em>cargorobot</em> to move the container from the <em>IOPort</em> to the <em>slot5</em> (for marking the container) and then to the reserved slot.</p>
-
-<p>The service must also show on the <em>display</em> on the <em>IOPort</em>:</p>
-<ul>
-    <li>the current state of the <em>hold</em></li>
-    <li>the message '<strong>Service working</strong>', when it is all is going well</li>
-    <li>the message '<strong>Out of service</strong>' if the <em>sonar sensor</em> measures a distance D &gt; DFREE for at least 3 secs (perhaps a failure of the <em>sonar</em>).</li>
-</ul>
 
 <h2>Requirement analysis | Vocabolario</h2>
 <p>Nello Sprint 0 sono state chiarite le entit&agrave; e mappate sui concetti formali di QActor, Contesto e Messaggi. La struttura a 3 contesti definita nello Sprint 0 rimane la nostra architettura logica di riferimento. In questo sprint implementeremo i primi due attori reali (<code>cargoservice</code> e <code>cargorobot</code>) mantenendo mockati gli input distribuiti (sonar e led) e l'interfaccia utente (WebGUI).</p>
@@ -241,7 +211,18 @@ L'obiettivo principale di questo incremento &egrave; l'implementazione della log
 <h2>Problem analysis</h2>
 
 <h3>Stato della Stiva (slots1-4 e slot5)</h3>
-<p>L'orchestratore deve memorizzare se ciascuno dei quattro slot di stoccaggio (<code>slots1-4</code>) &egrave; libero o occupato, oltre ad attendere la marcatura nello <code>slot5</code>. Poich&eacute; questo stato &egrave; puramente informativo e interno alla logica di business di <code>cargoservice</code>, viene modellato come un insieme di variabili booleane all'interno dello stato dell'attore QActor <code>cargoservice</code> (es. <code>Slot1Occupied</code>, <code>Slot2Occupied</code>, ecc.). Non vi &egrave; la necessit&agrave; architetturalmente di introdurre un QActor separato per la stiva.</p>
+<p>L'orchestratore deve memorizzare se ciascuno dei quattro slot di stoccaggio (<code>slots1-4</code>) &egrave; libero o occupato, oltre ad attendere la marcatura nello <code>slot5</code>. Poich&eacute; questo stato &egrave; puramente informativo e interno alla logica di business di <code>cargoservice</code>, viene modellato come un insieme di variabili locali booleane all'interno dello stato dell'attore QActor <code>cargoservice</code>, evitando l'introduzione di un componente o attore separato per la stiva:</p>
+
+<pre>
+// Definizione variabili locali in cargoservice.qak
+var Slot1Occupied = false
+var Slot2Occupied = false
+var Slot3Occupied = false
+var Slot4Occupied = false
+var SystemOutOfService = false
+var IOPortOccupied = false
+var ReservedSlot = ""
+</pre>
 
 <h3>Risoluzione dell'Abstraction Gap per RobotSmart26</h3>
 <p>Il robot virtuale <strong>RobotSmart26</strong> (che risiede nel contesto esterno <code>ctxrobotsmart</code> alla porta <code>8020</code>) risponde a comandi cartesiani e di basso livello. Le nostre tappe logiche sono definite come costanti nominali: <code>ioport</code>, <code>slot5</code>, <code>slot1</code>, <code>slot2</code>, <code>slot3</code>, <code>slot4</code> e <code>home</code>. Esiste un evidente <strong>abstraction gap</strong> tra queste destinazioni semantiche e i comandi cartesiani richiesti dal robot.</p>
@@ -256,13 +237,48 @@ L'obiettivo principale di questo incremento &egrave; l'implementazione della log
     <li><code>slot4</code> &rarr; <code>(3,4)</code></li>
 </ul>
 <p>Quando riceve la richiesta <code>move_robot(DEST)</code> da <code>cargoservice</code>, il `cargorobot` traduce `DEST` nelle coordinate corrispondenti e invia al `RobotSmart26` la richiesta formale di movimento:</p>
+
 <pre>
-Request moverobot : moverobot(TARGETX, TARGETY, STEPTIME)
+// Traduzione e richiesta cartesiana in cargoservice.qak
+State doMove {
+    onMsg(move_robot : move_robot(DEST)) {
+        [#
+            CurrentDest = payloadArg(0)
+            when (CurrentDest) {
+                "home" -> { TargetX = 0; TargetY = 0 }
+                "ioport" -> { TargetX = 4; TargetY = 0 }
+                "slot5" -> { TargetX = 4; TargetY = 3 }
+                "slot1" -> { TargetX = 1; TargetY = 1 }
+                "slot2" -> { TargetX = 1; TargetY = 4 }
+                "slot3" -> { TargetX = 3; TargetY = 2 }
+                "slot4" -> { TargetX = 3; TargetY = 4 }
+                else -> { TargetX = 0; TargetY = 0 }
+            }
+        #]
+        println("$name | translating destination $CurrentDest to ($TargetX, $TargetY)") color green
+        request robotsmart -m moverobot : moverobot($TargetX, $TargetY, $StepTime)
+    }
+}
 </pre>
 <p>Il `cargorobot` attende la risposta del robot (<code>moverobotdone</code> o <code>moverobotfailed</code>) e risponde a sua volta a `cargoservice` con il risultato della movimentazione.</p>
 
 <h3>Analisi dell'interazione distributiva</h3>
-<p>Le interazioni coinvolgono attori distribuiti su diversi nodi di rete. La comunicazione tra l'orchestratore e il driver del robot avviene tramite uno schema Request-Reply sincrono, in modo da bloccare la logica fino all'effettivo completamento del movimento fisica. La marcatura del container sullo <code>slot5</code> viene invece attivata tramite un messaggio asincrono di Dispatch (<code>start_marking</code>) e notificata di ritorno tramite un Dispatch di risposta (<code>marking_done</code>).</p>
+<p>Nel metamodello QAK (e nell'Actor Model in generale), <strong>tutte le comunicazioni fisiche a scambio di messaggi avvengono in modo asincrono</strong> (non-blocking). </p>
+<ul>
+    <li>I messaggi di tipo <code>Dispatch</code> sono nativamente asincroni e non bloccanti (es. l'avvio della marcatura tramite <code>start_marking</code> o l'aggiornamento del Led/Display).</li>
+    <li>La comunicazione sincrona di tipo <code>Request-Reply</code> (es. la richiesta di movimento inviata da <code>cargoservice</code> a <code>cargorobot</code>) viene realizzata fisicamente tramite due comunicazioni asincrone separate (una Request di andata e un Reply di ritorno). L'attore mittente simula il comportamento sincrono bloccando la propria transizione di stato fino alla ricezione della risposta, rilasciando al contempo il thread fisico di esecuzione.</li>
+</ul>
+<p>I contratti formali di messaggistica asincrona e di request-reply definiti per il coordinamento sono:</p>
+
+<pre>
+// Messaggi dichiarati in cargoservice.qak
+Request move_robot : move_robot(DEST)
+Reply move_done : move_done(RESULT) for move_robot
+
+Request moverobot    :  moverobot(TARGETX, TARGETY, STEPTIME)
+Reply moverobotdone  :  moverobotdone(ARG)                  for moverobot
+Reply moverobotfailed:  moverobotfailed(PLANDONE, PLANTODO) for moverobot
+</pre>
 
 <h2>Test plans</h2>
 <p>Per validare la correttezza del comportamento del sistema nello Sprint 1, dobbiamo definire dei test automatizzati che avviino il sistema e simulino l'interazione del cliente. I test saranno scritti in Kotlin/Java tramite <strong>JUnit 4</strong>.</p>

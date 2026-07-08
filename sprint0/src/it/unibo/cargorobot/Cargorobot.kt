@@ -32,20 +32,22 @@ class Cargorobot ( name: String, scope: CoroutineScope, isconfined: Boolean=fals
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outgreen("$name | ready")
+						CommUtils.outgreen("cargorobot | ready")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t012",targetState="doMove",cond=whenRequest("move_robot"))
+					 transition(edgeName="t011",targetState="doMove",cond=whenRequest("move_robot"))
 				}	 
 				state("doMove") { //this:State
 					action { //it:State
 						if( checkMsgContent( Term.createTerm("move_robot(DEST)"), Term.createTerm("move_robot(DEST)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 val Dest = payloadArg(0)  
-								CommUtils.outgreen("$name | moving to $Dest...")
+								CommUtils.outgreen("cargorobot | moving to $Dest...")
+								delay(1000) 
+								CommUtils.outgreen("cargorobot | reached $Dest")
 								answer("move_robot", "move_done", "move_done(success)"   )  
 						}
 						//genTimer( actor, state )
@@ -53,7 +55,7 @@ class Cargorobot ( name: String, scope: CoroutineScope, isconfined: Boolean=fals
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t013",targetState="doMove",cond=whenRequest("move_robot"))
+					 transition(edgeName="t012",targetState="doMove",cond=whenRequest("move_robot"))
 				}	 
 			}
 		}

@@ -122,8 +122,8 @@ class TestSprint1 {
             assertTrue(reply!!.msgContent().contains("reserved"))
             assertTrue(reply.msgContent().contains("slot1"))
 
-            // 2. Simulate container arrival by sending sonar_data(2) to cargoservice
-            val sonarMsg = CommUtils.buildDispatch("testclient", "sonar_data", "sonar_data(2)", "cargoservice")
+            // 2. Simulate container arrival by sending distance(2) to cargoservice
+            val sonarMsg = CommUtils.buildDispatch("testclient", "distance", "distance(2)", "cargoservice")
             CommUtils.outblue("Simulating container arrival: $sonarMsg")
             conn?.forward(sonarMsg)
 

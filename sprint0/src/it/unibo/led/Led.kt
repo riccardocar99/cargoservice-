@@ -32,27 +32,27 @@ class Led ( name: String, scope: CoroutineScope, isconfined: Boolean=false, isdy
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outmagenta("$name | starting...")
+						CommUtils.outcyan("led | started")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t014",targetState="handleCmd",cond=whenDispatch("led_cmd"))
+					 transition(edgeName="t016",targetState="handleState",cond=whenDispatch("led_state"))
 				}	 
-				state("handleCmd") { //this:State
+				state("handleState") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("led_cmd(CMD)"), Term.createTerm("led_cmd(CMD)"), 
+						if( checkMsgContent( Term.createTerm("led_state(STATE)"), Term.createTerm("led_state(STATE)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 val Cmd = payloadArg(0)  
-								CommUtils.outmagenta("$name | led cmd received: $Cmd")
+								 val State = payloadArg(0)  
+								CommUtils.outcyan("led | state changed: $State")
 						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t015",targetState="handleCmd",cond=whenDispatch("led_cmd"))
+					 transition(edgeName="t017",targetState="handleState",cond=whenDispatch("led_state"))
 				}	 
 			}
 		}

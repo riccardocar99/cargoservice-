@@ -40,9 +40,9 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name | starting...")
+						CommUtils.outblue("cargoservice | starting...")
 						 SystemOutOfService = false  
-						forward("display_update", "display_update(working)" ,"ioport" ) 
+						forward("display_msg", "display_msg(service_working)" ,"ioport" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -52,38 +52,34 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 				}	 
 				state("working") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name | waiting for load requests...")
+						CommUtils.outblue("cargoservice | waiting for load requests...")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
 					 transition(edgeName="t00",targetState="handleLoadRequest",cond=whenRequest("load"))
-					transition(edgeName="t01",targetState="handleSonarFail",cond=whenDispatch("sonar_fail"))
+					transition(edgeName="t01",targetState="handleDistanceLimit",cond=whenDispatch("distance"))
 				}	 
 				state("handleLoadRequest") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
 						if( checkMsgContent( Term.createTerm("load(CLIENT_ID)"), Term.createTerm("load(CLIENT_ID)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
-								                // Check Out of Service or IOPort occupied
 								                if (SystemOutOfService || IOPortOccupied) {
-								answer("load", "retrylater", "retrylater(system_busy_or_out_of_service)"   )  
+								answer("load", "retrylater", "retrylater(busy_or_out_of_service)"   )  
 								
 								                } else if (Slot1Occupied && Slot2Occupied && Slot3Occupied && Slot4Occupied) {
 								answer("load", "reject", "reject(hold_full)"   )  
 								
 								                } else {
-								                    // Find a free slot
 								                    if (!Slot1Occupied) ReservedSlot = "slot1"
 								                    else if (!Slot2Occupied) ReservedSlot = "slot2"
 								                    else if (!Slot3Occupied) ReservedSlot = "slot3"
 								                    else if (!Slot4Occupied) ReservedSlot = "slot4"
-								CommUtils.outblue("$name | accepted request, reserved $ReservedSlot")
+								CommUtils.outblue("cargoservice | request accepted, reserved $ReservedSlot")
 								answer("load", "reserved", "reserved($ReservedSlot)"   )  
-								forward("led_cmd", "led_cmd(blink)" ,"led" ) 
+								forward("led_state", "led_state(blink)" ,"led" ) 
 								
 								                }
 						}
@@ -92,11 +88,14 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="waitingForContainer", cond=doswitch() )
+					 transition( edgeName="goto",targetState="waitingForContainer", cond=doswitchGuarded({ ReservedSlot != ""  
+					}) )
+					transition( edgeName="goto",targetState="working", cond=doswitchGuarded({! ( ReservedSlot != ""  
+					) }) )
 				}	 
 				state("waitingForContainer") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name | waiting for container at sensor area (30s timeout)...")
+						CommUtils.outblue("cargoservice | waiting for container at IOPort sensor area...")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -105,20 +104,17 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 				 	 					  scope, context!!, "local_tout_"+name+"_waitingForContainer", 30000.toLong() )  //OCT2023
 					}	 	 
 					 transition(edgeName="t02",targetState="handleTimeout",cond=whenTimeout("local_tout_"+name+"_waitingForContainer"))   
-					transition(edgeName="t03",targetState="checkContainerArrival",cond=whenDispatch("sonar_data"))
-					transition(edgeName="t04",targetState="handleSonarFail",cond=whenDispatch("sonar_fail"))
+					transition(edgeName="t03",targetState="checkContainerArrival",cond=whenDispatch("distance"))
 				}	 
 				state("checkContainerArrival") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("sonar_data(D)"), Term.createTerm("sonar_data(D)"), 
+						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								
 								                val DVal = payloadArg(0).toDouble()
-								                // D < DFREE/2 simulates container presence
-								                if (DVal < 10.0) { // e.g. DFREE is 20
+								                // D < DFREE/2 to detect presence
+								                if (DVal < 10.0) {
 								                    IOPortOccupied = true
-								CommUtils.outblue("$name | container detected at IOPort sensor area")
-								
 								                }
 						}
 						//genTimer( actor, state )
@@ -133,56 +129,44 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 				}	 
 				state("robotExecution") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name | starting robot execution to load container into $ReservedSlot")
+						CommUtils.outblue("cargoservice | using cargorobot to load container...")
 						request("move_robot", "move_robot(ioport)" ,"cargorobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t05",targetState="robotAtIOPort",cond=whenReply("move_done"))
+					 transition(edgeName="t04",targetState="robotAtIOPort",cond=whenReply("move_done"))
 				}	 
 				state("robotAtIOPort") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("move_done(RESULT)"), Term.createTerm("move_done(success)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outblue("$name | robot picked container at IOPort, moving to slot5")
-						}
 						request("move_robot", "move_robot(slot5)" ,"cargorobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t06",targetState="robotAtSlot5",cond=whenReply("move_done"))
+					 transition(edgeName="t05",targetState="robotAtSlot5",cond=whenReply("move_done"))
 				}	 
 				state("robotAtSlot5") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("move_done(RESULT)"), Term.createTerm("move_done(success)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outblue("$name | robot placed container at slot5, starting marker")
-								forward("start_marking", "start_marking($ReservedSlot)" ,"marker" ) 
-						}
+						forward("start_marking", "start_marking($ReservedSlot)" ,"marker" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t07",targetState="markingCompleted",cond=whenDispatch("marking_done"))
+					 transition(edgeName="t06",targetState="markingCompleted",cond=whenDispatch("marking_done"))
 				}	 
 				state("markingCompleted") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("marking_done(SLOT)"), Term.createTerm("marking_done(SLOT)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outblue("$name | container marking completed, moving to $ReservedSlot")
-						}
 						request("move_robot", "move_robot($ReservedSlot)" ,"cargorobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t08",targetState="robotAtReservedSlot",cond=whenReply("move_done"))
+					 transition(edgeName="t07",targetState="robotAtReservedSlot",cond=whenReply("move_done"))
 				}	 
 				state("robotAtReservedSlot") { //this:State
 					action { //it:State
@@ -194,20 +178,19 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 						            
 						            IOPortOccupied = false
 						            ReservedSlot = ""
-						CommUtils.outblue("$name | robot placed container in reserved slot, returning HOME")
-						forward("led_cmd", "led_cmd(off)" ,"led" ) 
+						forward("led_state", "led_state(off)" ,"led" ) 
 						request("move_robot", "move_robot(home)" ,"cargorobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t09",targetState="robotExecutionCompleted",cond=whenReply("move_done"))
+					 transition(edgeName="t08",targetState="robotExecutionCompleted",cond=whenReply("move_done"))
 				}	 
 				state("robotExecutionCompleted") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name | container loaded successfully")
-						forward("display_update", "display_update(working)" ,"ioport" ) 
+						CommUtils.outblue("cargoservice | container loaded successfully")
+						forward("display_msg", "display_msg(service_working)" ,"ioport" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -217,8 +200,8 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 				}	 
 				state("handleTimeout") { //this:State
 					action { //it:State
-						CommUtils.outblue("$name | client timeout: disengaging...")
-						forward("led_cmd", "led_cmd(off)" ,"led" ) 
+						CommUtils.outblue("cargoservice | client timeout, disengaging...")
+						forward("led_state", "led_state(off)" ,"led" ) 
 						 ReservedSlot = ""  
 						//genTimer( actor, state )
 					}
@@ -227,31 +210,59 @@ class Cargoservice ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 					}	 	 
 					 transition( edgeName="goto",targetState="working", cond=doswitch() )
 				}	 
-				state("handleSonarFail") { //this:State
+				state("handleDistanceLimit") { //this:State
 					action { //it:State
-						CommUtils.outred("$name | sonar failure detected, system out of service!")
-						 SystemOutOfService = true  
-						forward("led_cmd", "led_cmd(off)" ,"led" ) 
-						forward("display_update", "display_update(out_of_service)" ,"ioport" ) 
+						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								
+								                val DVal = payloadArg(0).toDouble()
+								                // D > DFREE for at least 3 secs simulates Out of Service
+								                if (DVal > 20.0) {
+								                    SystemOutOfService = true
+								                }
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t010",targetState="handleSonarRecovery",cond=whenDispatch("sonar_ok"))
-					transition(edgeName="t011",targetState="handleLoadRequest",cond=whenRequest("load"))
+					 transition( edgeName="goto",targetState="handleOutOfService", cond=doswitchGuarded({ SystemOutOfService  
+					}) )
+					transition( edgeName="goto",targetState="working", cond=doswitchGuarded({! ( SystemOutOfService  
+					) }) )
 				}	 
-				state("handleSonarRecovery") { //this:State
+				state("handleOutOfService") { //this:State
 					action { //it:State
-						CommUtils.outgreen("$name | sonar recovered, back to normal service")
-						 SystemOutOfService = false  
-						forward("display_update", "display_update(working)" ,"ioport" ) 
+						CommUtils.outred("cargoservice | system out of service!")
+						forward("led_state", "led_state(off)" ,"led" ) 
+						forward("display_msg", "display_msg(out_of_service)" ,"ioport" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="working", cond=doswitch() )
+					 transition(edgeName="t09",targetState="checkRecovery",cond=whenDispatch("distance"))
+					transition(edgeName="t010",targetState="handleLoadRequest",cond=whenRequest("load"))
+				}	 
+				state("checkRecovery") { //this:State
+					action { //it:State
+						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								
+								                val DVal = payloadArg(0).toDouble()
+								                if (DVal <= 20.0) {
+								                    SystemOutOfService = false
+								                }
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="working", cond=doswitchGuarded({ !SystemOutOfService  
+					}) )
+					transition( edgeName="goto",targetState="handleOutOfService", cond=doswitchGuarded({! ( !SystemOutOfService  
+					) }) )
 				}	 
 			}
 		}

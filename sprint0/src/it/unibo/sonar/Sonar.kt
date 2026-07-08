@@ -32,8 +32,9 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false, is
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outyellow("$name | starting distance emissions")
-						forward("sonar_data", "sonar_data(20)" ,"cargoservice" ) 
+						delay(2500) 
+						CommUtils.outyellow("sonar | container presence detected (distance = 5)")
+						forward("distance", "distance(5)" ,"cargoservice" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

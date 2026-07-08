@@ -32,27 +32,27 @@ class Ioport ( name: String, scope: CoroutineScope, isconfined: Boolean=false, i
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outyellow("$name | display init: service working")
+						CommUtils.outyellow("ioport | display init: service_working")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t018",targetState="handleDisplayUpdate",cond=whenDispatch("display_update"))
+					 transition(edgeName="t020",targetState="handleDisplay",cond=whenDispatch("display_msg"))
 				}	 
-				state("handleDisplayUpdate") { //this:State
+				state("handleDisplay") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("display_update(STATE)"), Term.createTerm("display_update(STATE)"), 
+						if( checkMsgContent( Term.createTerm("display_msg(MSG)"), Term.createTerm("display_msg(MSG)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 val StateVal = payloadArg(0)  
-								CommUtils.outyellow("$name | display updated state: $StateVal")
+								 val Msg = payloadArg(0)  
+								CommUtils.outyellow("ioport | display message: $Msg")
 						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t019",targetState="handleDisplayUpdate",cond=whenDispatch("display_update"))
+					 transition(edgeName="t021",targetState="handleDisplay",cond=whenDispatch("display_msg"))
 				}	 
 			}
 		}
