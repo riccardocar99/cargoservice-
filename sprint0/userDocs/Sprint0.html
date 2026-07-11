@@ -239,9 +239,25 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 
 <h3>Cargoservice, Stiva (hold), Sonar e Led</h3>
 <p>Il <strong>cargoservice</strong> &egrave; l'orchestratore dell'intero sistema. Implementa la logica di business pura, valuta le condizioni della stiva (piena/libera) e del sensore, e dirige il <em>cargorobot</em>. Computazionalmente, &egrave; un <strong>QActor</strong> reattivo centrale.</p>
-<p>La <strong>stiva (hold)</strong> rappresenta le postazioni fisiche (slot 1-4 per l'immagazzinamento e slot 5 per la marcatura). &Egrave; un'entit&agrave; puramente informativa, il cui stato (libero/occupato) sar&agrave; tracciato internamente alla logica del <em>cargoservice</em> o demandato ad un componente di servizio, modellabile come semplice struttura dati (POJO).</p>
-<p>Il <strong>sonar</strong> &egrave; un dispositivo di rilevazione della distanza. Poich&eacute; deve comunicare attivamente l'evento "fuori servizio" (rilevazione prolungata oltre i 3 secondi), &egrave; un componente reattivo indipendente, modellabile formalmente come <strong>QActor</strong>.</p>
-<p>Il <strong>led</strong> &egrave; un dispositivo luminoso. Pur essendo passivo per natura, poich&eacute; si suppone distribuito su una macchina hardware a s&eacute; stante insieme al sonar (es. un Raspberry Pi), &egrave; opportuno modellarlo come <strong>QActor</strong> in ascolto di eventi o comandi.</p>
+<p>La <strong>stiva (hold)</strong> racchiude le postazioni fisiche destinate all'immagazzinamento dei container (<code>slots1-4</code>) e alla marcatura temporanea (<code>slot5</code>). Essa non costituisce un attore autonomo (poiché non ha comportamento attivo autonomo), bensì viene formalmente modellata all'interno dello stato dell'orchestratore <code>cargoservice</code> (QActor) mediante variabili di stato booleane. Ciascuno slot logico viene mappato in coordinate cartesiane precise sulla griglia bidimensionale del simulatore <code>RobotSmart26</code> (visualizzata a fianco del robot virtuale):</p>
+<ul>
+    <li><code>home</code> &rarr; coordinate <code>(0,0)</code></li>
+    <li><code>ioport</code> &rarr; coordinate <code>(4,0)</code></li>
+    <li><code>slot5</code> &rarr; coordinate <code>(4,3)</code></li>
+    <li><code>slot1</code> &rarr; coordinate <code>(1,1)</code></li>
+    <li><code>slot2</code> &rarr; coordinate <code>(1,4)</code></li>
+    <li><code>slot3</code> &rarr; coordinate <code>(3,2)</code></li>
+    <li><code>slot4</code> &rarr; coordinate <code>(3,4)</code></li>
+</ul>
+<p>Le variabili di stato per tracciare l'occupazione all'interno dell'attore <code>cargoservice</code> sono:</p>
+<pre style="background-color: #f1f8e9; padding: 10px; border-radius: 4px; border: 1px solid #c5e1a5;">
+var Slot1Occupied = false
+var Slot2Occupied = false
+var Slot3Occupied = false
+var Slot4Occupied = false
+</pre>
+<p>Il <strong>sonar</strong> &egrave; un dispositivo di rilevazione della distanza. Dai requisiti si evince che il sistema deve passare in uno stato di <strong>Out of service</strong> se il sonar misura una distanza <code>D &gt; DFREE</code> per almeno 3 secondi (indice di una possibile rottura del sensore). Il sonar viene modellato formalmente come un <strong>QActor</strong> indipendente (esecutore in un thread separato) che emette periodicamente messaggi di tipo dispatch (<code>distance(D)</code>) per permettere all'orchestratore <code>cargoservice</code> di valutare la condizione temporale e aggiornare lo stato del sistema.</p>
+<p>Il <strong>led</strong> &egrave; un dispositivo luminoso. Pur essendo passivo per natura, poich&eacute; si suppone distribuito su una macchina hardware a s&eacute; stante insieme al sonar (es. un Raspberry Pi), &egrave; opportuno modellarlo come <strong>QActor</strong> in ascolto di messaggi di stato per attivare o disattivare il lampeggio.</p>
 
 <h3>Modello delle Interazioni Logiche (Base) e Modello Eseguibile</h3>
 <p>Tra le interazioni descritte nei requisiti, individuiamo fin da subito il pattern comunicativo cardine per l'utente:</p>
@@ -253,10 +269,11 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 </div>
 
 <h2>Problem analysis</h2>
+<h3>Verso un Modello dei Requisiti</h3>
 <p>L'infrastruttura QAK ci permette di affrontare le problematiche relative ai sistemi distribuiti. Di seguito esploriamo i nodi fondamentali dell'architettura.</p>
 
 <h3>Abstraction Gap</h3>
-<p>Esiste un chiaro <strong>abstraction gap</strong> tra le operazioni richieste dal <em>core business</em> (es. "carica il container allo slot 2") e i movimenti elementari offerti dal software fornito (il <em>RobotSmart26</em>). Il problema viene risolto introducendo l'entit&agrave; <strong>cargorobot</strong>: esso maschera le complessit&agrave; del robot fisico/virtuale e offre un'interfaccia ad alto livello al <em>cargoservice</em>, colmando cos&igrave; il divario astrattivo.</p>
+<p>Esiste un chiaro <strong>abstraction gap</strong> tra le operazioni di business richieste dall'orchestratore (es. "sposta il robot allo slot 2") e i comandi cinematico-cartesiani di basso livello previsti da <em>RobotSmart26</em>. Il problema viene risolto introducendo il QActor <strong>cargorobot</strong>: esso espone all'orchestratore <code>cargoservice</code> un contratto di messaggistica formale Request-Reply (richiesta <code>move_robot(DEST)</code> e risposta <code>move_done(RESULT)</code>) e si occupa internamente di effettuare la traduzione logico-cartesiana e la gestione della comunicazione di rete TCP/CoAP verso il robot virtuale, colmando cos&igrave; il divario astrattivo.</p>
 
 <h3>Definizione dei Contesti (Nodi di Deployment)</h3>
 <p>Poich&eacute; abbiamo pi&ugrave; componenti software che girano su macchine e ambiti differenti, l'architettura logica richiede la definizione di almeno tre <strong>contesti</strong> QAK separati:</p>
@@ -276,7 +293,13 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
     <b>Test Funzionale 1: Carico Rifiutato (Stiva Piena)</b><br>
     <i>Stato:</i> Il <code>cargoservice</code> registra che gli slot da 1 a 4 sono occupati.<br>
     <i>Azione:</i> Invio richiesta <code>load</code>.<br>
-    <i>Risultato Atteso:</i> Il sistema risponde immediatamente con il messaggio <code>retrylater</code> senza attivare la movimentazione robotica.
+    <i>Risultato Atteso:</i> Il sistema risponde immediatamente con il messaggio <code>reject</code> senza attivare la movimentazione robotica.<br>
+    <i>Riferimento Codice:</i> Nel file <a href="https://github.com/riccardocar99/cargoservice-/blob/main/sprint0/src/cargoservice.qak" target="web">sprint0/src/cargoservice.qak</a> lo stato viene gestito in <code>handleLoadRequest</code> con la seguente guardia booleana:
+    <pre style="background-color: #f1f8e9; padding: 10px; border-radius: 4px; border: 1px solid #c5e1a5;">
+    } else if (Slot1Occupied && Slot2Occupied && Slot3Occupied && Slot4Occupied) {
+        replyTo load with reject : reject(hold_full)
+    }
+    </pre>
 </div>
 <div class="req">
     <b>Test Funzionale 2: Accettazione Carico (Happy Path)</b><br>
@@ -285,14 +308,14 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
     <i>Risultato Atteso:</i> Il sistema accetta la richiesta prenotando uno slot e fa lampeggiare il Led di segnalazione (sistema impegnato).
 </div> 
 
-<h2>Project</h2> 
+<h2>Organizzazione del processo di produzione</h2> 
 <p>L'architettura logica QAK sviluppata (disponibile in <a href="https://github.com/riccardocar99/cargoservice-/blob/main/sprint0/src/cargoservice.qak" target="web">cargoservice.qak</a>) e il corrispettivo TestPlan pongono le basi per l'avanzamento dei lavori. Di seguito la pianificazione strategica e operativa.</p>
-<p><strong>Piano di Lavoro e Definizione dello Sprint 1:</strong></p>
-<ul>
-    <li>Costruzione del primo prototipo eseguibile per il <code>cargoservice</code> e implementazione automatizzata dei Test Funzionali base individuati (es. via JUnit).</li>
-    <li>Raffinamento del QActor <code>cargorobot</code> (che funge da driver logico) per superare completamente l'Abstraction Gap, interfacciandosi con il <em>RobotSmart26</em> in ambiente di collaudo e gestendo le eccezioni di movimento.</li>
-    <li>Definizione dei modelli di comunicazione via rete (HTTP/CoAP) tra la WebGUI (<code>ctx_gui</code>) e l'orchestratore centrale.</li>
-</ul>
+<p><strong>Definizione e Goal dello Sprint 1:</strong></p>
+<div class="remark" style="background-color: #E8F5E9; border: 1.5px solid #2E7D32;">
+    <strong>Goal dello Sprint 1:</strong> Realizzazione del nucleo centrale di orchestrazione (QActor <code>cargoservice</code>) e del driver di movimentazione del robot (QActor <code>cargorobot</code>), affrontando l'interazione reale con <code>RobotSmart26</code> (hostato in Docker) ed il superamento dell'abstraction gap cartesiano. Il prototipo eseguibile del ciclo di carico (Happy Path) deve essere convalidato tramite test automatici JUnit 4.
+</div>
+<p><strong>Motivazione:</strong></p>
+<p>La scelta di partire dal ciclo di carico principale (Happy Path) e dalla movimentazione del robot risponde alla necessità di mitigare il rischio tecnologico più elevato, ovvero l'integrazione di rete e fisica con il robot virtuale pre-fornito (<code>RobotSmart26</code>). Stabilire prima un'architettura logica di controllo funzionante e testabile programmaticamente consente di gettare le basi su cui innestare, nei successivi sprint, i dettagli tecnologici di contorno (quali la WebGUI reale e l'hardware del Sonar/Led su Raspberry Pi PicoW) riducendo al minimo l'incertezza nello sviluppo.</p>
 
 <h2>Testing</h2> 
 <p><em>(Da compilare negli sprint successivi)</em></p>
