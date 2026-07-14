@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOPort Dashboard - CargoService</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-primary: #3b82f6;
+            --accent-success: #10b981;
+            --accent-danger: #ef4444;
+            --accent-warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 8px 0;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.out-of-service {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-badge.waiting {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-badge.arrived {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-primary);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .dashboard-section {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 0 0 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 5px;
+        }
+
+        .grid-hold {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .slot {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .slot.occupied {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1.5px solid var(--accent-primary);
+        }
+
+        .slot.occupied::after {
+            content: "CONTAINER";
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .slot-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .slot-status {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .btn-load {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-load:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-load:active {
+            transform: translateY(0);
+        }
+
+        .btn-load:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        .console {
+            background: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            padding: 12px;
+            border-radius: 8px;
+            height: 80px;
+            overflow-y: auto;
+            color: #4ade80;
+            border: 1px solid #22c55e;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IOPort Client</h1>
+            <span id="service-status" class="status-badge">Service working</span>
+        </header>
+
+        <div class="dashboard-section">
+            <h2>Hold Layout (Slots 1-4)</h2>
+            <div class="grid-hold">
+                <div id="slot1" class="slot">
+                    <div class="slot-title">Slot 1</div>
+                    <div class="slot-status">Free</div>
+                </div>
+                <div id="slot2" class="slot">
+                    <div class="slot-title">Slot 2</div>
+                    <div class="slot-status">Free</div>
+                </div>
+                <div id="slot3" class="slot">
+                    <div class="slot-title">Slot 3</div>
+                    <div class="slot-status">Free</div>
+                </div>
+                <div id="slot4" class="slot">
+                    <div class="slot-title">Slot 4</div>
+                    <div class="slot-status">Free</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <h2>System Details</h2>
+            <div class="info-panel">
+                <div class="info-row">
+                    <span class="info-label">IOPort State:</span>
+                    <span id="ioport-state" class="info-value" style="color: var(--text-muted);">Empty</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Current Reservation:</span>
+                    <span id="reservation-state" class="info-value" style="color: var(--accent-warning);">None</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-load" class="btn-load">
+            <span>PUSH TO LOAD CONTAINER</span>
+        </button>
+
+        <div id="console" class="console">
+            [System initialized] Ready for input.
+        </div>
+    </div>
+
+    <script>
+        const btnLoad = document.getElementById('btn-load');
+        const statusBadge = document.getElementById('service-status');
+        const ioportState = document.getElementById('ioport-state');
+        const reservationState = document.getElementById('reservation-state');
+        const consoleEl = document.getElementById('console');
+
+        function logToConsole(msg) {
+            consoleEl.innerHTML += `<br>[${new Date().toLocaleTimeString()}] ${msg}`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/status');
+                if (!response.ok) return;
+                const text = await response.text();
+                // Format: state(SystemOutOfService,Slot1Occupied,Slot2Occupied,Slot3Occupied,Slot4Occupied,ReservedSlot,IOPortOccupied,DisplayMsg)
+                // E.g.: state(false,false,false,false,false,,false,service_working)
+                const match = /state\((true|false),(true|false),(true|false),(true|false),(true|false),(.*),(true|false),(.*)\)/.exec(text);
+                if (match) {
+                    const outOfService = match[1] === 'true';
+                    const slot1 = match[2] === 'true';
+                    const slot2 = match[3] === 'true';
+                    const slot3 = match[4] === 'true';
+                    const slot4 = match[5] === 'true';
+                    const reserved = match[6];
+                    const ioportOccupied = match[7] === 'true';
+                    const displayMsg = match[8];
+
+                    // Update Out of service badge
+                    if (outOfService) {
+                        statusBadge.textContent = 'Out of service';
+                        statusBadge.className = 'status-badge out-of-service';
+                        btnLoad.disabled = true;
+                    } else {
+                        if (displayMsg === 'waiting_for_distance') {
+                            statusBadge.textContent = 'IN ATTESA DI DISTANZA';
+                            statusBadge.className = 'status-badge waiting';
+                        } else if (displayMsg === 'container_arrived') {
+                            statusBadge.textContent = 'CARICO IN CORSO';
+                            statusBadge.className = 'status-badge arrived';
+                        } else if (displayMsg === 'loading') {
+                            statusBadge.textContent = 'CARICAMENTO STIVA';
+                            statusBadge.className = 'status-badge arrived';
+                        } else {
+                            statusBadge.textContent = 'Service working';
+                            statusBadge.className = 'status-badge';
+                        }
+                        btnLoad.disabled = ioportOccupied || reserved !== '';
+                    }
+
+                    // Update slots
+                    updateSlotUI('slot1', slot1);
+                    updateSlotUI('slot2', slot2);
+                    updateSlotUI('slot3', slot3);
+                    updateSlotUI('slot4', slot4);
+
+                    // Update IOPort
+                    if (ioportOccupied) {
+                        ioportState.textContent = 'OCCUPIED';
+                        ioportState.style.color = 'var(--accent-warning)';
+                    } else {
+                        ioportState.textContent = 'Empty';
+                        ioportState.style.color = 'var(--text-muted)';
+                    }
+
+                    // Update Reservation
+                    if (reserved && reserved !== '') {
+                        reservationState.textContent = reserved.toUpperCase();
+                        reservationState.style.color = 'var(--accent-warning)';
+                    } else {
+                        reservationState.textContent = 'None';
+                        reservationState.style.color = 'var(--text-muted)';
+                    }
+                }
+            } catch (e) {
+                // Silently ignore connection errors in polling
+            }
+        }
+
+        function updateSlotUI(id, occupied) {
+            const el = document.getElementById(id);
+            const statusEl = el.querySelector('.slot-status');
+            if (occupied) {
+                el.className = 'slot occupied';
+                statusEl.textContent = 'Occupied';
+            } else {
+                el.className = 'slot';
+                statusEl.textContent = 'Free';
+            }
+        }
+
+        btnLoad.addEventListener('click', async () => {
+            btnLoad.disabled = true;
+            logToConsole("Requesting cargo load...");
+            try {
+                const response = await fetch('/load', { method: 'POST' });
+                const text = await response.text();
+                
+                // Parse QAK reply payload from CoAP message
+                // standard format reply is e.g. "msg(reserved,reply,cargoservice,gui,reserved(slot1),N)"
+                if (text.includes("reserved")) {
+                    const slotMatch = /reserved\((.*?)\)/.exec(text);
+                    const slotName = slotMatch ? slotMatch[1] : "slot";
+                    logToConsole(`SUCCESS: Reserved ${slotName.toUpperCase()}. Deliver container to IOPort within 30s!`);
+                } else if (text.includes("retrylater")) {
+                    logToConsole(`RETRY LATER: System busy or out of service.`);
+                } else if (text.includes("reject")) {
+                    logToConsole(`REJECTED: Hold is full.`);
+                } else {
+                    logToConsole(`Response: ${text}`);
+                }
+            } catch (e) {
+                logToConsole(`ERROR: Failed to contact web server.`);
+            }
+            updateStatus();
+        });
+
+        // Start polling
+        setInterval(updateStatus, 1000);
+        updateStatus();
+    </script>
+</body>
+</html>

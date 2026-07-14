@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js" crossorigin="anonymous"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+<style type="text/css">
+body
+{
+    margin-left:  30px;
+    margin-right: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+P
+{
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+#i {
+    color: #ff1010;
+}
+tt{
+    font-size: 90%;
+	color: #006600;
+}
+em{
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre{
+	font-family: "Consolas", "Courier New", monospace;
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+</style>
+<title>Sprint 2: cargoservice</title></head>
+
+<body>
+<div id="top">
+<h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE <font size="5"></font> </h1>
+</div>  
+
+<div class="body"> 
+<h2>Introduction</h2>
+<p>Questo documento descrive il lavoro svolto nello <strong>Sprint 2</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.</p>
+
+<h3>Goal dello Sprint 2</h3>
+<div class="remark" style="background-color: #E8F5E9; border: 1.5px solid #2E7D32;">
+    L'obiettivo (<strong>Goal</strong>) dello Sprint 2 è lo sviluppo e l'integrazione di rete dei componenti fisici/simulati distribuiti del sistema, superando i mock dello Sprint 1: la <strong>WebGUI dell'IOPort</strong> (che racchiude pushbutton e display) ed il sotto-sistema <strong>Sonar & Led su Raspberry Pi Pico W</strong> comunicante via MQTT. Il corretto funzionamento distributivo e la gestione delle anomalie di rete devono essere convalidati.
+</div>
+ 
+<h2>Requirements</h2>
+<div class="remark">
+    Il testo dei requisiti finali del tema &egrave; consultabile nel file di specifica fornito dal committente: 
+    <a href="../../Tema2026.html">Tema2026.html</a>
+</div>
+
+<h2>Requirement analysis | Vocabolario</h2>
+<p>Dall'analisi dei requisiti dello Sprint 0 e dall'architettura dello Sprint 1, emergono i seguenti requisiti per la distribuzione:</p>
+<ul>
+    <li><strong>IOPort (WebGUI):</strong> Deve esporre l'interfaccia utente formata dal <code>pushbutton</code> (input) per richiedere il carico e dal <code>display</code> (output) per mostrare lo stato del hold e i messaggi di stato.</li>
+    <li><strong>Sonar & Led (PicoW):</strong> Il sonar rileva la presenza del container (distanza <code>D < DFREE/2</code> per 3s) e gestisce l'anomalia di fuori servizio (<code>D > DFREE</code> per 3s). Il Led lampeggia mentre il sistema è impegnato (engaged) ed è spento altrimenti.</li>
+</ul>
+
+<h2>Problem analysis</h2>
+
+<h3>Interazione della WebGUI (IOPort) con Qak</h3>
+<p>La WebGUI dell'IOPort deve poter inviare la richiesta <code>load</code> e mostrare dinamicamente lo stato. Poiché gli attori QAK sono nativamente risorse <strong>CoAP osservabili</strong>, la WebGUI (implementata in HTML5/JavaScript) può registrarsi come Observer CoAP sul risorsa <code>/ctx_cargoservice/cargoservice</code>. In questo modo riceverà aggiornamenti asincroni push (senza polling) ad ogni variazione di stato. Le richieste di carico verranno invece inoltrate tramite messaggi CoAP Request o chiamate HTTP/REST.</p>
+
+<h3>Comunicazione del Nodo Sonar & Led (PicoW)</h3>
+<p>Il microcontrollore Raspberry Pi Pico W controlla i dispositivi fisici eseguendo script MicroPython. La comunicazione avviene via rete tramite protocollo <strong>MQTT</strong> (broker centralizzato):</p>
+<ul>
+    <li>Il Sonar legge i dati fisici dal sensore HC-SR04 ed effettua la pubblicazione MQTT delle letture di distanza.</li>
+    <li>Il Led si sottoscrive ad un topic MQTT dedicato (es. <code>cargoservice/led</code>) per accendersi o lampeggiare in risposta alle transizioni dell'orchestratore.</li>
+</ul>
+<p>Per isolare l'orchestratore <code>cargoservice</code> dai dettagli del protocollo MQTT, introduciamo un attore ponte (<strong>MQTT Adapter</strong>) nel contesto <code>ctx_cargoservice</code> che si occupa di convertire i messaggi MQTT in messaggi nativi QAK (es. <code>distance(D)</code>) e viceversa.</p>
+
+<h3>Architettura Logica Distribuita</h3>
+<div class="remark">
+    <p>L'architettura dello Sprint 2 vede la reale distribuzione fisica dei componenti su 3 nodi di rete:</p>
+    <ul>
+        <li><code>ctx_cargoservice</code> (PC principale, porta 8082): contiene l'orchestratore <code>cargoservice</code>, il driver <code>cargorobot</code>, il marcatore <code>marker</code> e l'adattatore MQTT.</li>
+        <li><code>ctx_gui</code> (Web Browser): ospita la WebGUI dell'IOPort che comunica via CoAP/WebSocket.</li>
+        <li><code>ctx_picow</code> (PicoW / Script Python): nodo remoto Sonar & Led che comunica via MQTT (Broker alla porta 1883).</li>
+    </ul>
+</div>
+
+<h2>Test plans</h2>
+<p>I test di integrazione dello Sprint 2 mirano a convalidare il comportamento distribuito simulando gli input in rete:</p>
+<div class="req">
+    <b>Test Funzionale 1: Pressione Pushbutton da GUI</b><br>
+    <i>Azione:</i> La WebGUI invia una richiesta CoAP di <code>load</code>.<br>
+    <i>Risultato Atteso:</i> Il display mostra la prenotazione dello slot logico e il led inizia a lampeggiare.
+</div>
+<div class="req">
+    <b>Test Funzionale 2: Rilevamento Sonar in Rete</b><br>
+    <i>Azione:</i> Il Sonar pubblica via MQTT una distanza `D = 5` per 3 secondi.<br>
+    <i>Risultato Atteso:</i> `cargoservice` riceve il messaggio, attiva la movimentazione del robot e il Led continua a lampeggiare.
+</div>
+<div class="req">
+    <b>Test Funzionale 3: Gestione Anomalie (Out of Service)</b><br>
+    <i>Azione:</i> Il Sonar rileva una distanza `D > DFREE` (es. 30) per 3 secondi.<br>
+    <i>Risultato Atteso:</i> Il sistema interrompe la movimentazione del robot, il display mostra `"Out of service"` ed il Led si accende fisso.
+</div>
+
+<h2>Organizzazione del processo di produzione</h2> 
+<p>Pianificazione e compiti per lo sviluppo dello Sprint 2:</p>
+<ul>
+    <li>Sviluppo della WebGUI IOPort in HTML/JS e integrazione con libreria CoAP.js per l'osservabilità (Stima: 6 ore/uomo).</li>
+    <li>Scrittura del codice MicroPython/Python per PicoW per la lettura dei sensori fisici e la trasmissione MQTT (Stima: 8 ore/uomo).</li>
+    <li>Implementazione dell'MQTT Adapter in cargoservice.qak per instradare le distanze e i comandi Led (Stima: 6 ore/uomo).</li>
+    <li>Esecuzione della suite di test JUnit di integrazione distribuita (Stima: 4 ore/uomo).</li>
+</ul>
+
+<h2>Testing</h2> 
+<p><em>(Da compilare a seguito dei test eseguiti nello Sprint 2)</em></p>
+
+<h2>Deployment</h2> 
+<p>Per eseguire il sistema nello Sprint 2:</p>
+<ol>
+    <li>Avviare il broker MQTT (es. Mosquitto) locale o connettersi a broker pubblico alla porta <code>1883</code>.</li>
+    <li>Avviare il container Docker del robot virtuale <strong>RobotSmart26</strong> sulla porta <code>8020</code>.</li>
+    <li>Eseguire lo script Python/MicroPython sul nodo PicoW.</li>
+    <li>Eseguire il comando <code>./gradlew run</code> per avviare il servizio principale.</li>
+    <li>Aprire la WebGUI dell'IOPort nel browser.</li>
+</ol>
+
+<h2>Maintenance</h2> 
+<p><em>(N/A per Sprint 2)</em></p>
+
+<br/><br/> 	
+</div>  
+
+<div style="background-color:rgba(86, 56, 253, 0.9); width: 100%; box-sizing: border-box; text-align:left; color:white; padding: 20px; border-radius: 10px; margin-top: 30px;">
+    <div style="display: flex; gap: 20px; justify-content: space-around; align-items: flex-start; text-align: center; margin-bottom: 20px;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Luigi</span>
+            <img src="img/WhatsApp Image 2026-07-01 at 10.56.36.jpeg" alt="Luigi" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Riccardo</span>
+            <img src="img/IMG_20210714_212328_502.jpg" alt="Riccardo" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Simone</span>
+            <img src="img/WhatsApp Image 2026-07-01 at 11.05.03.jpeg" alt="Simone" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+    </div>
+    <div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px; font-size: 90%;">
+        GIT repo: <a href="https://github.com/riccardocar99/cargoservice-" style="color: #e6ccff; text-decoration: underline;">https://github.com/riccardocar99/cargoservice-</a>
+    </div>
+</div> 
+</body>
+</html>
