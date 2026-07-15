@@ -40,6 +40,7 @@ with Diagram('cargoserviceArch', show=False, outformat='png', graph_attr=graphat
      marker >> Edge(color='blue', style='solid',  decorate='true', label='<marking_done &nbsp; >',  fontcolor='blue') >> cargoservice
      sonar >> Edge(color='blue', style='solid',  decorate='true', label='<distance &nbsp; sonar_fail &nbsp; sonar_ok &nbsp; >',  fontcolor='blue') >> cargoservice
      cargoservice >> Edge(color='blue', style='solid',  decorate='true', label='<start_marking &nbsp; >',  fontcolor='blue') >> marker
+     cargoservice >> Edge(color='blue', style='solid',  decorate='true', label='<setrobotstate &nbsp; >',  fontcolor='blue') >> robotsmart
      cargoservice >> Edge(color='blue', style='solid',  decorate='true', label='<display_msg &nbsp; >',  fontcolor='blue') >> ioport
      cargoservice >> Edge(color='blue', style='solid',  decorate='true', label='<led_state &nbsp; >',  fontcolor='blue') >> led
 diag

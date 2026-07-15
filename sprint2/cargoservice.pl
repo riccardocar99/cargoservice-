@@ -13,6 +13,7 @@ reply( move_done, move_done(RESULT) ).  %%for move_robot
 request( moverobot, moverobot(TARGETX,TARGETY,STEPTIME) ).
 reply( moverobotdone, moverobotdone(ARG) ).  %%for moverobot
 reply( moverobotfailed, moverobotfailed(PLANDONE,PLANTODO) ).  %%for moverobot
+dispatch( setrobotstate, setpos(X,Y,D) ).
 dispatch( start_marking, start_marking(SLOT) ).
 dispatch( marking_done, marking_done(SLOT) ).
 dispatch( led_state, led_state(STATE) ).

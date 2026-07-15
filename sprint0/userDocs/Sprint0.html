@@ -233,14 +233,13 @@ L'obiettivo principale dello sprint 0 &egrave; analizzare, formalizzare e render
 <h3>Cargoservice, Stiva (hold), Sonar e Led</h3>
 <p>Il <strong>cargoservice</strong> &egrave; l'orchestratore dell'intero sistema. Implementa la logica di business pura, valuta le condizioni della stiva (piena/libera) e del sensore, e dirige il <em>cargorobot</em>. Computazionalmente, &egrave; un <strong>QActor</strong> reattivo centrale.</p>
 <p>La <strong>stiva (hold)</strong> racchiude le postazioni fisiche destinate all'immagazzinamento dei container (<code>slots1-4</code>) e alla marcatura temporanea (<code>slot5</code>). Essa non costituisce un attore autonomo (poiché non ha comportamento attivo autonomo), bensì viene formalmente modellata all'interno dello stato dell'orchestratore <code>cargoservice</code> (QActor) mediante variabili di stato booleane. Ciascuno slot logico viene mappato in coordinate cartesiane precise sulla griglia bidimensionale del simulatore <code>RobotSmart26</code> (visualizzata a fianco del robot virtuale):</p>
-<ul>
-    <li><code>home</code> &rarr; coordinate <code>(0,0)</code></li>
-    <li><code>ioport</code> &rarr; coordinate <code>(4,0)</code></li>
-    <li><code>slot5</code> &rarr; coordinate <code>(4,3)</code></li>
-    <li><code>slot1</code> &rarr; coordinate <code>(1,1)</code></li>
-    <li><code>slot2</code> &rarr; coordinate <code>(1,4)</code></li>
-    <li><code>slot3</code> &rarr; coordinate <code>(3,2)</code></li>
-    <li><code>slot4</code> &rarr; coordinate <code>(3,4)</code></li>
+    <li><code>home</code> &rarr; coordinate <code>(0,0)</code> (riga=0, colonna=0)</li>
+    <li><code>ioport</code> &rarr; coordinate <code>(4,0)</code> (riga=4, colonna=0)</li>
+    <li><code>slot5</code> &rarr; coordinate target <code>(2,5)</code> (cella libera adiacente allo Slot 5 in <code>(4,2)</code>)</li>
+    <li><code>slot1</code> &rarr; coordinate target <code>(1,1)</code> (cella libera adiacente allo Slot 1 in <code>(2,1)</code>)</li>
+    <li><code>slot2</code> &rarr; coordinate target <code>(2,3)</code> (cella libera adiacente allo Slot 2 in <code>(3,1)</code>)</li>
+    <li><code>slot3</code> &rarr; coordinate target <code>(3,1)</code> (cella libera adiacente allo Slot 3 in <code>(2,3)</code>)</li>
+    <li><code>slot4</code> &rarr; coordinate target <code>(4,3)</code> (cella libera adiacente allo Slot 4 in <code>(3,3)</code>)</li>
 </ul>
 <p>Le variabili di stato per tracciare l'occupazione all'interno dell'attore <code>cargoservice</code> sono:</p>
 <pre style="background-color: #f1f8e9; padding: 10px; border-radius: 4px; border: 1px solid #c5e1a5;">

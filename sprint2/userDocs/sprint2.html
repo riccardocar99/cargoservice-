@@ -218,15 +218,118 @@ div.imagedesc{
 </ul>
 <p>Per isolare l'orchestratore <code>cargoservice</code> dai dettagli del protocollo MQTT, introduciamo un attore ponte (<strong>MQTT Adapter</strong>) nel contesto <code>ctx_cargoservice</code> che si occupa di convertire i messaggi MQTT in messaggi nativi QAK (es. <code>distance(D)</code>) e viceversa.</p>
 
-<h3>Architettura Logica Distribuita</h3>
+<h3>Architettura Logica Distribuita e Nodi di Deployment</h3>
 <div class="remark">
-    <p>L'architettura dello Sprint 2 vede la reale distribuzione fisica dei componenti su 3 nodi di rete:</p>
+    <p>In coerenza con la pianificazione e l'analisi effettuata nello Sprint 0, il deployment effettivo del sistema si distribuisce sui seguenti contesti fisici ed hardware:</p>
     <ul>
-        <li><code>ctx_cargoservice</code> (PC principale, porta 8082): contiene l'orchestratore <code>cargoservice</code>, il driver <code>cargorobot</code>, il marcatore <code>marker</code> e l'adattatore MQTT.</li>
-        <li><code>ctx_gui</code> (Web Browser): ospita la WebGUI dell'IOPort che comunica via CoAP/WebSocket.</li>
-        <li><code>ctx_picow</code> (PicoW / Script Python): nodo remoto Sonar & Led che comunica via MQTT (Broker alla porta 1883).</li>
+        <li>
+            <strong>PC Principale (Host PC):</strong> Rappresenta il nodo centrale computazionale del sistema. Su questa macchina fisica coesistono ed operano due diversi runtime:
+            <ul>
+                <li><strong>Java Virtual Machine (JVM):</strong> Ospita il processo principale <code>cargoservice</code> (eseguito via <code>./gradlew run</code> alla porta CoAP <code>8082</code>). Questo processo avvia ed ospita nativamente il web server <code>IOPortWebServer</code> per la <strong>WebGUI dell'IOPort</strong> (porta <code>8081</code>).</li>
+                <li><strong>Docker Engine:</strong> Gestisce l'intera infrastruttura di simulazione e di comunicazione di rete tramite container isolati sulla stessa macchina:
+                    <ul>
+                        <li>Il broker MQTT <code>mosquitto</code> (porta <code>1883</code>), impiegato per lo scambio messaggi con il microcontrollore.</li>
+                        <li>Il pianificatore di movimenti autonomo <code>robotsmart26</code> (contesto esterno <code>ctxrobotsmart</code>, porta <code>8020</code>).</li>
+                        <li>L'interfaccia di monitoraggio 2D del robot <code>robotoutgui25</code> (porta <code>8085</code>).</li>
+                        <li>Il simulatore fisico 3D <code>wenv</code> (porte <code>8090/8091</code>).</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <strong>Web Browser (Client GUI):</strong> Rappresenta l'interfaccia utente finale per l'operatore/cliente. Dal browser vengono caricate e renderizzate la dashboard dell'IOPort (indirizzo <code>http://localhost:8081</code>, che comunica con la JVM tramite CoAP) e l'interfaccia 2D del robot (indirizzo <code>http://localhost:8085</code>, che comunica con Docker via WebSocket).
+        </li>
+        <li>
+            <strong>Raspberry Pi Pico W (Nodo Remoto):</strong> Rappresenta il microcontrollore remoto hardware (contesto <code>ctx_picow</code>) deputato all'interfacciamento fisico. Esegue uno script MicroPython autonomo che legge le distanze dal sensore Sonar (HC-SR04) e pilota lo stato del Led fisico, scambiando informazioni con il broker MQTT (porta <code>1883</code>) esposto dal PC Principale.
+        </li>
     </ul>
 </div>
+
+<h3>Modellazione del Comportamento del Robot e Coordinamento</h3>
+<p>Nel contesto dello Sprint 2, l'orchestratore <code>cargoservice</code> e l'attore <code>cargorobot</code> coordinano la movimentazione del robot nel rispetto dei requisiti di tema finale. Il robot esegue la transizione tra le aree logiche (IOPort, Slot5 e Slot di stoccaggio) e supporta la sospensione/ripristino dei movimenti in caso di guasto rilevato dal sonar remoto.</p>
+
+<h4>1. Sincronizzazione e Reset Iniziale</h4>
+<p>All'avvio, l'orchestratore invia un comando di reset per riallineare il planner logico di <code>robotsmart26</code> con lo stato di startup del simulatore 3D (WEnv), forzando la posizione iniziale a <code>(0,0)</code> con direzione <code>SUD</code> (down):</p>
+<pre>
+State s0 initial {
+    println("cargoservice | starting...") color blue
+    [# SystemOutOfService = false #]
+    forward ioport -m display_msg : display_msg(service_working)
+    println("cargoservice | Sincronizzazione: resetto lo stato del robot nel planner a (0,0) SOUTH...") color blue
+    <b>forward robotsmart -m setrobotstate : setpos(0, 0, down)</b>
+    updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+}
+</pre>
+
+<h4>2. Mappatura delle Coordinate Logiche della Stiva</h4>
+<p>Le coordinate della stiva seguono la convenzione del planner A* espressa come <code>(riga, colonna)</code>. Per ciascuno slot logico viene definita la coordinata di posizionamento adiacente libera ("accanto") al fine di prevenire collisioni con i container o gli ostacoli strutturali:</p>
+<pre>
+when (CurrentDest) {
+    "home"   -> { TargetX = 0; TargetY = 0 } // Riga 0, Colonna 0
+    "ioport" -> { TargetX = 4; TargetY = 0 } // Riga 4, Colonna 0 (IOPort)
+    "slot5"  -> { TargetX = 2; TargetY = 5 } // Cella libera accanto a destra dello Slot 5 (2,4)
+    "slot1"  -> { TargetX = 1; TargetY = 1 } // Cella libera accanto a sinistra dello Slot 1 (1,2)
+    "slot2"  -> { TargetX = 2; TargetY = 3 } // Cella libera accanto sotto allo Slot 2 (1,3)
+    "slot3"  -> { TargetX = 3; TargetY = 1 } // Cella libera accanto a sinistra dello Slot 3 (3,2)
+    "slot4"  -> { TargetX = 4; TargetY = 3 } // Cella libera accanto sotto allo Slot 4 (3,3)
+    else     -> { TargetX = 0; TargetY = 0 }
+}
+</pre>
+
+<h4>3. Sequenza Nominale e Ciclo di Lavoro</h4>
+<p>Il robot esegue la transizione lineare dei carichi passando per lo <code>slot5</code> per la marcatura temporanea:</p>
+<pre>
+<kc>// 1. Spostamento all'IOPort per raccogliere il container</kc>
+State robotExecution {
+    [# CurrentDest = "ioport" #]
+    request cargorobot -m move_robot : move_robot(ioport)
+}
+Transition t0 whenReply move_done -> robotAtIOPort
+
+<kc>// 2. Spostamento a Slot 5 per etichettatura temporanea</kc>
+State robotAtIOPort {
+    [# CurrentDest = "slot5" #]
+    request cargorobot -m move_robot : move_robot(slot5)
+}
+Transition t0 whenReply move_done -> robotAtSlot5
+
+<kc>// 3. Posizionamento e attivazione del marcatore</kc>
+State robotAtSlot5 {
+    println("cargoservice | robot arrivato in slot5: poso temporaneamente per marcatura...") color green
+    forward marker -m start_marking : start_marking($ReservedSlot)
+}
+Transition t0 whenMsg marking_done -> markingCompleted
+
+<kc>// 4. Trasferimento nello slot di stoccaggio definitivo</kc>
+State markingCompleted {
+    [# CurrentDest = ReservedSlot #]
+    println("cargoservice | marcatura completata: sposto il container in $ReservedSlot...") color green
+    request cargorobot -m move_robot : move_robot($ReservedSlot)
+}
+Transition t0 whenReply move_done -> robotAtReservedSlot
+</pre>
+
+<h4>4. Gestione delle Interruzioni (Out of Service) e Ripristino</h4>
+<p>Nel caso in cui il Sonar rilevi un errore (distanza > DFREE per 3s), viene emesso l'evento <code>alarm</code> per arrestare immediatamente il robot virtuale. Al ripristino delle condizioni normali, l'orchestratore ricalcola la transizione riprendendo il movimento verso l'ultimo target di destinazione memorizzato (<code>CurrentDest</code>):</p>
+<pre>
+State handleInterrupt {
+    println("cargoservice | INTERRUPTION: Sonar failure reported.") color red
+    <b>emit alarm : alarm(sonar_failure)</b> <kc>// Arresta robotsmart26</kc>
+    [# SystemOutOfService = true; DisplayMsg = "out_of_service" #]
+    updateResource [# "state(...)" #]
+} Goto outOfService
+
+State handleRecovery {
+    println("cargoservice | RECOVERY: Sonar reports normal operation.") color green
+    [# SystemOutOfService = false; DisplayMsg = "service_working" #]
+    updateResource [# "state(...)" #]
+} Goto working if [# ReservedSlot == "" #] else resumeActivity
+
+State resumeActivity {
+    println("cargoservice | resuming movement to destination: $CurrentDest")
+}
+Goto robotExecution if [# CurrentDest == "ioport" #] else checkSlot5Resuming
+</pre>
 
 <h2>Test plans</h2>
 <p>I test di integrazione dello Sprint 2 mirano a convalidare il comportamento distribuito simulando gli input in rete:</p>
@@ -259,13 +362,12 @@ div.imagedesc{
 <p><em>(Da compilare a seguito dei test eseguiti nello Sprint 2)</em></p>
 
 <h2>Deployment</h2> 
-<p>Per eseguire il sistema nello Sprint 2:</p>
+<p>Il deployment ed avvio del sistema si compone dei seguenti passi operativi:</p>
 <ol>
-    <li>Avviare il broker MQTT (es. Mosquitto) locale o connettersi a broker pubblico alla porta <code>1883</code>.</li>
-    <li>Avviare il container Docker del robot virtuale <strong>RobotSmart26</strong> sulla porta <code>8020</code>.</li>
-    <li>Eseguire lo script Python/MicroPython sul nodo PicoW.</li>
-    <li>Eseguire il comando <code>./gradlew run</code> per avviare il servizio principale.</li>
-    <li>Aprire la WebGUI dell'IOPort nel browser.</li>
+    <li><strong>Avvio dell'Infrastruttura (Docker):</strong> Eseguire il comando <code>docker compose up</code> nella directory radice dello Sprint 2 per istanziare congiuntamente il broker MQTT <code>mosquitto</code> (porta <code>1883</code>), il simulatore <code>wenv</code> (porte <code>8090/8091</code>), il visualizzatore 2D <code>robotoutgui25</code> (porta <code>8085</code>) ed il pianificatore di movimenti <code>robotsmart26</code> (porta <code>8020</code>).</li>
+    <li><strong>Avvio del Nodo Fisico/Remoto (PicoW):</strong> Caricare ed eseguire lo script MicroPython/Python sul Raspberry Pi Pico W per collegare i sensori sonar e led al broker MQTT.</li>
+    <li><strong>Avvio del Core Business Logic:</strong> Eseguire il comando <code>./gradlew run</code> per avviare il contesto software principale <code>ctx_cargoservice</code> (porta <code>8082</code>), che attiva anche il web server dell'IOPort alla porta <code>8081</code>.</li>
+    <li><strong>Interfacce Utente:</strong> Accedere tramite browser web alla dashboard dell'IOPort all'indirizzo <code>http://localhost:8081</code> per inviare i comandi di carico, e monitorare i movimenti del robot all'indirizzo <code>http://localhost:8085</code>.</li>
 </ol>
 
 <h2>Maintenance</h2> 

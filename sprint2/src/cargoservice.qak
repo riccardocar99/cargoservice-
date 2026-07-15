@@ -5,7 +5,7 @@ Request load : load(CLIENT_ID)
 Reply reserved : reserved(SLOT) for load
 Reply retrylater : retrylater(REASON) for load
 Reply reject : reject(REASON) for load
-
+ 
 // Sonar measurements (from requirements: measures a distance D)
 Dispatch distance : distance(D)
 Dispatch sonar_ok : sonar_ok(D)
@@ -14,11 +14,12 @@ Dispatch sonar_fail : sonar_fail(D)
 // Internal robot commands (between cargoservice and cargorobot driver)
 Request move_robot : move_robot(DEST)
 Reply move_done : move_done(RESULT) for move_robot
-
+ 
 // External robot commands (to external RobotSmart26 on port 8020)
 Request moverobot    :  moverobot(TARGETX, TARGETY, STEPTIME)
 Reply moverobotdone  :  moverobotdone(ARG)                  for moverobot
 Reply moverobotfailed:  moverobotfailed(PLANDONE, PLANTODO) for moverobot
+Dispatch setrobotstate: setpos(X, Y, D)
 
 // Marker commands (from requirements: marker device labels and signals when completed)
 Dispatch start_marking : start_marking(SLOT)
@@ -62,6 +63,8 @@ QActor cargoservice context ctx_cargoservice {
         println("cargoservice | starting...") color blue
         [# SystemOutOfService = false #]
         forward ioport -m display_msg : display_msg(service_working)
+        println("cargoservice | Sincronizzazione: resetto lo stato del robot nel planner a (0,0) SOUTH (giù)...") color blue
+        forward robotsmart -m setrobotstate : setpos(0, 0, down)
         updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
     }
     Goto working
@@ -144,7 +147,7 @@ QActor cargoservice context ctx_cargoservice {
         whenMsg sonar_fail -> handleInterrupt
 
     State robotAtSlot5 {
-        println("cargoservice | starting marking device at slot5") color blue
+        println("cargoservice | robot arrivato in slot5: poso temporaneamente il container in slot5 per marcatura...") color green
         forward marker -m start_marking : start_marking($ReservedSlot)
     }
     Transition t0
@@ -153,7 +156,7 @@ QActor cargoservice context ctx_cargoservice {
 
     State markingCompleted {
         [# CurrentDest = ReservedSlot #]
-        println("cargoservice | moving robot to reserved slot $ReservedSlot") color blue
+        println("cargoservice | marcatura completata in slot5: sposto il container dallo slot5 allo slot riservato $ReservedSlot...") color green
         request cargorobot -m move_robot : move_robot($ReservedSlot)
     }
     Transition t0
@@ -277,11 +280,11 @@ QActor cargorobot context ctx_cargoservice {
                 when (CurrentDest) {
                     "home" -> { TargetX = 0; TargetY = 0 }
                     "ioport" -> { TargetX = 4; TargetY = 0 }
-                    "slot5" -> { TargetX = 4; TargetY = 3 }
+                    "slot5" -> { TargetX = 2; TargetY = 5 }
                     "slot1" -> { TargetX = 1; TargetY = 1 }
-                    "slot2" -> { TargetX = 1; TargetY = 4 }
-                    "slot3" -> { TargetX = 3; TargetY = 2 }
-                    "slot4" -> { TargetX = 3; TargetY = 4 }
+                    "slot2" -> { TargetX = 2; TargetY = 3 }
+                    "slot3" -> { TargetX = 3; TargetY = 1 }
+                    "slot4" -> { TargetX = 4; TargetY = 3 }
                     else -> { TargetX = 0; TargetY = 0 }
                 }
             #]
