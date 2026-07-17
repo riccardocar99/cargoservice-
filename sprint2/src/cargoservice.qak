@@ -5,7 +5,7 @@ Request load : load(CLIENT_ID)
 Reply reserved : reserved(SLOT) for load
 Reply retrylater : retrylater(REASON) for load
 Reply reject : reject(REASON) for load
- 
+
 // Sonar measurements (from requirements: measures a distance D)
 Dispatch distance : distance(D)
 Dispatch sonar_ok : sonar_ok(D)

@@ -189,7 +189,7 @@ div.imagedesc{
 
 <h3>Goal dello Sprint 2</h3>
 <div class="remark" style="background-color: #E8F5E9; border: 1.5px solid #2E7D32;">
-    L'obiettivo (<strong>Goal</strong>) dello Sprint 2 è lo sviluppo e l'integrazione di rete dei componenti fisici/simulati distribuiti del sistema, superando i mock dello Sprint 1: la <strong>WebGUI dell'IOPort</strong> (che racchiude pushbutton e display) ed il sotto-sistema <strong>Sonar & Led su Raspberry Pi Pico W</strong> comunicante via MQTT. Il corretto funzionamento distributivo e la gestione delle anomalie di rete devono essere convalidati.
+    L'obiettivo (<strong>Goal</strong>) dello Sprint 2 è lo sviluppo e l'integrazione di rete dei componenti distribuiti del sistema, superando i mock dello Sprint 1. In questo sprint si è preferito <strong>simulare il sotto-sistema Sonar & Led</strong> (originariamente previsto su scheda fisica Raspberry Pi Pico W) tramite un emulatore Python dedicato comunicante via MQTT, al fine di focalizzare lo sviluppo sulle logiche di coordinamento e integrazione di rete. L'integrazione con la scheda fisica e i sensori hardware reali sarà completata nello <strong>Sprint 3</strong>. Il corretto funzionamento distributivo e la gestione delle anomalie di rete devono essere comunque convalidati.
 </div>
  
 <h2>Requirements</h2>
@@ -211,11 +211,93 @@ div.imagedesc{
 <p>La WebGUI dell'IOPort deve poter inviare la richiesta <code>load</code> e mostrare dinamicamente lo stato. Poiché gli attori QAK sono nativamente risorse <strong>CoAP osservabili</strong>, la WebGUI (implementata in HTML5/JavaScript) può registrarsi come Observer CoAP sul risorsa <code>/ctx_cargoservice/cargoservice</code>. In questo modo riceverà aggiornamenti asincroni push (senza polling) ad ogni variazione di stato. Le richieste di carico verranno invece inoltrate tramite messaggi CoAP Request o chiamate HTTP/REST.</p>
 
 <h3>Comunicazione del Nodo Sonar & Led (PicoW)</h3>
-<p>Il microcontrollore Raspberry Pi Pico W controlla i dispositivi fisici eseguendo script MicroPython. La comunicazione avviene via rete tramite protocollo <strong>MQTT</strong> (broker centralizzato):</p>
+<p>Nel progetto finale, la scheda fisica Raspberry Pi Pico W eseguirà lo script MicroPython <code>pico_sonar_led.py</code> per leggere la distanza fisica ed interfacciarsi con il LED. Tuttavia, nello <strong>Sprint 2</strong>, al fine di semplificare il testing del coordinamento e la simulazione delle condizioni di presenza/assenza/errore, si è preferito <strong>simulare il funzionamento del Pico W</strong> tramite un emulatore scritto in Python: <code>pico_emulator.py</code>. La realizzazione fisica su hardware reale (Pico W + sensori fisici) sarà demandata allo <strong>Sprint 3</strong>.</p>
+<p>L'emulatore simula lo scambio di messaggi MQTT via rete:</p>
 <ul>
-    <li>Il Sonar legge i dati fisici dal sensore HC-SR04 ed effettua la pubblicazione MQTT delle letture di distanza.</li>
-    <li>Il Led si sottoscrive ad un topic MQTT dedicato (es. <code>cargoservice/led</code>) per accendersi o lampeggiare in risposta alle transizioni dell'orchestratore.</li>
+    <li>Invia continuativamente letture di distanza simulate al topic <code>cargoservice/pico/sonar</code> per consentire all'attore QAK di misurare la durata delle condizioni.</li>
+    <li>Consente all'operatore di impostare la distanza corrente via console (es. <code>D &lt; 10</code> per la presenza, <code>D &gt; 20</code> per simulare il fuori servizio).</li>
+    <li>Si sottoscrive al topic <code>cargoservice/pico/led</code> per stampare a console i cambiamenti di stato del LED (on, off, blink).</li>
 </ul>
+<p>Di seguito è allegato il codice del file <code>pico_emulator.py</code> che giustifica questa scelta architetturale e ne realizza il comportamento:</p>
+<pre>
+import time
+import sys
+import threading
+try:
+    import paho.mqtt.client as mqtt
+except ImportError:
+    print("Error: paho-mqtt library not found. Please install it using: pip install paho-mqtt")
+    sys.exit(1)
+
+MQTT_BROKER = "localhost"
+MQTT_PORT = 1883
+
+led_state = "off"
+current_distance = 15.0  # Default idle state
+
+def on_connect(client, userdata, flags, rc):
+    print(f"Emulator | Connected to MQTT Broker at {MQTT_BROKER}:{MQTT_PORT}")
+    client.subscribe("cargoservice/pico/led")
+
+def on_message(client, userdata, msg):
+    global led_state
+    topic = msg.topic
+    payload = msg.payload.decode('utf-8')
+    if topic == "cargoservice/pico/led":
+        led_state = payload
+        print(f"\n[LED UPDATE] LED is now: {led_state.upper()}")
+
+def distance_publisher_loop(client):
+    global current_distance
+    while True:
+        try:
+            client.publish("cargoservice/pico/sonar", f"{current_distance:.1f}")
+            time.sleep(0.5)
+        except Exception as e:
+            time.sleep(1)
+
+def console_input_loop(client):
+    global current_distance
+    print("\n=======================================================")
+    print("Pico W Emulator - Console Control")
+    print("Enter a distance (in cm) to publish to cargoservice:")
+    print("  - Enter &lt; 10 (e.g., 5) to simulate container presence")
+    print("  - Enter &gt; 20 (e.g., 30) to simulate Sonar failure")
+    print("  - Enter between 10 and 20 (e.g., 15) to simulate normal idle state")
+    print("=======================================================\n")
+    
+    while True:
+        try:
+            val = input("Enter distance (cm) -> ").strip()
+            if not val:
+                continue
+            d = float(val)
+            current_distance = d
+            print(f"-&gt; Selected distance: {d} cm")
+        except ValueError:
+            print("Invalid number.")
+        except KeyboardInterrupt:
+            break
+
+def main():
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
+
+    mqtt_thread = threading.Thread(target=client.loop_forever)
+    mqtt_thread.daemon = True
+    mqtt_thread.start()
+
+    pub_thread = threading.Thread(target=distance_publisher_loop, args=(client,))
+    pub_thread.daemon = True
+    pub_thread.start()
+
+    console_input_loop(client)
+
+if __name__ == "__main__":
+    main()
+</pre>
 <p>Per isolare l'orchestratore <code>cargoservice</code> dai dettagli del protocollo MQTT, introduciamo un attore ponte (<strong>MQTT Adapter</strong>) nel contesto <code>ctx_cargoservice</code> che si occupa di convertire i messaggi MQTT in messaggi nativi QAK (es. <code>distance(D)</code>) e viceversa.</p>
 
 <h3>Architettura Logica Distribuita e Nodi di Deployment</h3>
@@ -240,7 +322,7 @@ div.imagedesc{
             <strong>Web Browser (Client GUI):</strong> Rappresenta l'interfaccia utente finale per l'operatore/cliente. Dal browser vengono caricate e renderizzate la dashboard dell'IOPort (indirizzo <code>http://localhost:8081</code>, che comunica con la JVM tramite CoAP) e l'interfaccia 2D del robot (indirizzo <code>http://localhost:8085</code>, che comunica con Docker via WebSocket).
         </li>
         <li>
-            <strong>Raspberry Pi Pico W (Nodo Remoto):</strong> Rappresenta il microcontrollore remoto hardware (contesto <code>ctx_picow</code>) deputato all'interfacciamento fisico. Esegue uno script MicroPython autonomo che legge le distanze dal sensore Sonar (HC-SR04) e pilota lo stato del Led fisico, scambiando informazioni con il broker MQTT (porta <code>1883</code>) esposto dal PC Principale.
+            <strong>Pico W Emulator (Nodo Remoto):</strong> Per questo sprint rappresenta un nodo simulato (eseguito localmente sul PC tramite il processo <code>pico_emulator.py</code>) che emula il comportamento del Raspberry Pi Pico W. Riceve comandi per lo stato del LED e pubblica distanze tramite MQTT (porta <code>1883</code>). L'interfacciamento hardware reale con la scheda fisica e i sensori effettivi è programmato per lo <strong>Sprint 3</strong>.
         </li>
     </ul>
 </div>
@@ -353,7 +435,7 @@ Goto robotExecution if [# CurrentDest == "ioport" #] else checkSlot5Resuming
 <p>Pianificazione e compiti per lo sviluppo dello Sprint 2:</p>
 <ul>
     <li>Sviluppo della WebGUI IOPort in HTML/JS e integrazione con libreria CoAP.js per l'osservabilità (Stima: 6 ore/uomo).</li>
-    <li>Scrittura del codice MicroPython/Python per PicoW per la lettura dei sensori fisici e la trasmissione MQTT (Stima: 8 ore/uomo).</li>
+    <li>Scrittura dell'emulatore Python (<code>pico_emulator.py</code>) per simulare via console l'invio delle distanze e la ricezione dello stato del LED (Stima: 6 ore/uomo).</li>
     <li>Implementazione dell'MQTT Adapter in cargoservice.qak per instradare le distanze e i comandi Led (Stima: 6 ore/uomo).</li>
     <li>Esecuzione della suite di test JUnit di integrazione distribuita (Stima: 4 ore/uomo).</li>
 </ul>
@@ -365,7 +447,7 @@ Goto robotExecution if [# CurrentDest == "ioport" #] else checkSlot5Resuming
 <p>Il deployment ed avvio del sistema si compone dei seguenti passi operativi:</p>
 <ol>
     <li><strong>Avvio dell'Infrastruttura (Docker):</strong> Eseguire il comando <code>docker compose up</code> nella directory radice dello Sprint 2 per istanziare congiuntamente il broker MQTT <code>mosquitto</code> (porta <code>1883</code>), il simulatore <code>wenv</code> (porte <code>8090/8091</code>), il visualizzatore 2D <code>robotoutgui25</code> (porta <code>8085</code>) ed il pianificatore di movimenti <code>robotsmart26</code> (porta <code>8020</code>).</li>
-    <li><strong>Avvio del Nodo Fisico/Remoto (PicoW):</strong> Caricare ed eseguire lo script MicroPython/Python sul Raspberry Pi Pico W per collegare i sensori sonar e led al broker MQTT.</li>
+    <li><strong>Avvio del Nodo Fisico/Remoto Emulato (Pico W):</strong> Eseguire l'emulatore locale tramite il comando <code>python src/pico/pico_emulator.py</code> sul PC per simulare i sensori sonar e led interfacciandoli al broker MQTT. Il caricamento sul microcontrollore reale avverrà nello <strong>Sprint 3</strong>.</li>
     <li><strong>Avvio del Core Business Logic:</strong> Eseguire il comando <code>./gradlew run</code> per avviare il contesto software principale <code>ctx_cargoservice</code> (porta <code>8082</code>), che attiva anche il web server dell'IOPort alla porta <code>8081</code>.</li>
     <li><strong>Interfacce Utente:</strong> Accedere tramite browser web alla dashboard dell'IOPort all'indirizzo <code>http://localhost:8081</code> per inviare i comandi di carico, e monitorare i movimenti del robot all'indirizzo <code>http://localhost:8085</code>.</li>
 </ol>
