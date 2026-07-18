@@ -221,13 +221,13 @@ var ReservedSlot = ""
 <p>Il robot virtuale <strong>RobotSmart26</strong> (che risiede nel contesto esterno <code>ctxrobotsmart</code> alla porta <code>8020</code>) risponde a comandi cartesiani e di basso livello. Le nostre tappe logiche sono definite come costanti nominali: <code>ioport</code>, <code>slot5</code>, <code>slot1</code>, <code>slot2</code>, <code>slot3</code>, <code>slot4</code> e <code>home</code>. Esiste un evidente <strong>abstraction gap</strong> tra queste destinazioni semantiche e i comandi cartesiani richiesti dal robot.</p>
 <p>Questo divario viene risolto all'interno del QActor <strong>cargorobot</strong>, che funge da driver di traduzione. Il <code>cargorobot</code> mantiene internamente una mappatura statica per tradurre le posizioni logiche in coordinate reali (X, Y) all'interno della griglia della stanza virtuale:</p>
 <ul>
-    <li><code>home</code> &rarr; <code>(0,0)</code></li>
-    <li><code>ioport</code> &rarr; <code>(4,0)</code></li>
-    <li><code>slot5</code> &rarr; <code>(4,3)</code></li>
-    <li><code>slot1</code> &rarr; <code>(1,1)</code></li>
-    <li><code>slot2</code> &rarr; <code>(1,4)</code></li>
-    <li><code>slot3</code> &rarr; <code>(3,2)</code></li>
-    <li><code>slot4</code> &rarr; <code>(3,4)</code></li>
+    <li><code>home</code> &rarr; <code>(0,0)</code> (riga=0, colonna=0)</li>
+    <li><code>ioport</code> &rarr; <code>(4,0)</code> (riga=4, colonna=0)</li>
+    <li><code>slot5</code> &rarr; <code>(2,5)</code> (cella adiacente allo Slot 5 in <code>(4,2)</code>)</li>
+    <li><code>slot1</code> &rarr; <code>(1,1)</code> (cella adiacente allo Slot 1 in <code>(2,1)</code>)</li>
+    <li><code>slot2</code> &rarr; <code>(2,3)</code> (cella adiacente allo Slot 2 in <code>(3,1)</code>)</li>
+    <li><code>slot3</code> &rarr; <code>(3,1)</code> (cella adiacente allo Slot 3 in <code>(2,3)</code>)</li>
+    <li><code>slot4</code> &rarr; <code>(4,3)</code> (cella adiacente allo Slot 4 in <code>(3,3)</code>)</li>
 </ul>
 <p>Quando riceve la richiesta <code>move_robot(DEST)</code> da <code>cargoservice</code>, il `cargorobot` traduce `DEST` nelle coordinate corrispondenti e invia al `RobotSmart26` la richiesta formale di movimento:</p>
 
@@ -240,11 +240,11 @@ State doMove {
             when (CurrentDest) {
                 "home" -> { TargetX = 0; TargetY = 0 }
                 "ioport" -> { TargetX = 4; TargetY = 0 }
-                "slot5" -> { TargetX = 4; TargetY = 3 }
+                "slot5" -> { TargetX = 2; TargetY = 5 }
                 "slot1" -> { TargetX = 1; TargetY = 1 }
-                "slot2" -> { TargetX = 1; TargetY = 4 }
-                "slot3" -> { TargetX = 3; TargetY = 2 }
-                "slot4" -> { TargetX = 3; TargetY = 4 }
+                "slot2" -> { TargetX = 2; TargetY = 3 }
+                "slot3" -> { TargetX = 3; TargetY = 1 }
+                "slot4" -> { TargetX = 4; TargetY = 3 }
                 else -> { TargetX = 0; TargetY = 0 }
             }
         #]

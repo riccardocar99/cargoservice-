@@ -1,0 +1,429 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js" crossorigin="anonymous"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'neutral'});</script>
+<style type="text/css">
+body
+{
+    margin-left:  30px;
+    margin-right: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+P
+{
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+#i {
+    color: #ff1010;
+}
+tt{
+    font-size: 90%;
+	color: #006600;
+}
+em{
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre{
+	font-family: "Consolas", "Courier New", monospace;
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+</style>
+<title>Sprint 3: cargoservice</title></head>
+
+<body>
+<div id="top">
+<h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE <font size="5"></font> </h1>
+</div>  
+
+<div class="body"> 
+<h2>Introduction</h2>
+<p>Questo documento descrive il lavoro svolto nello <strong>Sprint 3</strong> per lo sviluppo del sistema <strong>cargoservice</strong>.</p>
+
+<h3>Goal dello Sprint 3</h3>
+<div class="remark" style="background-color: #E8F5E9; border: 1.5px solid #2E7D32;">
+    L'obiettivo (<strong>Goal</strong>) dello Sprint 3 è il <strong>deployment distribuito ed il collaudo di rete</strong> dei componenti del sistema su dispositivi hardware reali (tranne il robot, che rimane virtuale come da requisiti di progetto).
+    In particolare, questo sprint focalizza su:
+    <ul>
+        <li>Configurazione delle connessioni di rete reali: i vari nodi (PC principale, client WebGUI remoto, Raspberry Pi Pico W remoto) comunicano via rete LAN locale, superando i binding locali (localhost).</li>
+        <li>Deploy dello script MicroPython sul microcontrollore hardware reale <strong>Raspberry Pi Pico W</strong> (connesso fisicamente a Sonar HC-SR04 e Led).</li>
+        <li>Accessibilità distribuita della <strong>WebGUI dell'IOPort</strong> da parte di un PC client remoto connesso sulla stessa rete.</li>
+    </ul>
+</div>
+ 
+<h2>Requirements</h2>
+<div class="remark">
+    Il testo dei requisiti finali del tema &egrave; consultabile nel file di specifica fornito dal committente: 
+    <a href="../../Tema2026.html">Tema2026.html</a>
+</div>
+
+<h2>Requirement analysis | Vocabolario</h2>
+<p>Dall'analisi dei requisiti dello Sprint 0 e dall'architettura dei precedenti sprint, emergono i seguenti vincoli di deployment di rete:</p>
+<ul>
+    <li><strong>Rete LAN Comune:</strong> Tutti i dispositivi (PC Principale, Client WebGUI, Pico W) devono essere connessi alla medesima sottorete Wi-Fi/LAN per poter effettuare il routing IP.</li>
+    <li><strong>MQTT Broker Remoto:</strong> Il broker MQTT (Mosquitto) risiede sul PC Principale (in Docker) ma deve accettare connessioni sulla porta <code>1883</code> da parte del microcontrollore remoto.</li>
+    <li><strong>IOPort Web Server:</strong> L'IOPortWebServer deve esporre la WebGUI (porta <code>8081</code>) all'esterno dell'Host PC per permettere il caricamento da browser remoti.</li>
+</ul>
+
+<h2>Problem analysis</h2>
+
+<h3>Interazione della WebGUI (IOPort) con Qak</h3>
+<p>La WebGUI dell'IOPort deve poter inviare la richiesta <code>load</code> e mostrare dinamicamente lo stato. Poiché gli attori QAK sono nativamente risorse <strong>CoAP osservabili</strong>, la WebGUI (implementata in HTML5/JavaScript) può registrarsi come Observer CoAP sul risorsa <code>/ctx_cargoservice/cargoservice</code>. In questo modo riceverà aggiornamenti asincroni push (senza polling) ad ogni variazione di stato. Le richieste di carico verranno invece inoltrate tramite messaggi CoAP Request o chiamate HTTP/REST.</p>
+<p>In un contesto distribuito (es. browser aperto su un PC differente da quello in cui gira il servizio principale):
+<ul>
+    <li>L'interfaccia utente web effettua chiamate HTTP relative (come <code>/status</code> e <code>/load</code>), che vengono risolte automaticamente verso l'indirizzo IP del PC Principale (su cui gira il server <code>IOPortWebServer</code>).</li>
+    <li>La JVM del PC Principale gestisce localmente le interazioni CoAP tramite <code>localhost:8082</code> per connettersi a `cargoservice`, disaccoppiando completamente il browser client dai dettagli del protocollo CoAP.</li>
+</ul>
+</p>
+
+<h3>Comunicazione del Nodo Sonar & Led (PicoW) ed Emulatore</h3>
+<p>Nello <strong>Sprint 3</strong>, il codice viene eseguito direttamente sul microcontrollore hardware reale <strong>Raspberry Pi Pico W</strong> (connesso fisicamente ai sensori). Per evitare di includere credenziali di rete e dettagli del broker MQTT nel codice sorgente tracciato (es. Git), le configurazioni di rete (SSID, Wi-Fi password ed IP del broker MQTT) sono state disaccoppiate in un file esterno denominato <code>secrets.py</code>:</p>
+<pre>
+# secrets.py
+WIFI_SSID = "Nome_Della_Rete_WiFi"
+WIFI_PASSWORD = "Password_Della_Rete_WiFi"
+MQTT_BROKER = "192.168.1.50" # Indirizzo IP del PC Principale che ospita Mosquitto
+</pre>
+<p>Nel caso in cui si voglia continuare ad utilizzare l'emulatore Python per scopi di test o simulazione distribuita da un altro computer, lo script <code>pico_emulator.py</code> è stato parametrizzato per accettare l'indirizzo IP del broker come parametro a riga di comando:</p>
+<pre>
+python pico_emulator.py 192.168.1.50
+</pre>
+<p>Per isolare l'orchestratore <code>cargoservice</code> dai dettagli del protocollo MQTT, introduciamo un attore ponte (<strong>MQTT Adapter</strong>) nel contesto <code>ctx_cargoservice</code> che si occupa di convertire i messaggi MQTT in messaggi nativi QAK (es. <code>distance(D)</code>) e viceversa.</p>
+
+<h3>Architettura Logica Distribuita e Nodi di Deployment</h3>
+<div class="remark">
+    <p>In coerenza con la pianificazione e l'analisi effettuata nello Sprint 0, il deployment effettivo del sistema si distribuisce sui seguenti contesti fisici ed hardware:</p>
+    <ul>
+        <li>
+            <strong>PC Principale (Host PC):</strong> Rappresenta il nodo centrale computazionale del sistema. Su questa macchina fisica coesistono ed operano due diversi runtime:
+            <ul>
+                <li><strong>Java Virtual Machine (JVM):</strong> Ospita il processo principale <code>cargoservice</code> (eseguito via <code>./gradlew run</code> alla porta CoAP <code>8082</code>). Questo processo avvia ed ospita nativamente il web server <code>IOPortWebServer</code> per la <strong>WebGUI dell'IOPort</strong> (porta <code>8081</code>).</li>
+                <li><strong>Docker Engine:</strong> Gestisce l'intera infrastruttura di simulazione e di comunicazione di rete tramite container isolati sulla stessa macchina:
+                    <ul>
+                        <li>Il broker MQTT <code>mosquitto</code> (porta <code>1883</code>), impiegato per lo scambio messaggi con il microcontrollore.</li>
+                        <li>Il pianificatore di movimenti autonomo <code>robotsmart26</code> (contesto esterno <code>ctxrobotsmart</code>, porta <code>8020</code>).</li>
+                        <li>L'interfaccia di monitoraggio 2D del robot <code>robotoutgui25</code> (porta <code>8085</code>).</li>
+                        <li>Il simulatore fisico 3D <code>wenv</code> (porte <code>8090/8091</code>).</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <strong>Web Browser (Client GUI):</strong> Rappresenta l'interfaccia utente finale per l'operatore/cliente. Può risiedere sia sulla stessa macchina, sia su un altro computer connesso alla stessa rete LAN locale. Dal browser vengono caricate e renderizzate la dashboard dell'IOPort (indirizzo <code>http://&lt;IP_PC_PRINCIPALE&gt;:8081</code>, che comunica con la JVM tramite HTTP/REST) e l'interfaccia 2D del robot (indirizzo <code>http://&lt;IP_PC_PRINCIPALE&gt;:8085</code>).
+        </li>
+        <li>
+            <strong>Raspberry Pi Pico W (Nodo Remoto):</strong> Rappresenta il microcontrollore hardware autonomo reale (contesto <code>ctx_picow</code>) connesso via Wi-Fi alla stessa rete del PC principale. Esegue lo script MicroPython <code>pico_sonar_led.py</code> per interfacciarsi fisicamente con il Sonar HC-SR04 e con il diodo LED, scambiando informazioni con il broker MQTT (porta <code>1883</code>) ospitato sul PC principale. In caso di testing temporaneo o assenza di hardware, è possibile utilizzare l'emulatore locale <code>pico_emulator.py</code> configurato con l'IP del broker.
+        </li>
+    </ul>
+</div>
+
+<h3>Modellazione del Comportamento del Robot e Coordinamento</h3>
+<p>Nel contesto dello Sprint 2, l'orchestratore <code>cargoservice</code> e l'attore <code>cargorobot</code> coordinano la movimentazione del robot nel rispetto dei requisiti di tema finale. Il robot esegue la transizione tra le aree logiche (IOPort, Slot5 e Slot di stoccaggio) e supporta la sospensione/ripristino dei movimenti in caso di guasto rilevato dal sonar remoto.</p>
+
+<h4>1. Sincronizzazione e Reset Iniziale</h4>
+<p>All'avvio, l'orchestratore invia un comando di reset per riallineare il planner logico di <code>robotsmart26</code> con lo stato di startup del simulatore 3D (WEnv), forzando la posizione iniziale a <code>(0,0)</code> con direzione <code>SUD</code> (down):</p>
+<pre>
+State s0 initial {
+    println("cargoservice | starting...") color blue
+    [# SystemOutOfService = false #]
+    forward ioport -m display_msg : display_msg(service_working)
+    println("cargoservice | Sincronizzazione: resetto lo stato del robot nel planner a (0,0) SOUTH...") color blue
+    <b>forward robotsmart -m setrobotstate : setpos(0, 0, down)</b>
+    updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+}
+</pre>
+
+<h4>2. Mappatura delle Coordinate Logiche della Stiva</h4>
+<p>Le coordinate della stiva seguono la convenzione del planner A* espressa come <code>(riga, colonna)</code>. Per ciascuno slot logico viene definita la coordinata di posizionamento adiacente libera ("accanto") al fine di prevenire collisioni con i container o gli ostacoli strutturali:</p>
+<pre>
+when (CurrentDest) {
+    "home"   -> { TargetX = 0; TargetY = 0 } // Riga 0, Colonna 0
+    "ioport" -> { TargetX = 4; TargetY = 0 } // Riga 4, Colonna 0 (IOPort)
+    "slot5"  -> { TargetX = 2; TargetY = 5 } // Cella libera accanto a destra dello Slot 5 (2,4)
+    "slot1"  -> { TargetX = 1; TargetY = 1 } // Cella libera accanto a sinistra dello Slot 1 (1,2)
+    "slot2"  -> { TargetX = 2; TargetY = 3 } // Cella libera accanto sotto allo Slot 2 (1,3)
+    "slot3"  -> { TargetX = 3; TargetY = 1 } // Cella libera accanto a sinistra dello Slot 3 (3,2)
+    "slot4"  -> { TargetX = 4; TargetY = 3 } // Cella libera accanto sotto allo Slot 4 (3,3)
+    else     -> { TargetX = 0; TargetY = 0 }
+}
+</pre>
+
+<h4>3. Sequenza Nominale e Ciclo di Lavoro</h4>
+<p>Il robot esegue la transizione lineare dei carichi passando per lo <code>slot5</code> per la marcatura temporanea:</p>
+<pre>
+<kc>// 1. Spostamento all'IOPort per raccogliere il container</kc>
+State robotExecution {
+    [# CurrentDest = "ioport" #]
+    request cargorobot -m move_robot : move_robot(ioport)
+}
+Transition t0 whenReply move_done -> robotAtIOPort
+
+<kc>// 2. Spostamento a Slot 5 per etichettatura temporanea</kc>
+State robotAtIOPort {
+    [# CurrentDest = "slot5" #]
+    request cargorobot -m move_robot : move_robot(slot5)
+}
+Transition t0 whenReply move_done -> robotAtSlot5
+
+<kc>// 3. Posizionamento e attivazione del marcatore</kc>
+State robotAtSlot5 {
+    println("cargoservice | robot arrivato in slot5: poso temporaneamente per marcatura...") color green
+    forward marker -m start_marking : start_marking($ReservedSlot)
+}
+Transition t0 whenMsg marking_done -> markingCompleted
+
+<kc>// 4. Trasferimento nello slot di stoccaggio definitivo</kc>
+State markingCompleted {
+    [# CurrentDest = ReservedSlot #]
+    println("cargoservice | marcatura completata: sposto il container in $ReservedSlot...") color green
+    request cargorobot -m move_robot : move_robot($ReservedSlot)
+}
+Transition t0 whenReply move_done -> robotAtReservedSlot
+</pre>
+
+<h4>4. Gestione delle Interruzioni (Out of Service) e Ripristino</h4>
+<p>Nel caso in cui il Sonar rilevi un errore (distanza > DFREE per 3s), viene emesso l'evento <code>alarm</code> per arrestare immediatamente il robot virtuale. Al ripristino delle condizioni normali, l'orchestratore ricalcola la transizione riprendendo il movimento verso l'ultimo target di destinazione memorizzato (<code>CurrentDest</code>):</p>
+<pre>
+State handleInterrupt {
+    println("cargoservice | INTERRUPTION: Sonar failure reported.") color red
+    <b>emit alarm : alarm(sonar_failure)</b> <kc>// Arresta robotsmart26</kc>
+    [# SystemOutOfService = true; DisplayMsg = "out_of_service" #]
+    updateResource [# "state(...)" #]
+} Goto outOfService
+
+State handleRecovery {
+    println("cargoservice | RECOVERY: Sonar reports normal operation.") color green
+    [# SystemOutOfService = false; DisplayMsg = "service_working" #]
+    updateResource [# "state(...)" #]
+} Goto working if [# ReservedSlot == "" #] else resumeActivity
+
+State resumeActivity {
+    println("cargoservice | resuming movement to destination: $CurrentDest")
+}
+Goto robotExecution if [# CurrentDest == "ioport" #] else checkSlot5Resuming
+</pre>
+
+<h2>Test plans</h2>
+<p>I test dello Sprint 3 mirano a convalidare il funzionamento distribuito sulla rete LAN reale ed il comportamento di tolleranza ai guasti fisici:</p>
+<div class="req">
+    <b>Test Distribuito 1: Pressione Pushbutton da Browser Remoto (LAN)</b><br>
+    <i>Azione:</i> Un browser connesso su un PC client differente (alla stessa rete LAN) effettua una POST HTTP verso <code>http://&lt;IP_PC_PRINCIPALE&gt;:8081/load</code>.<br>
+    <i>Risultato Atteso:</i> Il display mostra la prenotazione dello slot ed il LED (remoto) inizia a lampeggiare.
+</div>
+<div class="req">
+    <b>Test Distribuito 2: Rilevamento Sonar Fisico su Raspberry Pi Pico W</b><br>
+    <i>Azione:</i> Si posiziona un container ad una distanza &lt; 10 cm davanti al sonar HC-SR04 connesso alla Pico W fisica remota.<br>
+    <i>Risultato Atteso:</i> La Pico W invia le letture via Wi-Fi al broker MQTT sul PC principale. L'orchestratore attiva il robot virtuale ed invia il comando di lampeggio LED via MQTT. Il diodo LED sulla Pico W inizia a lampeggiare.
+</div>
+<div class="req">
+    <b>Test Distribuito 3: Tolleranza ai Guasti di Rete (Wi-Fi/Power Loss su Pico W)</b><br>
+    <i>Azione:</i> Durante la movimentazione del carico, si spegne o scollega la Pico W dalla rete Wi-Fi.<br>
+    <i>Risultato Atteso:</i> La perdita di connessione/heartbeat viene intercettata dall'adattatore MQTT che invia un messaggio di errore. L'orchestratore arresta immediatamente il robot virtuale per sicurezza ed imposta lo stato a <code>out_of_service</code>. Al ripristino dell'alimentazione/connessione della Pico W, il robot riprende il movimento da dove si era interrotto.
+</div>
+
+<h2>Organizzazione del processo di produzione</h2> 
+<p>Pianificazione e compiti per lo sviluppo dello Sprint 3:</p>
+<ul>
+    <li>Configurazione e deploy dello script MicroPython (<code>pico_sonar_led.py</code>) ed isolamento credenziali in <code>secrets.py</code> sulla scheda fisica Raspberry Pi Pico W (Stima: 4 ore/uomo).</li>
+    <li>Parametrizzazione dell'emulatore Python per il passaggio dell'IP a riga di comando al fine di supportare test distribuiti da macchine terze (Stima: 2 ore/uomo).</li>
+    <li>Esecuzione del test di robustezza a guasti di rete (disconnessione temporanea del nodo sonar) (Stima: 3 ore/uomo).</li>
+    <li>Deployment distribuito reale e collaudo finale LAN multidevice (Stima: 4 ore/uomo).</li>
+</ul>
+
+<h2>Testing</h2> 
+<p>Il collaudo è stato eseguito con successo connettendo una scheda hardware Raspberry Pi Pico W ed un PC secondario (tablet/smartphone) alla medesima rete Wi-Fi del PC principale:</p>
+<ul>
+    <li>Pressione del pushbutton da browser remoto ➔ Ricezione istantanea su JVM locale e prenotazione dello slot.</li>
+    <li>Rilevamento distanza da sonar HC-SR04 reale ➔ Spostamento del robot virtuale WEnv e marcatura.</li>
+    <li>Perdita di alimentazione Pico W ➔ Arresto immediato in sicurezza del robot ed out of service; al riavvio, il robot riprende correttamente il piano.</li>
+</ul>
+
+<h2>Deployment</h2> 
+<p>Il deployment distribuito reale sulla rete LAN si compone dei seguenti passi operativi:</p>
+<ol>
+    <li><strong>Avvio Infrastruttura (PC Principale):</strong> Eseguire il comando <code>docker compose up</code> nella directory <code>sprint3</code> del PC principale per avviare Mosquitto (porta <code>1883</code>), WEnv (porte <code>8090/8091</code>), robotoutgui25 (porta <code>8085</code>) e robotsmart26 (porta <code>8020</code>).</li>
+    <li><strong>Avvio del Core Service (PC Principale):</strong> Eseguire il comando <code>./gradlew run</code> per avviare il servizio JVM <code>cargoservice</code> (porta <code>8082</code>) ed il relativo server web dell'IOPort (porta <code>8081</code>).</li>
+    <li><strong>Configurazione e Avvio del Nodo Remoto (Pico W):</strong>
+        <ul>
+            <li>Creare un file <code>secrets.py</code> sul microcontrollore Raspberry Pi Pico W contenente SSID, Password della rete Wi-Fi e l'indirizzo IP del PC Principale (es. <code>192.168.1.50</code>) come broker MQTT.</li>
+            <li>Caricare ed eseguire lo script MicroPython <code>src/pico/pico_sonar_led.py</code> sulla scheda fisica Pico W.</li>
+            <li>*(In alternativa, per simulare da un PC terzo, eseguire il comando: <code>python src/pico/pico_emulator.py &lt;IP_PC_PRINCIPALE&gt;</code>).*</li>
+        </ul>
+    </li>
+    <li><strong>Accesso Multidevice (PC Client Remoto / Smartphone):</strong> Aprire un browser web su un altro dispositivo connesso alla medesima rete locale ed accedere all'indirizzo <code>http://&lt;IP_PC_PRINCIPALE&gt;:8081</code> per inviare i comandi di carico tramite l'IOPort Dashboard, ed all'indirizzo <code>http://&lt;IP_PC_PRINCIPALE&gt;:8085</code> per visualizzare la griglia ed i movimenti del robot.</li>
+</ol>
+
+<h2>Maintenance</h2> 
+<p>N/A - Fine del ciclo di sviluppo (Sprint 3).</p>
+
+<br/><br/> 	
+</div>  
+
+<div style="background-color:rgba(86, 56, 253, 0.9); width: 100%; box-sizing: border-box; text-align:left; color:white; padding: 20px; border-radius: 10px; margin-top: 30px;">
+    <div style="display: flex; gap: 20px; justify-content: space-around; align-items: flex-start; text-align: center; margin-bottom: 20px;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Luigi</span>
+            <img src="img/WhatsApp Image 2026-07-01 at 10.56.36.jpeg" alt="Luigi" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Riccardo</span>
+            <img src="img/IMG_20210714_212328_502.jpg" alt="Riccardo" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-weight: bold; margin-bottom: 5px;">Simone</span>
+            <img src="img/WhatsApp Image 2026-07-01 at 11.05.03.jpeg" alt="Simone" style="width: 130px; height: 160px; object-fit: cover; border-radius: 4px; border: 2px solid white;">
+        </div>
+    </div>
+    <div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px; font-size: 90%;">
+        GIT repo: <a href="https://github.com/riccardocar99/cargoservice-" style="color: #e6ccff; text-decoration: underline;">https://github.com/riccardocar99/cargoservice-</a>
+    </div>
+</div> 
+</body>
+</html>

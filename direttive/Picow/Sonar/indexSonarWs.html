@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pico W</title>
+    </head>
+    <body>
+        <h1>Pico W Ultrasonic Distance with WebSocket</h1>
+        <h2 id="ultrasonic">Connessione in corso...</h2>
+        <p id="status" style="color: gray; font-size: 0.9em"></p>
+
+        <script>
+            const PicoAddress = window.location.hostname;
+            const WS_PORT = 81;  // porta WebSocket del Pico W (adatta se necessario)
+            const statusEl   = document.getElementById("status");
+            const ultrasonicEl = document.getElementById("ultrasonic");
+
+            function connect() {
+                const ws = new WebSocket(`ws://${PicoAddress}:${WS_PORT}/`);
+
+                ws.onopen = () => {
+                    statusEl.textContent = "Connesso";
+                    statusEl.style.color = "green";
+                };
+
+                ws.onmessage = (event) => {
+                    ultrasonicEl.textContent = `${event.data} cm`;
+                };
+
+                ws.onerror = (err) => {
+                    statusEl.textContent = "Errore WebSocket";
+                    statusEl.style.color = "red";
+                };
+
+                ws.onclose = () => {
+                    statusEl.textContent = "Connessione chiusa — riconnessione tra 2s...";
+                    statusEl.style.color = "orange";
+                    setTimeout(connect, 2000);  // riconnessione automatica
+                };
+            }
+
+            connect();
+        </script>
+    </body>
+</html>

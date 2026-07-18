@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pico W</title>
+    </head>
+      <body>
+        <h1>Pico W Ultrasonic Distance with AJAX</h1>
+        <h2 id="ultrasonic"></h2>
+        <!--
+        <script>
+            setInterval(() => location.reload(), 500)
+        </script>
+        -->
+
+        <script>
+            //instead of hardcoding, use address which browser accessed Pico W.
+            const PicoAddress = window.location.href
+
+            const getData = async () => {
+                console.log("getData picoaddr=" + PicoAddress)
+                //there is a slash at the end of PicoAddress, so don't use "/data". use "data"
+                const data = await fetch(`${PicoAddress}data`);
+                //response is just a string, so use data.text() to decode the Response's body
+                const distance = await data.text();
+                console.log("distance="+distance)
+                //target ultrasonic id and change its inner HTML
+                ultrasonic.innerHTML = `${distance} cm`;
+                //run getData() again.
+                setInterval(getData,100)
+                //you can run getData() but it seems more optimized if you give it some time to breathe
+            };
+
+            getData();
+           
+        </script>
+
+
+</html>

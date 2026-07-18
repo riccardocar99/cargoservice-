@@ -1,0 +1,466 @@
+System cargoservice
+
+// Customer requests (from requirements: request to load, reserved slot, retrylater, reject)
+Request load : load(CLIENT_ID)
+Reply reserved : reserved(SLOT) for load
+Reply retrylater : retrylater(REASON) for load
+Reply reject : reject(REASON) for load
+
+// Sonar measurements (from requirements: measures a distance D)
+Dispatch distance : distance(D)
+Dispatch sonar_ok : sonar_ok(D)
+Dispatch sonar_fail : sonar_fail(D)
+
+// Internal robot commands (between cargoservice and cargorobot driver)
+Request move_robot : move_robot(DEST)
+Reply move_done : move_done(RESULT) for move_robot
+ 
+// External robot commands (to external RobotSmart26 on port 8020)
+Request moverobot    :  moverobot(TARGETX, TARGETY, STEPTIME)
+Reply moverobotdone  :  moverobotdone(ARG)                  for moverobot
+Reply moverobotfailed:  moverobotfailed(PLANDONE, PLANTODO) for moverobot
+Dispatch setrobotstate: setpos(X, Y, D)
+
+// Marker commands (from requirements: marker device labels and signals when completed)
+Dispatch start_marking : start_marking(SLOT)
+Dispatch marking_done : marking_done(SLOT)
+
+// Led commands (from requirements: blink a Led while engaged, off otherwise)
+Dispatch led_state : led_state(STATE) // STATE: "blink", "off", "on"
+
+// Display updates (from requirements: show current state of the hold, 'Service working', 'Out of service')
+Dispatch display_msg : display_msg(MSG)
+
+// Alarm event (to interrupt robotsmart26)
+Event alarm : alarm(X)
+
+// Local event for sonar bridge callback
+Dispatch distance_event : distance_event(D)
+
+Context ctx_cargoservice ip [ host="localhost" port=8082 ]
+
+Context ctxrobotsmart    ip [ host="127.0.0.1" port=8020 ]
+
+ExternalQActor robotsmart context ctxrobotsmart
+
+/*
+ * cargoservice: orchestrator actor implementing the business requirements
+ */
+QActor cargoservice context ctx_cargoservice {
+    [#
+        var Slot1Occupied = false
+        var Slot2Occupied = false
+        var Slot3Occupied = false
+        var Slot4Occupied = false
+        var SystemOutOfService = false
+        var IOPortOccupied = false
+        var ReservedSlot = ""
+        var CurrentDest = ""
+        var DisplayMsg = "service_working"
+    #]
+
+    State s0 initial {
+        println("cargoservice | starting...") color blue
+        [# SystemOutOfService = false #]
+        forward ioport -m display_msg : display_msg(service_working)
+        println("cargoservice | Sincronizzazione: resetto lo stato del robot nel planner a (0,0) SOUTH (giù)...") color blue
+        forward robotsmart -m setrobotstate : setpos(0, 0, down)
+        updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+    }
+    Goto working
+
+    State working {
+        println("cargoservice | SYSTEM STATE: cargoservice aspetta una load...") color green
+    }
+    Transition t0
+        whenRequest load -> handleLoadRequest
+        whenMsg sonar_fail -> handleInterrupt
+
+    State handleLoadRequest {
+        onMsg(load : load(CLIENT_ID)) {
+            [#
+                if (SystemOutOfService || IOPortOccupied) {
+            #]
+                    replyTo load with retrylater : retrylater(busy_or_out_of_service)
+            [#
+                } else if (Slot1Occupied && Slot2Occupied && Slot3Occupied && Slot4Occupied) {
+            #]
+                    replyTo load with reject : reject(hold_full)
+            [#
+                } else {
+                    if (!Slot1Occupied) ReservedSlot = "slot1"
+                    else if (!Slot2Occupied) ReservedSlot = "slot2"
+                    else if (!Slot3Occupied) ReservedSlot = "slot3"
+                    else if (!Slot4Occupied) ReservedSlot = "slot4"
+                    DisplayMsg = "waiting_for_distance"
+            #]
+                    println("cargoservice | COMMAND RECEIVED: cargoservice riceve la richiesta di carico da client ${payloadArg(0)}.") color green
+                    println("cargoservice | SUCCESS: slot $ReservedSlot riservato. In attesa di conferma presenza container da picow (distanza < 10) entro 30s...") color green
+                    replyTo load with reserved : reserved($ReservedSlot)
+                    forward led -m led_state : led_state(blink)
+                    updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+            [#
+                }
+            #]
+        }
+    }
+    Goto waitingForContainer if [# ReservedSlot != "" #] else working
+
+    State waitingForContainer {
+        println("cargoservice | in attesa di conferma presenza container da picow (distanza < 10 cm)...") color green
+    }
+    Transition t0
+        whenTime 30000 -> handleTimeout
+        whenMsg distance -> checkContainerArrival
+        whenMsg sonar_fail -> handleInterrupt
+
+    State checkContainerArrival {
+        onMsg(distance : distance(D)) {
+            [#
+                val Dist = payloadArg(0).toDouble().toInt()
+                IOPortOccupied = true
+                DisplayMsg = "container_arrived"
+            #]
+            println("cargoservice | cargoservice: conferma ricevuta! Distanza ${payloadArg(0)} cm è OK (presenza container confermata).") color green
+            println("cargoservice | Procedo a far muovere il robot per il carico in $ReservedSlot...") color green
+            updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+        }
+    }
+    Goto robotExecution
+
+    State robotExecution {
+        [# CurrentDest = "ioport" #]
+        println("cargoservice | moving robot to ioport") color blue
+        request cargorobot -m move_robot : move_robot(ioport)
+    }
+    Transition t0
+        whenReply move_done -> robotAtIOPort
+        whenMsg sonar_fail -> handleInterrupt
+
+    State robotAtIOPort {
+        [# CurrentDest = "slot5" #]
+        println("cargoservice | moving robot to slot5") color blue
+        request cargorobot -m move_robot : move_robot(slot5)
+    }
+    Transition t0
+        whenReply move_done -> robotAtSlot5
+        whenMsg sonar_fail -> handleInterrupt
+
+    State robotAtSlot5 {
+        println("cargoservice | robot arrivato in slot5: poso temporaneamente il container in slot5 per marcatura...") color green
+        forward marker -m start_marking : start_marking($ReservedSlot)
+    }
+    Transition t0
+        whenMsg marking_done -> markingCompleted
+        whenMsg sonar_fail -> handleInterrupt
+
+    State markingCompleted {
+        [# CurrentDest = ReservedSlot #]
+        println("cargoservice | marcatura completata in slot5: sposto il container dallo slot5 allo slot riservato $ReservedSlot...") color green
+        request cargorobot -m move_robot : move_robot($ReservedSlot)
+    }
+    Transition t0
+        whenReply move_done -> robotAtReservedSlot
+        whenMsg sonar_fail -> handleInterrupt
+
+    State robotAtReservedSlot {
+        [#
+            if (ReservedSlot == "slot1") Slot1Occupied = true
+            else if (ReservedSlot == "slot2") Slot2Occupied = true
+            else if (ReservedSlot == "slot3") Slot3Occupied = true
+            else if (ReservedSlot == "slot4") Slot4Occupied = true
+            
+            IOPortOccupied = false
+            ReservedSlot = ""
+            DisplayMsg = "loading"
+        #]
+        updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+        [# CurrentDest = "home" #]
+        println("cargoservice | slot loaded, moving robot home") color blue
+        request cargorobot -m move_robot : move_robot(home)
+    }
+    Transition t0
+        whenReply move_done -> robotExecutionCompleted
+        whenMsg sonar_fail -> handleInterrupt
+
+    State robotExecutionCompleted {
+        println("cargoservice | SUCCESS: Container loaded successfully. Returning to service.") color green
+        [# DisplayMsg = "service_working" #]
+        forward ioport -m display_msg : display_msg(service_working)
+        forward led -m led_state : led_state(off)
+        updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+    }
+    Goto working
+
+    State handleTimeout {
+        println("cargoservice | TIMEOUT: 30 seconds elapsed. Resetting reservation and turning off LED.") color red
+        [#
+            ReservedSlot = ""
+            DisplayMsg = "service_working"
+        #]
+        forward led -m led_state : led_state(off)
+        updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+    }
+    Goto working
+
+    State handleInterrupt {
+        println("cargoservice | INTERRUPTION: Sonar failure reported. Moving to out-of-service state.") color red
+        emit alarm : alarm(sonar_failure)
+        [# 
+            SystemOutOfService = true 
+            DisplayMsg = "out_of_service"
+        #]
+        forward led -m led_state : led_state(on)
+        forward ioport -m display_msg : display_msg(out_of_service)
+        updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+    }
+    Goto outOfService
+
+    State outOfService {
+        println("cargoservice | waiting for sonar recovery...") color red
+    }
+    Transition t0
+        whenMsg sonar_ok -> handleRecovery
+        whenRequest load -> handleLoadRequestInFailure
+
+    State handleLoadRequestInFailure {
+        replyTo load with retrylater : retrylater(out_of_service)
+    }
+    Goto outOfService
+
+    State handleRecovery {
+        println("cargoservice | RECOVERY: Sonar reports normal operation. Resuming activity.") color green
+        [# 
+            SystemOutOfService = false 
+            DisplayMsg = "service_working"
+        #]
+        forward ioport -m display_msg : display_msg(service_working)
+        [#
+            val StateToResume = if (ReservedSlot != "") "blink" else "off"
+        #]
+        forward led -m led_state : led_state($StateToResume)
+        updateResource [# "state($SystemOutOfService,$Slot1Occupied,$Slot2Occupied,$Slot3Occupied,$Slot4Occupied,$ReservedSlot,$IOPortOccupied,$DisplayMsg)" #]
+    }
+    Goto working if [# ReservedSlot == "" #] else resumeActivity
+
+    State resumeActivity {
+        println("cargoservice | resuming movement to destination: $CurrentDest") color blue
+    }
+    Goto robotExecution if [# CurrentDest == "ioport" #] else checkSlot5Resuming
+
+    State checkSlot5Resuming {
+    }
+    Goto robotAtIOPort if [# CurrentDest == "slot5" #] else checkReservedResuming
+
+    State checkReservedResuming {
+    }
+    Goto markingCompleted if [# CurrentDest == ReservedSlot #] else robotAtReservedSlot
+}
+
+/*
+ * cargorobot: driver that translates logical positions to coordinate requests for RobotSmart26
+ */
+QActor cargorobot context ctx_cargoservice {
+    [#
+        var TargetX = 0
+        var TargetY = 0
+        var StepTime = 335
+        var CurrentDest = ""
+    #]
+    State s0 initial {
+        println("cargorobot | ready") color green
+    }
+    Transition t0
+        whenRequest move_robot -> doMove
+
+    State doMove {
+        onMsg(move_robot : move_robot(DEST)) {
+            [#
+                CurrentDest = payloadArg(0)
+                when (CurrentDest) {
+                    "home" -> { TargetX = 0; TargetY = 0 }
+                    "ioport" -> { TargetX = 4; TargetY = 0 }
+                    "slot5" -> { TargetX = 2; TargetY = 5 }
+                    "slot1" -> { TargetX = 1; TargetY = 1 }
+                    "slot2" -> { TargetX = 2; TargetY = 3 }
+                    "slot3" -> { TargetX = 3; TargetY = 1 }
+                    "slot4" -> { TargetX = 4; TargetY = 3 }
+                    else -> { TargetX = 0; TargetY = 0 }
+                }
+            #]
+            request robotsmart -m moverobot : moverobot($TargetX, $TargetY, $StepTime)
+        }
+    }
+    Transition t0
+        whenReply moverobotdone -> handleMoveSuccess
+        whenReply moverobotfailed -> handleMoveFailure
+
+    State handleMoveSuccess {
+        onMsg(moverobotdone : moverobotdone(ARG)) {
+            replyTo move_robot with move_done : move_done(success)
+        }
+    }
+    Transition t0
+        whenRequest move_robot -> doMove
+
+    State handleMoveFailure {
+        onMsg(moverobotfailed : moverobotfailed(PLANDONE, PLANTODO)) {
+            replyTo move_robot with move_done : move_done(failed)
+        }
+    }
+    Transition t0
+        whenRequest move_robot -> doMove
+}
+
+/*
+ * Sonar and Led Remote Proxy/Bridge actors (communicating with MicroPython via MQTT)
+ */
+QActor sonar context ctx_cargoservice {
+    [#
+        lateinit var mqtt: unibo.utils.MqttHelper
+        var LastD = 999.0
+        var PresenceStartTime: Long = 0
+        var FailureStartTime: Long = 0
+        var InFailure = false
+        var ContainerDetected = false
+        val DFREE = 20.0
+        val DFREE_2 = 10.0
+    #]
+    State s0 initial {
+        println("sonar | starting and connecting to MQTT...") color yellow
+        [#
+            mqtt = unibo.utils.MqttHelper("tcp://localhost:1883", "sonar_bridge")
+            mqtt.connect()
+            mqtt.subscribe("cargoservice/pico/sonar") { payload ->
+                try {
+                    val d = payload.toDouble()
+                    unibo.utils.QakHelper.sendDispatch("sonar", "distance_event", "$d", "sonar")
+                } catch (e: Exception) {
+                    println("sonar | invalid payload: $payload")
+                }
+            }
+        #]
+    }
+    Transition t0
+        whenMsg distance_event -> handleDistance
+
+    State handleDistance {
+        onMsg(distance_event : distance_event(D)) {
+            [#
+                val D = payloadArg(0).toDouble()
+                println("sonar | picow distanza: $D cm")
+                val Now = System.currentTimeMillis()
+                
+                // 1. Presence detection (D < DFREE/2 for 3 seconds)
+                if (D < DFREE_2) {
+                    if (PresenceStartTime == 0L) {
+                        PresenceStartTime = Now
+                    } else if (Now - PresenceStartTime >= 3000 && !ContainerDetected) {
+                        ContainerDetected = true
+                        #]
+                        println("sonar | container presence detected at IOPort!") color yellow
+                        forward cargoservice -m distance : distance($D)
+                        [#
+                    }
+                } else {
+                    PresenceStartTime = 0L
+                    ContainerDetected = false
+                }
+
+                // 2. Out of service detection (D > DFREE for 3 seconds)
+                if (D > DFREE) {
+                    if (FailureStartTime == 0L) {
+                        FailureStartTime = Now
+                    } else if (Now - FailureStartTime >= 3000 && !InFailure) {
+                        InFailure = true
+                        #]
+                        println("sonar | failure detected (Out of service)!") color red
+                        forward cargoservice -m sonar_fail : sonar_fail($D)
+                        [#
+                    }
+                } else {
+                    FailureStartTime = 0L
+                    if (InFailure) {
+                        InFailure = false
+                        #]
+                        println("sonar | failure recovered!") color green
+                        forward cargoservice -m sonar_ok : sonar_ok($D)
+                        [#
+                    }
+                }
+            #]
+        }
+    }
+    Transition t0
+        whenMsg distance_event -> handleDistance
+}
+
+QActor led context ctx_cargoservice {
+    [#
+        lateinit var mqtt: unibo.utils.MqttHelper
+    #]
+    State s0 initial {
+        println("led | starting and connecting to MQTT...") color cyan
+        [#
+            mqtt = unibo.utils.MqttHelper("tcp://localhost:1883", "led_bridge")
+            mqtt.connect()
+        #]
+    }
+    Transition t0
+        whenMsg led_state -> handleState
+
+    State handleState {
+        onMsg(led_state : led_state(STATE)) {
+            [#
+                val State = payloadArg(0)
+                mqtt.publish("cargoservice/pico/led", State)
+            #]
+            println("led | state published: $State") color cyan
+        }
+    }
+    Transition t0
+        whenMsg led_state -> handleState
+}
+
+QActor marker context ctx_cargoservice {
+    State s0 initial {
+        println("marker | ready") color yellow
+    }
+    Transition t0
+        whenMsg start_marking -> doMarking
+
+    State doMarking {
+        onMsg(start_marking : start_marking(SLOT)) {
+            [# val Slot = payloadArg(0) #]
+            println("marker | marking container for $Slot...") color yellow
+            delay 1000 // simulate marking duration
+            forward cargoservice -m marking_done : marking_done($Slot)
+        }
+    }
+    Transition t0
+        whenMsg start_marking -> doMarking
+}
+
+QActor ioport context ctx_cargoservice {
+    [#
+        lateinit var server: unibo.ioport.IOPortWebServer
+    #]
+    State s0 initial {
+        println("ioport | display init: service_working") color yellow
+        [#
+            server = unibo.ioport.IOPortWebServer(8081)
+            server.start()
+        #]
+    }
+    Transition t0
+        whenMsg display_msg -> handleDisplay
+
+    State handleDisplay {
+        onMsg(display_msg : display_msg(MSG)) {
+            [# val Msg = payloadArg(0) #]
+            println("ioport | display message: $Msg") color yellow
+        }
+    }
+    Transition t0
+        whenMsg display_msg -> handleDisplay
+}
