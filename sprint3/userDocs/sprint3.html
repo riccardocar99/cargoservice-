@@ -393,7 +393,15 @@ Goto robotExecution if [# CurrentDest == "ioport" #] else checkSlot5Resuming
     <li><strong>Configurazione e Avvio del Nodo Remoto (Pico W):</strong>
         <ul>
             <li>Creare un file <code>secrets.py</code> sul microcontrollore Raspberry Pi Pico W contenente SSID, Password della rete Wi-Fi e l'indirizzo IP del PC Principale (es. <code>192.168.1.50</code>) come broker MQTT.</li>
-            <li>Caricare ed eseguire lo script MicroPython <code>src/pico/pico_sonar_led.py</code> sulla scheda fisica Pico W.</li>
+            <li><strong>Configurazione dei Pin Fisici (Pico W ➔ HC-SR04):</strong> Lo script <code>pico_sonar_led.py</code> è pre-configurato per utilizzare i seguenti pin fisici reali:
+                <ul>
+                    <li><code>TRIG</code> &rarr; <strong>GP2 (Pin 4)</strong></li>
+                    <li><code>ECHO</code> &rarr; <strong>GP0 (Pin 1)</strong> (con pull-down interno abilitato per evitare letture fluttuanti)</li>
+                    <li><code>GND</code> &rarr; <strong>GND (Pin 38)</strong></li>
+                    <li><code>VCC</code> &rarr; <strong>VBUS (Pin 40, 5V)</strong> per garantire la tensione di esercizio nominale richiesta dal sonar standard</li>
+                </ul>
+            </li>
+            <li>Caricare ed eseguire lo script MicroPython <code>src/pico/pico_sonar_led.py</code> (avendolo rinominato in <code>main.py</code> sulla scheda per consentire l'avvio automatico senza Thonny).</li>
             <li>*(In alternativa, per simulare da un PC terzo, eseguire il comando: <code>python src/pico/pico_emulator.py &lt;IP_PC_PRINCIPALE&gt;</code>).*</li>
         </ul>
     </li>
